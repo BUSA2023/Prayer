@@ -3,88 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HIM PULLANITHAZHAM - Usthad Admin</title>
+    <title>Madrasa Tracker - Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap');
-        
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .arabic-text { font-family: 'Amiri', serif; }
-        
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #10b981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* Paper-like grid layout */
-        .paper-grid {
-            border: 1px solid #e5e7eb;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .paper-grid th, .paper-grid td {
-            border: 1px solid #e5e7eb;
-            padding: 8px;
-            text-align: center;
-            font-size: 14px;
-        }
+        .paper-grid { border: 1px solid #e5e7eb; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .paper-grid th, .paper-grid td { border: 1px solid #e5e7eb; padding: 8px; text-align: center; font-size: 14px; }
         .paper-grid th { background-color: #f9fafb; font-weight: 600; color: #4b5563; }
         .paper-grid td:first-child { font-weight: 600; color: #374151; background-color: #f9fafb; width: 60px;}
         .paper-grid tr:hover td { background-color: #f0fdf4; } 
-        
         .paper-grid tr.excused-row td { background-color: #fdf2f8 !important; }
         .excused-text { color: #db2777; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; cursor: pointer; letter-spacing: 1px;}
-        
-        .student-header {
-            background: #f3f4f6; padding: 12px; font-weight: bold; font-size: 16px; color: #1f2937;
-            border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;
-        }
+        .student-header { background: #f3f4f6; padding: 12px; font-weight: bold; font-size: 16px; color: #1f2937; border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex flex-col overflow-hidden">
 
-    <!-- Admin Login Modal -->
-    <div id="admin-login-modal" class="fixed inset-0 bg-emerald-900 z-[200] flex items-center justify-center p-4">
+    <div id="auth-screen" class="fixed inset-0 bg-emerald-900 z-[200] flex flex-col items-center justify-center p-4">
+        <div class="text-center mb-8 text-white">
+            <i class="fa-solid fa-mosque text-6xl mb-4 text-emerald-300"></i>
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Global Madrasa Tracker</h1>
+            <p class="text-emerald-100">Usthad Admin Portal</p>
+        </div>
         <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl relative fade-in">
-            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600 text-2xl">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-4 text-gray-800">Usthad Access</h3>
-            <p class="text-sm text-gray-500 mb-4">Enter PIN to access the tracking dashboard.</p>
-            <input type="password" id="admin-pin" placeholder="Enter PIN (786)" class="w-full text-center px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 outline-none text-xl tracking-widest mb-4">
-            <p id="pin-error" class="text-red-500 text-sm mb-4 hidden">Incorrect PIN.</p>
-            <button onclick="verifyAdminPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition">Unlock Panel</button>
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Sign In to Continue</h3>
+            <p class="text-sm text-gray-500 mb-6">Create or manage your Madrasa using your Google Account.</p>
+            <button id="google-login-btn" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-3 shadow-sm">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
+                Sign in with Google
+            </button>
         </div>
     </div>
 
-    <!-- Loading Overlay -->
+    <div id="setup-screen" class="hidden fixed inset-0 bg-emerald-900 z-[150] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl relative fade-in">
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Welcome, Usthad!</h3>
+            <p class="text-sm text-gray-500 mb-6">Let's set up your Madrasa profile to get started.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Madrasa Register Number</label>
+                    <input type="text" id="setup-reg-num" placeholder="e.g. 10254" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none uppercase font-mono tracking-wider">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Madrasa Name</label>
+                    <input type="text" id="setup-name" placeholder="e.g. HIM PULLANITHAZHAM" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Location / Place</label>
+                    <input type="text" id="setup-place" placeholder="e.g. Kerala" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <button id="finish-setup-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition mt-4">Create Madrasa Profile</button>
+            </div>
+        </div>
+    </div>
+
     <div id="loading-overlay" class="hidden fixed inset-0 bg-white z-[100] flex-col items-center justify-center">
         <div class="loader mb-4"></div>
-        <p class="text-emerald-700 font-bold text-lg animate-pulse">Syncing Database...</p>
+        <p class="text-emerald-700 font-bold text-lg animate-pulse" id="loading-text">Syncing Database...</p>
     </div>
 
     <nav id="main-nav" class="bg-white border-b border-gray-200 shadow-sm z-40 flex-shrink-0 hidden">
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3">
-                    <div class="bg-emerald-100 p-2 rounded-lg text-emerald-700">
-                        <i class="fa-solid fa-user-shield"></i>
-                    </div>
-                    <span class="font-bold text-lg text-emerald-800 hidden sm:block">Usthad Portal</span>
-                    <span class="font-bold text-lg text-emerald-800 sm:hidden">Usthad</span>
+                    <div class="bg-emerald-100 p-2 rounded-lg text-emerald-700"><i class="fa-solid fa-user-shield"></i></div>
+                    <span class="font-bold text-lg text-emerald-800 hidden sm:block" id="nav-madrasa-name">Usthad Portal</span>
                 </div>
                 
                 <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-                    <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700">Daily Entry</button>
-                    <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Tracker Sheets</button>
+                    <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700">Daily</button>
+                    <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Sheets</button>
+                    <button onclick="switchTab('settings')" id="tab-settings" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700"><i class="fa-solid fa-gear"></i></button>
                 </div>
             </div>
         </div>
@@ -93,7 +96,6 @@
     <main id="app-content" class="flex-grow overflow-y-auto bg-[#f8fafc] p-4 md:p-6 w-full fade-in hidden">
         <div class="max-w-[1400px] mx-auto space-y-6">
             
-            <!-- Daily View -->
             <div id="admin-daily-view" class="hidden space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -113,37 +115,61 @@
                     <div class="space-y-6">
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
                             <h3 class="font-bold text-gray-800 mb-3"><i class="fa-solid fa-bullhorn text-amber-500 mr-2"></i>Broadcast Advisement</h3>
-                            <textarea id="admin-msg-input" rows="5" class="w-full p-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none mb-3" placeholder="Write a message, announcement, or advice for all students to see on their portal..."></textarea>
+                            <textarea id="admin-msg-input" rows="5" class="w-full p-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none mb-3" placeholder="Write a message, announcement, or advice for all students to see..."></textarea>
                             <button id="save-msg-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-paper-plane"></i> Publish to Students
                             </button>
+                        </div>
+                        <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-5">
+                            <h3 class="font-bold text-indigo-800 mb-2"><i class="fa-solid fa-share-nodes mr-2"></i>Share Portal</h3>
+                            <p class="text-xs text-indigo-600 mb-3">Copy your unique link below and send it to parents. They will only see your Madrasa's data.</p>
+                            <div class="flex gap-2">
+                                <input type="text" id="share-link-input" readonly class="w-full px-3 py-2 rounded border border-indigo-200 text-xs bg-white outline-none cursor-text">
+                                <button onclick="copyShareLink()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded text-sm font-bold transition shrink-0"><i class="fa-solid fa-copy"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Bulk Tracking Sheets View -->
             <div id="sheet-view" class="space-y-4">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
                      <div>
                         <h2 class="text-lg font-bold text-gray-800">Monthly Tracker Sheets</h2>
-                        <p class="text-xs text-gray-500">Click any box to tick the prayer. Data is saved automatically.</p>
+                        <p class="text-xs text-gray-500">Click any box to cycle (Missed -> Done -> Excused). Automatically saves scroll position.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                         <input type="file" id="csv-upload" accept=".csv" class="hidden">
                         <button onclick="document.getElementById('csv-upload').click()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-2 rounded text-sm font-bold border border-indigo-200 transition shadow-sm flex items-center">
                             <i class="fa-solid fa-file-csv mr-2"></i> Import CSV
                         </button>
-                        
                         <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
-
                         <label class="text-sm font-bold text-gray-700 shrink-0">Select Month:</label>
                         <input type="month" id="admin-month-selector" class="w-full sm:w-auto px-3 py-2 rounded border border-gray-300 text-sm focus:ring-emerald-500 outline-none cursor-pointer bg-gray-50">
                     </div>
                 </div>
-                
                 <div id="paper-sheets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
                     <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div id="settings-view" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fa-solid fa-users-gear text-emerald-500 mr-2"></i>Manage Students</h2>
+                    <form id="add-student-form" class="flex flex-col sm:flex-row gap-3 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <input type="text" id="new-student-name" placeholder="Student Name" required class="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <select id="new-student-gender" class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                            <option value="boy">Boy</option>
+                            <option value="girl">Girl</option>
+                        </select>
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-sm whitespace-nowrap">Add Student</button>
+                    </form>
+                    <div id="student-manager-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button id="sign-out-btn" class="text-red-500 hover:text-red-700 font-bold px-4 py-2 transition"><i class="fa-solid fa-right-from-bracket mr-2"></i>Sign Out</button>
                 </div>
             </div>
             
@@ -158,9 +184,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, writeBatch, updateDoc, arrayUnion, arrayRemove, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA6ruQWH9yo2eVIzTytjg8QL51a3uQzhY0",
@@ -172,100 +197,124 @@
             measurementId: "G-GC2NZS7ZM6"
         };
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        let authReady = false;
+        const provider = new GoogleAuthProvider();
 
-        const STUDENTS = [
-            { name: 'Niswa', gender: 'girl' }, { name: 'Shahma', gender: 'girl' },
-            { name: 'Rashid', gender: 'boy' }, { name: 'Shamil', gender: 'boy' }, { name: 'Nafith', gender: 'boy' }
-        ];
-        
+        // Core Constants
         const PRAYERS = ['Subh', 'Luhr', 'Asr', 'Magrib', 'Isha'];
         const PRAYER_ARABIC = ['صبح', 'ظهر', 'عصر', 'مغرب', 'عشاء']; 
         
+        const PRAYER_UNLOCK_TIMES = {
+            'Subh': { h: 5, m: 0 }, 'Luhr': { h: 12, m: 15 }, 'Asr': { h: 15, m: 30 }, 'Magrib': { h: 18, m: 15 }, 'Isha': { h: 19, m: 30 }
+        };
+
+        // State Variables
+        let currentUid = null;
+        let currentMadrasaId = null; // This is now the Register Number
+        let madrasaData = { name: '', place: '', students: [] };
         let allRecords = {};
         
         const today = new Date();
-        let selectedDailyDate = today.toISOString().split('T')[0];
-        
-        // Ensure standard local YYYY-MM format for the month selector
+        const localTodayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        let selectedDailyDate = localTodayStr;
         const currentYearStr = today.getFullYear();
         const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
         let selectedViewMonth = `${currentYearStr}-${currentMonthStr}`;
-        let lastRenderedMonthStr = ""; // Added to track skeleton rendering
+        let lastRenderedMonthStr = ""; 
+        let scrollMemory = {};
 
+        // UI Setup
         const datePicker = document.getElementById('daily-date-picker');
         datePicker.value = selectedDailyDate;
-
+        datePicker.max = localTodayStr; 
         const monthSelector = document.getElementById('admin-month-selector');
         monthSelector.value = selectedViewMonth;
 
-        datePicker.addEventListener('change', (e) => {
-            selectedDailyDate = e.target.value;
-            renderAdminDaily();
+        datePicker.addEventListener('change', (e) => { selectedDailyDate = e.target.value; renderAdminDaily(); });
+        monthSelector.addEventListener('change', (e) => { selectedViewMonth = e.target.value; updateViews(); });
+
+        document.getElementById('google-login-btn').addEventListener('click', async () => {
+            try { await signInWithPopup(auth, provider); } catch (error) { showToast(error.message, "error"); }
         });
 
-        monthSelector.addEventListener('change', (e) => {
-            selectedViewMonth = e.target.value;
-            updateViews(); // Re-render sheets for the selected month
-        });
+        document.getElementById('sign-out-btn').addEventListener('click', () => { signOut(auth); });
 
-        // Smart Month Date Generator
-        function getDatesForViewMonth() {
-            const [y, m] = selectedViewMonth.split('-');
-            const year = parseInt(y);
-            const month = parseInt(m) - 1; // JS months are 0-11
-            
-            let startDay = 1; // By default, EVERY month automatically starts on the 1st
-            
-            // Strict requirement: ONLY September 2026 starts from the 9th
-            if (year === 2026 && month === 8) { 
-                startDay = 9;
-            }
-            
-            // Automatically gets the exact number of days in ANY selected month (e.g., Oct=31, Nov=30)
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const dates = [];
-            
-            for (let d = startDay; d <= daysInMonth; d++) {
-                // Ensure proper YYYY-MM-DD formatting regardless of timezone shifts
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                dates.push(dateStr);
-            }
-            return dates;
-        }
-
-        window.verifyAdminPin = async function() {
-            if (document.getElementById('admin-pin').value === '786') {
-                document.getElementById('admin-login-modal').classList.add('hidden');
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUid = user.uid;
+                document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('loading-overlay').classList.remove('hidden');
                 document.getElementById('loading-overlay').classList.add('flex');
                 
-                try {
-                    await signInAnonymously(auth);
-                    onAuthStateChanged(auth, (user) => {
-                        if (user && !authReady) {
-                            authReady = true;
-                            setupListeners();
-                        }
-                    });
-                } catch (err) {
-                    showToast("Database Login Failed. Check Rules.", "error");
+                // Query database to find if this Usthad has already set up a Madrasa
+                const q = query(collection(db, 'madrasas'), where('ownerUid', '==', currentUid));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    // Madrasa exists, grab the Register Number (document ID)
+                    currentMadrasaId = querySnapshot.docs[0].id;
+                    
+                    let baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+                    document.getElementById('share-link-input').value = `${baseUrl}/student-portal.html?mid=${currentMadrasaId}`;
+                    setupListeners();
+                } else {
+                    // No madrasa found, show setup screen
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                    document.getElementById('loading-overlay').classList.remove('flex');
+                    document.getElementById('setup-screen').classList.remove('hidden');
                 }
             } else {
-                document.getElementById('pin-error').classList.remove('hidden');
+                currentUid = null;
+                currentMadrasaId = null;
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('main-nav').classList.add('hidden');
+                document.getElementById('app-content').classList.add('hidden');
             }
-        };
+        });
+
+        document.getElementById('finish-setup-btn').addEventListener('click', async () => {
+            const regNum = document.getElementById('setup-reg-num').value.trim().toUpperCase();
+            const name = document.getElementById('setup-name').value.trim();
+            const place = document.getElementById('setup-place').value.trim();
+            if(!regNum || !name || !place) return showToast("Please fill all fields", "error");
+            
+            try {
+                // Check if someone else already took this Register Number
+                const docRef = doc(db, 'madrasas', regNum);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    return showToast("This Register Number is already claimed!", "error");
+                }
+
+                // Create the madrasa with the Register Number as the ID, and save the ownerUid securely inside it
+                await setDoc(docRef, { ownerUid: currentUid, name, place, students: [], advisement: "" });
+                currentMadrasaId = regNum;
+                
+                let baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+                document.getElementById('share-link-input').value = `${baseUrl}/student-portal.html?mid=${currentMadrasaId}`;
+                
+                document.getElementById('setup-screen').classList.add('hidden');
+                setupListeners();
+            } catch (e) { showToast(e.message, "error"); }
+        });
 
         function setupListeners() {
-            // Using direct root collection for standalone external app (since this isn't on the platform anymore)
-            const settingsRef = doc(db, 'madrasa_settings', 'global');
-            const recordsRef = collection(db, 'salah_monthly');
+            const madrasaRef = doc(db, 'madrasas', currentMadrasaId);
+            const recordsRef = collection(db, 'madrasas', currentMadrasaId, 'salah_records');
 
-            onSnapshot(settingsRef, (docSnap) => {
-                if(docSnap.exists()) document.getElementById('admin-msg-input').value = docSnap.data().advisement || '';
+            onSnapshot(madrasaRef, (docSnap) => {
+                if(docSnap.exists()) {
+                    madrasaData = docSnap.data();
+                    if(!madrasaData.students) madrasaData.students = []; 
+                    
+                    document.getElementById('nav-madrasa-name').innerText = madrasaData.name;
+                    if(document.getElementById('admin-msg-input').value === '') {
+                        document.getElementById('admin-msg-input').value = madrasaData.advisement || '';
+                    }
+                    renderStudentManager();
+                    updateViews(); 
+                }
             });
 
             onSnapshot(recordsRef, (snapshot) => {
@@ -278,95 +327,155 @@
                 document.getElementById('app-content').classList.remove('hidden');
                 
                 updateViews();
-            }, (error) => {
-                 console.error("Sync error:", error);
-                 showToast("Sync error. Please check Firebase rules.", "error");
+            }, (error) => showToast("Sync error.", "error"));
+        }
+
+        document.getElementById('add-student-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('new-student-name');
+            const genderInput = document.getElementById('new-student-gender');
+            
+            const newStudent = { name: nameInput.value.trim(), gender: genderInput.value };
+            if(madrasaData.students.some(s => s.name.toLowerCase() === newStudent.name.toLowerCase())) {
+                return showToast("Student name already exists", "error");
+            }
+
+            try {
+                const madrasaRef = doc(db, 'madrasas', currentMadrasaId);
+                await updateDoc(madrasaRef, { students: arrayUnion(newStudent) });
+                nameInput.value = '';
+                showToast("Student Added", "success");
+            } catch (err) { showToast(err.message, "error"); }
+        });
+
+        window.removeStudent = async function(name, gender) {
+            if(!confirm(`Are you sure you want to remove ${name}? Their past data will remain in the database but they will disappear from the tracking list.`)) return;
+            try {
+                const madrasaRef = doc(db, 'madrasas', currentMadrasaId);
+                await updateDoc(madrasaRef, { students: arrayRemove({name, gender}) });
+                showToast("Student Removed", "success");
+            } catch (err) { showToast(err.message, "error"); }
+        };
+
+        function renderStudentManager() {
+            const list = document.getElementById('student-manager-list');
+            list.innerHTML = '';
+            if(madrasaData.students.length === 0) {
+                list.innerHTML = `<div class="col-span-full text-center p-6 text-gray-500">No students added yet. Add your first student above!</div>`;
+                return;
+            }
+
+            madrasaData.students.forEach(s => {
+                const color = s.gender === 'girl' ? 'bg-pink-50 border-pink-200 text-pink-700' : 'bg-blue-50 border-blue-200 text-blue-700';
+                const icon = s.gender === 'girl' ? 'fa-person-dress' : 'fa-person';
+                list.innerHTML += `
+                    <div class="flex items-center justify-between p-3 rounded-lg border shadow-sm ${color}">
+                        <div class="font-bold flex items-center gap-2"><i class="fa-solid ${icon}"></i> ${s.name}</div>
+                        <button onclick="removeStudent('${s.name}', '${s.gender}')" class="text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
             });
         }
 
+        function isFuturePrayer(dateStr, prayer) {
+            if (dateStr > localTodayStr) return true;  
+            if (dateStr < localTodayStr) return false; 
+            
+            const currentHour = today.getHours();
+            const currentMinute = today.getMinutes();
+            const unlockTime = PRAYER_UNLOCK_TIMES[prayer];
+            
+            if (currentHour < unlockTime.h) return true;
+            if (currentHour === unlockTime.h && currentMinute < unlockTime.m) return true;
+            return false;
+        }
+
+        // Helper to get dates
+        function getDatesForViewMonth() {
+            const [y, m] = selectedViewMonth.split('-');
+            const year = parseInt(y);
+            const month = parseInt(m) - 1; 
+            let startDay = 1;
+            if (year === 2026 && month === 8) startDay = 9; // Original logic preserved
+            
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const dates = [];
+            for (let d = startDay; d <= daysInMonth; d++) {
+                dates.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`);
+            }
+            return dates;
+        }
+
         window.togglePrayer = async function(date, student, prayer, gender) {
-            if(!authReady) return;
+            if(!currentUid) return;
+            if (isFuturePrayer(date, prayer)) return showToast(`Cannot mark ${prayer} before its time!`, "error");
+
             const record = (allRecords[date] && allRecords[date][student]) || {};
             let current = record[prayer];
-            
-            // Support for legacy full-day flag
             if (record.excused === true) current = 'excused';
 
             let nextValue;
             if (gender === 'girl') {
-                // Cycle: Missed -> Done -> Excused -> Missed
                 if (current === true) nextValue = 'excused';
                 else if (current === 'excused') nextValue = false;
                 else nextValue = true;
             } else {
-                // Boys Cycle: Missed -> Done -> Missed
                 nextValue = current === true ? false : true;
             }
 
             try {
-                const docRef = doc(db, 'salah_monthly', date);
-                // When toggling individual waqths, ensure the legacy full-day flag is false so it doesn't override
+                // Save scroll position for this specific student's table
+                const scrollDiv = document.getElementById(`scroll-div-${student}`);
+                if (scrollDiv) scrollMemory[student] = scrollDiv.scrollTop;
+
+                const docRef = doc(db, 'madrasas', currentUid, 'salah_records', date);
                 await setDoc(docRef, { [student]: { [prayer]: nextValue, excused: false } }, { merge: true });
-            } catch (error) { 
-                console.error(error);
-                showToast("Failed to update", "error"); 
-            }
+            } catch (error) { showToast("Failed to update", "error"); }
         };
 
         window.toggleExcuse = async function(date, student, isExcused) {
-            if(!authReady) return;
+            if(!currentUid) return;
+            if (date > localTodayStr) return showToast("Cannot mark future dates!", "error");
+
             try {
-                const docRef = doc(db, 'salah_monthly', date);
-                let updateData = { excused: false }; // Clear global flag to use per-waqth granularity
-                
-                if (isExcused) {
-                    PRAYERS.forEach(p => updateData[p] = 'excused');
-                    showToast(`Marked full day excused for ${student}`, "success");
-                } else {
-                    PRAYERS.forEach(p => updateData[p] = false);
-                    showToast(`Removed leave for ${student}`, "success");
-                }
+                const scrollDiv = document.getElementById(`scroll-div-${student}`);
+                if (scrollDiv) scrollMemory[student] = scrollDiv.scrollTop;
+
+                const docRef = doc(db, 'madrasas', currentUid, 'salah_records', date);
+                let updateData = { excused: false }; 
+                if (isExcused) { PRAYERS.forEach(p => updateData[p] = 'excused'); } 
+                else { PRAYERS.forEach(p => updateData[p] = false); }
                 
                 await setDoc(docRef, { [student]: updateData }, { merge: true });
-            } catch (error) { 
-                console.error(error);
-                showToast("Error updating leave", "error"); 
-            }
+            } catch (error) { showToast("Error updating leave", "error"); }
         };
 
         document.getElementById('save-msg-btn').addEventListener('click', async () => {
-            if (!authReady) return;
+            if (!currentUid) return;
             const btn = document.getElementById('save-msg-btn');
             const msg = document.getElementById('admin-msg-input').value.trim();
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
             try {
-                await setDoc(doc(db, 'madrasa_settings', 'global'), { advisement: msg }, { merge: true });
+                await updateDoc(doc(db, 'madrasas', currentUid), { advisement: msg });
                 showToast("Published to Students!", "success");
-            } catch (err) { 
-                console.error(err);
-                showToast("Failed to save", "error"); 
-            } 
+            } catch (err) { showToast("Failed to save", "error"); } 
             finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish to Students'; }
         });
 
         function updateViews() {
             renderAdminDaily();
-            
-            // Get dates dynamically based on the selected month
             const dates = getDatesForViewMonth();
             renderPaperSheets(dates);
         }
 
         function renderPaperSheets(dates) {
             const container = document.getElementById('paper-sheets-container');
-            const todayStr = new Date().toISOString().split('T')[0];
+            const STUDENTS = madrasaData.students; // DYNAMIC STUDENTS ARRAY
             
-            // Check if we need to rebuild the entire framework (e.g., month changed or first load)
             const needsSkeleton = (lastRenderedMonthStr !== selectedViewMonth) || (container.innerHTML.trim() === '');
 
             if (needsSkeleton) {
                 container.innerHTML = '';
-                
                 STUDENTS.forEach(student => {
                     let colorTheme = student.gender === 'girl' ? 'text-pink-600 border-pink-200' : 'text-blue-600 border-blue-200';
                     let headerBg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
@@ -387,26 +496,25 @@
                                         ${leaveHeader}
                                     </tr>
                                 </thead>
-                                <tbody id="tbody-${student.name}">
-                                    <!-- Rows will be injected here without destroying the scroll container -->
-                                </tbody>
+                                <tbody id="tbody-${student.name}"></tbody>
                             </table>
                         </div>
                     </div>`;
                     container.innerHTML += tableHtml;
                 });
-                
                 lastRenderedMonthStr = selectedViewMonth;
             }
 
-            // ONLY update the inner rows. This perfectly prevents the scroll jump!
+            // Update Inner Rows
             STUDENTS.forEach(student => {
+                if(!document.getElementById(`tbody-${student.name}`)) return; // Skip if framework not built yet
                 let rowsHtml = '';
                 
                 dates.forEach((date) => {
                     const [year, month, day] = date.split('-');
                     const displayDate = `${day}-${month}-${year}`;
-                    const isToday = date === todayStr;
+                    const isToday = date === localTodayStr;
+                    const isFuture = date > localTodayStr;
                     
                     const record = (allRecords[date] && allRecords[date][student.name]) || {};
                     let isFullDayExcused = record.excused === true;
@@ -417,40 +525,44 @@
                         
                         let done = val === true;
                         let excused = val === 'excused';
+                        let isFutureWaqth = isFuturePrayer(date, p);
                         
                         let icon = '';
                         if (done) icon = '<i class="fa-solid fa-check text-blue-700 font-bold text-xl drop-shadow-sm"></i>';
                         else if (excused) icon = '<i class="fa-solid fa-moon text-pink-500 font-bold text-lg drop-shadow-sm"></i>';
+                        else if (isFutureWaqth) icon = '<i class="fa-solid fa-clock text-gray-300 font-bold text-lg"></i>'; 
                         
-                        return `<td class="p-1 text-center cursor-pointer hover:bg-gray-100 transition border-l border-gray-100" onclick="togglePrayer('${date}', '${student.name}', '${p}', '${student.gender}')">
-                            <div class="w-full h-8 flex items-center justify-center text-lg">${icon}</div>
-                        </td>`;
+                        let clickAction = isFutureWaqth ? `showToast('Cannot mark ${p} before its time!', 'error')` : `togglePrayer('${date}', '${student.name}', '${p}', '${student.gender}')`;
+                        let cursorClass = isFutureWaqth ? 'cursor-not-allowed opacity-40 bg-gray-50' : 'cursor-pointer hover:bg-gray-100 transition';
+
+                        return `<td class="p-1 text-center border-l border-gray-100 ${cursorClass}" onclick="${clickAction}"><div class="w-full h-8 flex items-center justify-center text-lg">${icon}</div></td>`;
                     }).join('');
                     
-                    // Add the Leave Button column for girls
                     let leaveCell = '';
                     if (student.gender === 'girl') {
                         let allExcused = PRAYERS.every(p => (record[p] === 'excused' || isFullDayExcused));
+                        let actionRemove = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name}', false)`;
+                        let actionAdd = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name}', true)`;
+                        
                         if (allExcused && PRAYERS.length > 0) {
-                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="toggleExcuse('${date}', '${student.name}', false)" class="w-full h-8 rounded bg-pink-100 text-pink-700 hover:bg-pink-200 transition flex items-center justify-center" title="Remove Leave"><i class="fa-solid fa-xmark"></i></button></td>`;
+                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="${actionRemove}" class="w-full h-8 rounded bg-pink-100 text-pink-700 hover:bg-pink-200 transition flex items-center justify-center" title="Remove Leave"><i class="fa-solid fa-xmark"></i></button></td>`;
                         } else {
-                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="toggleExcuse('${date}', '${student.name}', true)" class="w-full h-8 rounded text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition flex items-center justify-center" title="Mark Whole Day Excused"><i class="fa-solid fa-moon"></i></button></td>`;
+                            let btnClass = isFuture ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition';
+                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="${actionAdd}" class="w-full h-8 rounded flex items-center justify-center ${btnClass}" title="Mark Whole Day Excused"><i class="fa-solid fa-moon"></i></button></td>`;
                         }
                     }
 
-                    const rowClass = isToday ? 'bg-emerald-50' : 'bg-white';
-
-                    rowsHtml += `
-                        <tr class="${rowClass}">
-                            <td class="p-2 text-center border-r font-bold sticky left-0 z-0 whitespace-nowrap ${isToday ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-700'}">${displayDate}</td>
-                            ${cellsHtml}
-                            ${leaveCell}
-                        </tr>
-                    `;
+                    const rowClass = isToday ? 'bg-emerald-50' : (isFuture ? 'bg-gray-50/50 opacity-75' : 'bg-white');
+                    rowsHtml += `<tr class="${rowClass}"><td class="p-2 text-center border-r font-bold sticky left-0 z-0 whitespace-nowrap ${isToday ? 'bg-emerald-50 text-emerald-700' : (isFuture ? 'bg-gray-100 text-gray-400' : 'bg-gray-50 text-gray-700')}">${displayDate}</td>${cellsHtml}${leaveCell}</tr>`;
                 });
 
-                // Directly target and update the specific student's tbody
                 document.getElementById(`tbody-${student.name}`).innerHTML = rowsHtml;
+                
+                // Restore scroll position seamlessly
+                const scrollDiv = document.getElementById(`scroll-div-${student.name}`);
+                if (scrollDiv && scrollMemory[student.name]) {
+                    scrollDiv.scrollTop = scrollMemory[student.name];
+                }
             });
         }
 
@@ -458,6 +570,12 @@
             const container = document.getElementById('admin-daily-list');
             container.innerHTML = '';
             const dateData = allRecords[selectedDailyDate] || {};
+            const STUDENTS = madrasaData.students;
+
+            if(STUDENTS.length === 0) {
+                container.innerHTML = `<div class="p-4 text-center text-gray-500">Go to Settings to add students.</div>`;
+                return;
+            }
 
             STUDENTS.forEach((student) => {
                 const data = dateData[student.name] || {};
@@ -466,32 +584,24 @@
                 let dotsHtml = PRAYERS.map((p, i) => {
                     let val = data[p];
                     if (isFullDayExcused) val = 'excused';
-                    
                     let done = val === true;
                     let excused = val === 'excused';
+                    let isFutureWaqth = isFuturePrayer(selectedDailyDate, p);
                     
                     let c = 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200';
                     let icon = 'fa-xmark opacity-50';
+                    let clickAction = `togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', '${student.gender}')`;
                     
-                    if (done) {
-                        c = 'bg-emerald-500 text-white border-emerald-600';
-                        icon = 'fa-check';
-                    } else if (excused) {
-                        c = 'bg-pink-100 text-pink-600 border-pink-300';
-                        icon = 'fa-moon';
-                    }
+                    if (done) { c = 'bg-emerald-500 text-white border-emerald-600'; icon = 'fa-check'; } 
+                    else if (excused) { c = 'bg-pink-100 text-pink-600 border-pink-300'; icon = 'fa-moon'; } 
+                    else if (isFutureWaqth) { c = 'bg-gray-50 text-gray-300 border-gray-100 opacity-60 cursor-not-allowed hover:bg-gray-50'; icon = 'fa-clock'; clickAction = `showToast('Cannot mark ${p} before its time!', 'error')`; }
                     
-                    return `<button onclick="togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', '${student.gender}')" 
-                            class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 ${c}" title="${p}">
-                            <i class="fa-solid ${icon}"></i>
-                            </button>`;
+                    return `<button onclick="${clickAction}" class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 ${c}" title="${p}"><i class="fa-solid ${icon}"></i></button>`;
                 }).join('');
 
                 let actionsHtml = '';
                 if (student.gender === 'girl') {
-                    // Check if all 5 prayers are set to 'excused'
                     let allExcused = PRAYERS.every(p => (data[p] === 'excused' || isFullDayExcused));
-                    
                     if (allExcused && PRAYERS.length > 0) {
                         actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', false)" class="px-3 py-2 bg-pink-100 text-pink-700 rounded-lg text-xs font-bold w-full hover:bg-pink-200 transition">Remove Leave</button>`;
                     } else {
@@ -515,51 +625,57 @@
         window.switchTab = function(tabName) {
             document.getElementById('admin-daily-view').classList.add('hidden');
             document.getElementById('sheet-view').classList.add('hidden');
+            document.getElementById('settings-view').classList.add('hidden');
+            
             document.getElementById('tab-daily').className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700";
             document.getElementById('tab-sheet').className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700";
+            document.getElementById('tab-settings').className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700";
             
             document.getElementById(`tab-${tabName}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800";
             if (tabName === 'daily') document.getElementById('admin-daily-view').classList.remove('hidden');
             if (tabName === 'sheet') document.getElementById('sheet-view').classList.remove('hidden');
+            if (tabName === 'settings') document.getElementById('settings-view').classList.remove('hidden');
         };
 
+        window.copyShareLink = function() {
+            const copyText = document.getElementById("share-link-input");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            showToast("Share link copied to clipboard!", "success");
+        }
+
         document.getElementById('csv-upload').addEventListener('change', async (e) => {
-            if (!authReady) return;
+            if (!currentUid) return;
             const file = e.target.files[0];
             if (!file) return;
 
             document.getElementById('loading-overlay').classList.remove('hidden');
             document.getElementById('loading-overlay').classList.add('flex');
-            document.querySelector('#loading-overlay p').innerText = "Importing CSV Data...";
+            document.getElementById('loading-text').innerText = "Importing CSV Data...";
 
             const reader = new FileReader();
             reader.onload = async (event) => {
                 try {
-                    const csvText = event.target.result;
-                    const rows = csvText.split('\n');
+                    const rows = event.target.result.split('\n');
                     const updatesByDate = {};
-
-                    // Start from 1 to skip header row
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i].trim();
                         if (!row) continue;
-                        
                         const cols = row.split(',');
-                        if (cols.length < 8) continue; // Ensure row has all required columns
+                        if (cols.length < 8) continue; 
 
-                        // Smart Date Converter: Accepts DD-MM-YYYY or DD/MM/YYYY and formats for database
                         let rawDate = cols[0].trim();
                         let dbDate = rawDate;
                         if (/^\d{1,2}[-/]\d{1,2}[-/]\d{4}$/.test(rawDate)) {
                             const parts = rawDate.split(/[-/]/);
-                            const d = parts[0].padStart(2, '0');
-                            const m = parts[1].padStart(2, '0');
-                            const y = parts[2];
-                            dbDate = `${y}-${m}-${d}`;
+                            dbDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
                         }
 
                         const student = cols[1].trim();
-                        
+                        // Only process students that exist in this madrasa
+                        if(!madrasaData.students.some(s => s.name.toLowerCase() === student.toLowerCase())) continue;
+
                         const subhRaw = cols[2].trim() === '1' || cols[2].trim().toLowerCase() === 'true';
                         const luhrRaw = cols[3].trim() === '1' || cols[3].trim().toLowerCase() === 'true';
                         const asrRaw = cols[4].trim() === '1' || cols[4].trim().toLowerCase() === 'true';
@@ -568,24 +684,16 @@
                         const excused = cols[7] && (cols[7].trim() === '1' || cols[7].trim().toLowerCase() === 'true');
 
                         let subh = subhRaw, luhr = luhrRaw, asr = asrRaw, magrib = magribRaw, isha = ishaRaw;
-                        
-                        // If CSV explicitly marks them as excused (1), override all waqths for that row
-                        if (excused) {
-                            subh = 'excused'; luhr = 'excused'; asr = 'excused'; magrib = 'excused'; isha = 'excused';
-                        }
+                        if (excused) { subh = 'excused'; luhr = 'excused'; asr = 'excused'; magrib = 'excused'; isha = 'excused'; }
 
                         if (!updatesByDate[dbDate]) updatesByDate[dbDate] = {};
-                        updatesByDate[dbDate][student] = {
-                            Subh: subh, Luhr: luhr, Asr: asr, Magrib: magrib, Isha: isha, excused: false
-                        };
+                        updatesByDate[dbDate][student] = { Subh: subh, Luhr: luhr, Asr: asr, Magrib: magrib, Isha: isha, excused: false };
                     }
 
-                    // Use Firestore Batch to safely upload all days at once
                     const batch = writeBatch(db);
                     let count = 0;
-
                     for (const [date, studentsData] of Object.entries(updatesByDate)) {
-                        const docRef = doc(db, 'salah_monthly', date);
+                        const docRef = doc(db, 'madrasas', currentUid, 'salah_records', date);
                         batch.set(docRef, studentsData, { merge: true });
                         count++;
                     }
@@ -593,17 +701,13 @@
                     if (count > 0) {
                         await batch.commit();
                         showToast(`Successfully imported data for ${count} days!`, "success");
-                    } else {
-                        showToast("No valid data found in CSV.", "error");
-                    }
-                } catch (error) {
-                    console.error("CSV Import Error:", error);
-                    showToast("Failed to parse CSV file.", "error");
-                } finally {
+                    } else { showToast("No valid data found matching your students.", "error"); }
+                } catch (error) { showToast("Failed to parse CSV file.", "error"); } 
+                finally {
                     document.getElementById('loading-overlay').classList.add('hidden');
                     document.getElementById('loading-overlay').classList.remove('flex');
-                    document.querySelector('#loading-overlay p').innerText = "Syncing Database...";
-                    e.target.value = ''; // Reset input to allow re-uploading the same file if needed
+                    document.getElementById('loading-text').innerText = "Syncing Database...";
+                    e.target.value = ''; 
                 }
             };
             reader.readAsText(file);
@@ -614,7 +718,6 @@
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = message;
             const icon = document.getElementById('toast-icon');
-            
             if (type === 'success') {
                 toast.className = 'fixed bottom-5 right-5 transform z-[100] flex items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4 border-emerald-500 transition-all duration-300';
                 icon.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 text-emerald-500';
