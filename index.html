@@ -17,13 +17,12 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Loading animation */
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #10b981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Styles for the paper-like grid layout replicating the physical sheets */
+        /* Paper-like grid layout */
         .paper-grid {
             border: 1px solid #e5e7eb;
             background: white;
@@ -39,9 +38,8 @@
         }
         .paper-grid th { background-color: #f9fafb; font-weight: 600; color: #4b5563; }
         .paper-grid td:first-child { font-weight: 600; color: #374151; background-color: #f9fafb; width: 60px;}
-        .paper-grid tr:hover td { background-color: #f0fdf4; } /* Light green hover for admin */
+        .paper-grid tr:hover td { background-color: #f0fdf4; } 
         
-        /* Menses/Excused Styling */
         .paper-grid tr.excused-row td { background-color: #fdf2f8 !important; }
         .excused-text { color: #db2777; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; cursor: pointer; letter-spacing: 1px;}
         
@@ -86,7 +84,7 @@
                 
                 <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
                     <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700">Daily Entry</button>
-                    <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Bulk Tracker Sheets</button>
+                    <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Tracker Sheets</button>
                 </div>
             </div>
         </div>
@@ -124,19 +122,19 @@
                 </div>
             </div>
 
-            <!-- Bulk Tracking Sheets View (Replicating the paper structure) -->
+            <!-- Bulk Tracking Sheets View -->
             <div id="sheet-view" class="space-y-4">
-                <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
                      <div>
                         <h2 class="text-lg font-bold text-gray-800">Monthly Tracker Sheets</h2>
-                        <p class="text-xs text-gray-500">Click any box to tick the prayer for that specific day. Edits save instantly to the cloud.</p>
+                        <p class="text-xs text-gray-500">Click any box to tick the prayer. Data is saved automatically.</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded text-xs font-bold animate-pulse">Live Editing</span>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <label class="text-sm font-bold text-gray-700 shrink-0">Select Month:</label>
+                        <input type="month" id="admin-month-selector" class="w-full sm:w-auto px-3 py-2 rounded border border-gray-300 text-sm focus:ring-emerald-500 outline-none cursor-pointer bg-gray-50">
                     </div>
                 </div>
                 
-                <!-- This container will hold individual tables for each student (like the image) -->
                 <div id="paper-sheets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
                     <!-- Populated by JS -->
                 </div>
@@ -153,21 +151,21 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // User's Firebase Configuration
-        const appId = "prayer-5f162";
         const firebaseConfig = {
             apiKey: "AIzaSyCwKSTl9ZXrLOF41kCmK5BVlNSEPecRK_Y",
             authDomain: "prayer-5f162.firebaseapp.com",
             projectId: "prayer-5f162",
             storageBucket: "prayer-5f162.firebasestorage.app",
             messagingSenderId: "728078267159",
-            appId: "1:728078267159:web:96ec460dc907f16f163d52"
+            appId: "1:728078267159:web:96ec460dc907f16f163d52",
+            measurementId: "G-1P878W2W5J"
         };
-
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const auth = getAuth(app);
         let authReady = false;
@@ -177,26 +175,58 @@
             { name: 'Rashid', gender: 'boy' }, { name: 'Shamil', gender: 'boy' }, { name: 'Nafith', gender: 'boy' }
         ];
         
-        // Exact matching for physical sheet headers
         const PRAYERS = ['Subh', 'Luhr', 'Asr', 'Magrib', 'Isha'];
         const PRAYER_ARABIC = ['صبح', 'ظهر', 'عصر', 'مغرب', 'عشاء']; 
         
         let allRecords = {};
-        let selectedDailyDate = new Date().toISOString().split('T')[0];
         
-        // Always track from the 9th
         const today = new Date();
-        const minDate = new Date(today.getFullYear(), today.getMonth(), 9);
-        if (today.getDate() < 9) minDate.setMonth(minDate.getMonth() - 1);
+        let selectedDailyDate = today.toISOString().split('T')[0];
         
+        // Ensure standard local YYYY-MM format for the month selector
+        const currentYearStr = today.getFullYear();
+        const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
+        let selectedViewMonth = `${currentYearStr}-${currentMonthStr}`;
+
         const datePicker = document.getElementById('daily-date-picker');
-        datePicker.min = minDate.toISOString().split('T')[0];
         datePicker.value = selectedDailyDate;
+
+        const monthSelector = document.getElementById('admin-month-selector');
+        monthSelector.value = selectedViewMonth;
 
         datePicker.addEventListener('change', (e) => {
             selectedDailyDate = e.target.value;
             renderAdminDaily();
         });
+
+        monthSelector.addEventListener('change', (e) => {
+            selectedViewMonth = e.target.value;
+            updateViews(); // Re-render sheets for the selected month
+        });
+
+        // Smart Month Date Generator
+        function getDatesForViewMonth() {
+            const [y, m] = selectedViewMonth.split('-');
+            const year = parseInt(y);
+            const month = parseInt(m) - 1; // JS months are 0-11
+            
+            let startDay = 1;
+            // Strict requirement: If it's September 2026, start from the 9th
+            if (year === 2026 && month === 8) { 
+                startDay = 9;
+            }
+            
+            // Get the exact number of days in the selected month
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const dates = [];
+            
+            for (let d = startDay; d <= daysInMonth; d++) {
+                // Ensure proper YYYY-MM-DD formatting regardless of timezone shifts
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                dates.push(dateStr);
+            }
+            return dates;
+        }
 
         window.verifyAdminPin = async function() {
             if (document.getElementById('admin-pin').value === '786') {
@@ -221,8 +251,9 @@
         };
 
         function setupListeners() {
-            const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
-            const recordsRef = collection(db, 'artifacts', appId, 'public', 'data', 'salah_monthly');
+            // Using direct root collection for standalone external app (since this isn't on the platform anymore)
+            const settingsRef = doc(db, 'madrasa_settings', 'global');
+            const recordsRef = collection(db, 'salah_monthly');
 
             onSnapshot(settingsRef, (docSnap) => {
                 if(docSnap.exists()) document.getElementById('admin-msg-input').value = docSnap.data().advisement || '';
@@ -247,9 +278,8 @@
         window.togglePrayer = async function(date, student, prayer, newValue) {
             if(!authReady) return;
             try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'salah_monthly', date);
+                const docRef = doc(db, 'salah_monthly', date);
                 await setDoc(docRef, { [student]: { [prayer]: newValue } }, { merge: true });
-                // We don't need UI updates here because onSnapshot handles the re-render automatically
             } catch (error) { 
                 console.error(error);
                 showToast("Failed to update", "error"); 
@@ -259,7 +289,7 @@
         window.toggleExcuse = async function(date, student, isExcused) {
             if(!authReady) return;
             try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'salah_monthly', date);
+                const docRef = doc(db, 'salah_monthly', date);
                 // When excused, set excused flag. When not excused, remove it.
                 await setDoc(docRef, { [student]: { excused: isExcused } }, { merge: true });
                 if(isExcused) {
@@ -279,7 +309,7 @@
             const msg = document.getElementById('admin-msg-input').value.trim();
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { advisement: msg }, { merge: true });
+                await setDoc(doc(db, 'madrasa_settings', 'global'), { advisement: msg }, { merge: true });
                 showToast("Published to Students!", "success");
             } catch (err) { 
                 console.error(err);
@@ -291,22 +321,17 @@
         function updateViews() {
             renderAdminDaily();
             
-            // Calculate Dates for Sheet View based on rules (from 9th to end of tracking period)
-            const dates = [];
-            let curr = new Date(minDate);
-            // Generate up to 30 days
-            for(let i=0; i<30; i++) {
-                dates.push(curr.toISOString().split('T')[0]);
-                curr.setDate(curr.getDate() + 1);
-            }
+            // Get dates dynamically based on the selected month
+            const dates = getDatesForViewMonth();
             renderPaperSheets(dates);
         }
 
-        // Render Individual Paper Sheets exactly like the physical image
         function renderPaperSheets(dates) {
             const container = document.getElementById('paper-sheets-container');
             container.innerHTML = '';
             
+            const todayStr = new Date().toISOString().split('T')[0];
+
             STUDENTS.forEach(student => {
                 let colorTheme = student.gender === 'girl' ? 'text-pink-600 border-pink-200' : 'text-blue-600 border-blue-200';
                 let headerBg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
@@ -329,12 +354,10 @@
                             <tbody>
                 `;
 
-                dates.forEach((date, index) => {
-                    const dateObj = new Date(date);
-                    // Shows the exact date number (like in the notebook image)
-                    const displayDay = dateObj.getDate(); 
-                    const isToday = date === new Date().toISOString().split('T')[0];
-                    const isFuture = dateObj > today;
+                dates.forEach((date) => {
+                    // Extract exactly the day number directly from the string to prevent timezone offset issues
+                    const displayDay = parseInt(date.split('-')[2]); 
+                    const isToday = date === todayStr;
                     
                     const record = (allRecords[date] && allRecords[date][student.name]) || {};
                     const isExcused = record.excused === true;
@@ -342,7 +365,6 @@
                     let cellsHtml = '';
                     
                     if (isExcused) {
-                        // Span across all prayers, visually showing menses leave
                         cellsHtml = `<td colspan="5" class="p-1 excused-row">
                             <div class="excused-text" onclick="toggleExcuse('${date}', '${student.name}', false)">🌙 Excused Leave (Click to Remove)</div>
                         </td>
@@ -350,20 +372,14 @@
                             <i class="fa-solid fa-times text-pink-600"></i>
                         </td>`;
                     } else {
-                        // Create ticks for each prayer
                         cellsHtml = PRAYERS.map((p) => {
                             let done = record[p] === true;
-                            // Replicating a blue pen tick mark or empty space
                             let icon = done ? '<i class="fa-solid fa-check text-blue-700 font-bold text-xl drop-shadow-sm"></i>' : '';
-                            // Make it unclickable if future date
-                            let clickAction = isFuture ? `onclick="showToast('Cannot mark future dates', 'error')"` : `onclick="togglePrayer('${date}', '${student.name}', '${p}', ${!done})"`;
-                            
-                            return `<td class="p-1 text-center cursor-pointer transition ${isFuture ? 'bg-gray-50 opacity-50' : ''}" ${clickAction}>
+                            return `<td class="p-1 text-center cursor-pointer hover:bg-gray-50 transition" onclick="togglePrayer('${date}', '${student.name}', '${p}', ${!done})">
                                 <div class="w-full h-8 flex items-center justify-center text-lg">${icon}</div>
                             </td>`;
                         }).join('');
                         
-                        // Add Excused toggler for girls
                         if(student.gender === 'girl') {
                              cellsHtml += `<td class="p-1 text-center cursor-pointer hover:bg-pink-100 transition text-gray-300 hover:text-pink-500" onclick="toggleExcuse('${date}', '${student.name}', true)">
                                 <i class="fa-solid fa-moon"></i>
@@ -371,7 +387,7 @@
                         }
                     }
                     
-                    const rowClass = isToday ? 'bg-emerald-50' : (isFuture ? 'bg-gray-50 text-gray-400' : 'bg-white');
+                    const rowClass = isToday ? 'bg-emerald-50' : 'bg-white';
 
                     tableHtml += `
                         <tr class="${rowClass} ${isExcused ? 'excused-row' : ''}">
@@ -387,7 +403,6 @@
         }
 
         function renderAdminDaily() {
-            // Used mostly for quick actions on mobile, similar logic applied.
             const container = document.getElementById('admin-daily-list');
             container.innerHTML = '';
             const dateData = allRecords[selectedDailyDate] || {};
