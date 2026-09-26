@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noorani Madrasa - Usthad Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .arabic-text { font-family: 'Amiri', serif; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Loading animation */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #10b981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Styles for the paper-like grid layout replicating the physical sheets */
+        .paper-grid {
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .paper-grid th, .paper-grid td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .paper-grid th { background-color: #f9fafb; font-weight: 600; color: #4b5563; }
+        .paper-grid td:first-child { font-weight: 600; color: #374151; background-color: #f9fafb; width: 60px;}
+        .paper-grid tr:hover td { background-color: #f0fdf4; } /* Light green hover for admin */
+        
+        /* Menses/Excused Styling */
+        .paper-grid tr.excused-row td { background-color: #fdf2f8 !important; }
+        .excused-text { color: #db2777; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; cursor: pointer; letter-spacing: 1px;}
+        
+        .student-header {
+            background: #f3f4f6; padding: 12px; font-weight: bold; font-size: 16px; color: #1f2937;
+            border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 bg-emerald-900 z-[200] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl relative fade-in">
+            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600 text-2xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Usthad Access</h3>
+            <p class="text-sm text-gray-500 mb-4">Enter PIN to access the tracking dashboard.</p>
+            <input type="password" id="admin-pin" placeholder="Enter PIN (786)" class="w-full text-center px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 outline-none text-xl tracking-widest mb-4">
+            <p id="pin-error" class="text-red-500 text-sm mb-4 hidden">Incorrect PIN.</p>
+            <button onclick="verifyAdminPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition">Unlock Panel</button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-white z-[100] flex-col items-center justify-center">
+        <div class="loader mb-4"></div>
+        <p class="text-emerald-700 font-bold text-lg animate-pulse">Syncing Database...</p>
+    </div>
+
+    <nav id="main-nav" class="bg-white border-b border-gray-200 shadow-sm z-40 flex-shrink-0 hidden">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="bg-emerald-100 p-2 rounded-lg text-emerald-700">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <span class="font-bold text-lg text-emerald-800 hidden sm:block">Usthad Portal</span>
+                    <span class="font-bold text-lg text-emerald-800 sm:hidden">Usthad</span>
+                </div>
+                
+                <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                    <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700">Daily Entry</button>
+                    <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Bulk Tracker Sheets</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app-content" class="flex-grow overflow-y-auto bg-[#f8fafc] p-4 md:p-6 w-full fade-in hidden">
+        <div class="max-w-[1400px] mx-auto space-y-6">
+            
+            <!-- Daily View -->
+            <div id="admin-daily-view" class="hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-wrap gap-2">
+                            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-calendar-check text-emerald-600 mr-2"></i>Daily Quick Entry</h3>
+                            <input type="date" id="daily-date-picker" class="px-3 py-1.5 rounded border border-gray-300 text-sm focus:ring-emerald-500 outline-none cursor-pointer">
+                        </div>
+                        <div class="p-2 bg-blue-50 border-b border-blue-100 text-xs text-blue-800 flex justify-between px-4">
+                            <span>Legend:</span>
+                            <span class="arabic-text">صبح (S), ظهر (L), عصر (A), مغرب (M), عشاء (I)</span>
+                        </div>
+                        <div id="admin-daily-list" class="divide-y divide-gray-100 p-2">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                            <h3 class="font-bold text-gray-800 mb-3"><i class="fa-solid fa-bullhorn text-amber-500 mr-2"></i>Broadcast Advisement</h3>
+                            <textarea id="admin-msg-input" rows="5" class="w-full p-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none mb-3" placeholder="Write a message, announcement, or advice for all students to see on their portal..."></textarea>
+                            <button id="save-msg-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> Publish to Students
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Tracking Sheets View (Replicating the paper structure) -->
+            <div id="sheet-view" class="space-y-4">
+                <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                     <div>
+                        <h2 class="text-lg font-bold text-gray-800">Monthly Tracker Sheets</h2>
+                        <p class="text-xs text-gray-500">Click any box to tick the prayer for that specific day. Edits save instantly to the cloud.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded text-xs font-bold animate-pulse">Live Editing</span>
+                    </div>
+                </div>
+                
+                <!-- This container will hold individual tables for each student (like the image) -->
+                <div id="paper-sheets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4" role="alert">
+        <div id="toast-icon" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg"></div>
+        <div id="toast-msg" class="ml-3 text-sm font-medium mr-4"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // User's Firebase Configuration
+        const appId = "prayer-5f162";
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwKSTl9ZXrLOF41kCmK5BVlNSEPecRK_Y",
+            authDomain: "prayer-5f162.firebaseapp.com",
+            projectId: "prayer-5f162",
+            storageBucket: "prayer-5f162.firebasestorage.app",
+            messagingSenderId: "728078267159",
+            appId: "1:728078267159:web:96ec460dc907f16f163d52"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        let authReady = false;
+
+        const STUDENTS = [
+            { name: 'Niswa', gender: 'girl' }, { name: 'Shahma', gender: 'girl' },
+            { name: 'Rashid', gender: 'boy' }, { name: 'Shamil', gender: 'boy' }, { name: 'Nafith', gender: 'boy' }
+        ];
+        
+        // Exact matching for physical sheet headers
+        const PRAYERS = ['Subh', 'Luhr', 'Asr', 'Magrib', 'Isha'];
+        const PRAYER_ARABIC = ['صبح', 'ظهر', 'عصر', 'مغرب', 'عشاء']; 
+        
+        let allRecords = {};
+        let selectedDailyDate = new Date().toISOString().split('T')[0];
+        
+        // Always track from the 9th
+        const today = new Date();
+        const minDate = new Date(today.getFullYear(), today.getMonth(), 9);
+        if (today.getDate() < 9) minDate.setMonth(minDate.getMonth() - 1);
+        
+        const datePicker = document.getElementById('daily-date-picker');
+        datePicker.min = minDate.toISOString().split('T')[0];
+        datePicker.value = selectedDailyDate;
+
+        datePicker.addEventListener('change', (e) => {
+            selectedDailyDate = e.target.value;
+            renderAdminDaily();
+        });
+
+        window.verifyAdminPin = async function() {
+            if (document.getElementById('admin-pin').value === '786') {
+                document.getElementById('admin-login-modal').classList.add('hidden');
+                document.getElementById('loading-overlay').classList.remove('hidden');
+                document.getElementById('loading-overlay').classList.add('flex');
+                
+                try {
+                    await signInAnonymously(auth);
+                    onAuthStateChanged(auth, (user) => {
+                        if (user && !authReady) {
+                            authReady = true;
+                            setupListeners();
+                        }
+                    });
+                } catch (err) {
+                    showToast("Database Login Failed. Check Rules.", "error");
+                }
+            } else {
+                document.getElementById('pin-error').classList.remove('hidden');
+            }
+        };
+
+        function setupListeners() {
+            const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global');
+            const recordsRef = collection(db, 'artifacts', appId, 'public', 'data', 'salah_monthly');
+
+            onSnapshot(settingsRef, (docSnap) => {
+                if(docSnap.exists()) document.getElementById('admin-msg-input').value = docSnap.data().advisement || '';
+            });
+
+            onSnapshot(recordsRef, (snapshot) => {
+                allRecords = {};
+                snapshot.forEach(doc => { allRecords[doc.id] = doc.data(); });
+                
+                document.getElementById('loading-overlay').classList.add('hidden');
+                document.getElementById('loading-overlay').classList.remove('flex');
+                document.getElementById('main-nav').classList.remove('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+                
+                updateViews();
+            }, (error) => {
+                 console.error("Sync error:", error);
+                 showToast("Sync error. Please check Firebase rules.", "error");
+            });
+        }
+
+        window.togglePrayer = async function(date, student, prayer, newValue) {
+            if(!authReady) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'salah_monthly', date);
+                await setDoc(docRef, { [student]: { [prayer]: newValue } }, { merge: true });
+                // We don't need UI updates here because onSnapshot handles the re-render automatically
+            } catch (error) { 
+                console.error(error);
+                showToast("Failed to update", "error"); 
+            }
+        };
+
+        window.toggleExcuse = async function(date, student, isExcused) {
+            if(!authReady) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'salah_monthly', date);
+                // When excused, set excused flag. When not excused, remove it.
+                await setDoc(docRef, { [student]: { excused: isExcused } }, { merge: true });
+                if(isExcused) {
+                    showToast(`Marked ${student} as Excused`, "success");
+                } else {
+                    showToast(`Removed leave for ${student}`, "success");
+                }
+            } catch (error) { 
+                console.error(error);
+                showToast("Error updating leave", "error"); 
+            }
+        };
+
+        document.getElementById('save-msg-btn').addEventListener('click', async () => {
+            if (!authReady) return;
+            const btn = document.getElementById('save-msg-btn');
+            const msg = document.getElementById('admin-msg-input').value.trim();
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global'), { advisement: msg }, { merge: true });
+                showToast("Published to Students!", "success");
+            } catch (err) { 
+                console.error(err);
+                showToast("Failed to save", "error"); 
+            } 
+            finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish to Students'; }
+        });
+
+        function updateViews() {
+            renderAdminDaily();
+            
+            // Calculate Dates for Sheet View based on rules (from 9th to end of tracking period)
+            const dates = [];
+            let curr = new Date(minDate);
+            // Generate up to 30 days
+            for(let i=0; i<30; i++) {
+                dates.push(curr.toISOString().split('T')[0]);
+                curr.setDate(curr.getDate() + 1);
+            }
+            renderPaperSheets(dates);
+        }
+
+        // Render Individual Paper Sheets exactly like the physical image
+        function renderPaperSheets(dates) {
+            const container = document.getElementById('paper-sheets-container');
+            container.innerHTML = '';
+            
+            STUDENTS.forEach(student => {
+                let colorTheme = student.gender === 'girl' ? 'text-pink-600 border-pink-200' : 'text-blue-600 border-blue-200';
+                let headerBg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
+                
+                let tableHtml = `
+                <div class="paper-grid flex flex-col h-[75vh]">
+                    <div class="student-header ${headerBg}">
+                        <span class="uppercase tracking-widest ${colorTheme}">${student.name}</span>
+                        ${student.gender === 'girl' ? '<span class="text-xs font-normal text-pink-500 bg-pink-100 px-2 py-1 rounded-md"><i class="fa-solid fa-moon"></i> Click E to mark Menses</span>' : ''}
+                    </div>
+                    <div class="overflow-y-auto flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="sticky top-0 bg-white shadow-sm z-10">
+                                <tr>
+                                    <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-gray-500 bg-gray-50">Date</th>
+                                    ${PRAYER_ARABIC.map(p => `<th class="p-2 border-b arabic-text font-normal text-lg">${p}</th>`).join('')}
+                                    ${student.gender === 'girl' ? '<th class="p-2 border-b text-pink-500" title="Excused Leave">E</th>' : ''}
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                dates.forEach((date, index) => {
+                    const dateObj = new Date(date);
+                    // Shows the exact date number (like in the notebook image)
+                    const displayDay = dateObj.getDate(); 
+                    const isToday = date === new Date().toISOString().split('T')[0];
+                    const isFuture = dateObj > today;
+                    
+                    const record = (allRecords[date] && allRecords[date][student.name]) || {};
+                    const isExcused = record.excused === true;
+                    
+                    let cellsHtml = '';
+                    
+                    if (isExcused) {
+                        // Span across all prayers, visually showing menses leave
+                        cellsHtml = `<td colspan="5" class="p-1 excused-row">
+                            <div class="excused-text" onclick="toggleExcuse('${date}', '${student.name}', false)">🌙 Excused Leave (Click to Remove)</div>
+                        </td>
+                        <td class="p-1 excused-row bg-pink-100 text-center cursor-pointer hover:bg-pink-200 transition" onclick="toggleExcuse('${date}', '${student.name}', false)">
+                            <i class="fa-solid fa-times text-pink-600"></i>
+                        </td>`;
+                    } else {
+                        // Create ticks for each prayer
+                        cellsHtml = PRAYERS.map((p) => {
+                            let done = record[p] === true;
+                            // Replicating a blue pen tick mark or empty space
+                            let icon = done ? '<i class="fa-solid fa-check text-blue-700 font-bold text-xl drop-shadow-sm"></i>' : '';
+                            // Make it unclickable if future date
+                            let clickAction = isFuture ? `onclick="showToast('Cannot mark future dates', 'error')"` : `onclick="togglePrayer('${date}', '${student.name}', '${p}', ${!done})"`;
+                            
+                            return `<td class="p-1 text-center cursor-pointer transition ${isFuture ? 'bg-gray-50 opacity-50' : ''}" ${clickAction}>
+                                <div class="w-full h-8 flex items-center justify-center text-lg">${icon}</div>
+                            </td>`;
+                        }).join('');
+                        
+                        // Add Excused toggler for girls
+                        if(student.gender === 'girl') {
+                             cellsHtml += `<td class="p-1 text-center cursor-pointer hover:bg-pink-100 transition text-gray-300 hover:text-pink-500" onclick="toggleExcuse('${date}', '${student.name}', true)">
+                                <i class="fa-solid fa-moon"></i>
+                             </td>`;
+                        }
+                    }
+                    
+                    const rowClass = isToday ? 'bg-emerald-50' : (isFuture ? 'bg-gray-50 text-gray-400' : 'bg-white');
+
+                    tableHtml += `
+                        <tr class="${rowClass} ${isExcused ? 'excused-row' : ''}">
+                            <td class="p-2 text-center border-r font-bold sticky left-0 z-0 ${isToday ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-700'}">${displayDay}</td>
+                            ${cellsHtml}
+                        </tr>
+                    `;
+                });
+
+                tableHtml += `</tbody></table></div></div>`;
+                container.innerHTML += tableHtml;
+            });
+        }
+
+        function renderAdminDaily() {
+            // Used mostly for quick actions on mobile, similar logic applied.
+            const container = document.getElementById('admin-daily-list');
+            container.innerHTML = '';
+            const dateData = allRecords[selectedDailyDate] || {};
+
+            STUDENTS.forEach((student) => {
+                const data = dateData[student.name] || {};
+                const isExcused = data.excused === true;
+                
+                let dotsHtml = '';
+                if (!isExcused) {
+                    dotsHtml = PRAYERS.map((p, i) => {
+                        const done = data[p] === true;
+                        const c = done ? 'bg-emerald-500 text-white border-emerald-600' : 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200';
+                        return `<button onclick="togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', ${!done})" 
+                                class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 ${c}" title="${p}">
+                                <i class="fa-solid ${done ? 'fa-check' : 'fa-xmark opacity-50'}"></i>
+                                </button>`;
+                    }).join('');
+                }
+
+                let actionsHtml = '';
+                if (student.gender === 'girl') {
+                    if (isExcused) {
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', false)" class="px-4 py-2 bg-pink-100 text-pink-700 rounded-lg text-sm font-bold w-full hover:bg-pink-200 transition">Remove Leave</button>`;
+                        dotsHtml = `<div class="w-full text-center text-pink-500 text-sm font-bold py-2 bg-pink-50 rounded-lg border border-pink-100 flex items-center justify-center"><i class="fa-solid fa-moon mr-2"></i> On Leave (Excused)</div>`;
+                    } else {
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', true)" class="w-10 h-10 bg-gray-100 text-gray-400 hover:bg-pink-100 hover:text-pink-600 rounded-lg flex items-center justify-center transition border border-gray-200 shadow-sm" title="Mark Excused"><i class="fa-solid fa-moon"></i></button>`;
+                    }
+                }
+
+                container.innerHTML += `
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition border-b border-gray-50 last:border-0">
+                        <div class="flex items-center gap-3 w-40">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${student.gender === 'girl' ? 'bg-pink-100 text-pink-600' : 'bg-blue-100 text-blue-600'}">${student.name.charAt(0)}</div>
+                            <span class="font-bold text-gray-800 uppercase tracking-wide text-sm">${student.name}</span>
+                        </div>
+                        <div class="flex-grow flex gap-2 justify-center sm:justify-start">${dotsHtml}</div>
+                        <div class="flex-shrink-0">${actionsHtml}</div>
+                    </div>
+                `;
+            });
+        }
+
+        window.switchTab = function(tabName) {
+            document.getElementById('admin-daily-view').classList.add('hidden');
+            document.getElementById('sheet-view').classList.add('hidden');
+            document.getElementById('tab-daily').className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700";
+            document.getElementById('tab-sheet').className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700";
+            
+            document.getElementById(`tab-${tabName}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800";
+            if (tabName === 'daily') document.getElementById('admin-daily-view').classList.remove('hidden');
+            if (tabName === 'sheet') document.getElementById('sheet-view').classList.remove('hidden');
+        };
+
+        let toastTimeout;
+        window.showToast = function(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            const icon = document.getElementById('toast-icon');
+            
+            if (type === 'success') {
+                toast.className = 'fixed bottom-5 right-5 transform z-[100] flex items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4 border-emerald-500 transition-all duration-300';
+                icon.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 text-emerald-500';
+                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else {
+                toast.className = 'fixed bottom-5 right-5 transform z-[100] flex items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4 border-red-500 transition-all duration-300';
+                icon.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-red-100 text-red-500';
+                icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            }
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2000);
+        };
+    </script>
+</body>
+</html>
