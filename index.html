@@ -194,6 +194,7 @@
         const currentYearStr = today.getFullYear();
         const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
         let selectedViewMonth = `${currentYearStr}-${currentMonthStr}`;
+        let lastRenderedMonthStr = ""; // Added to track skeleton rendering
 
         const datePicker = document.getElementById('daily-date-picker');
         datePicker.value = selectedDailyDate;
@@ -358,31 +359,50 @@
 
         function renderPaperSheets(dates) {
             const container = document.getElementById('paper-sheets-container');
-            container.innerHTML = '';
-            
             const todayStr = new Date().toISOString().split('T')[0];
+            
+            // Check if we need to rebuild the entire framework (e.g., month changed or first load)
+            const needsSkeleton = (lastRenderedMonthStr !== selectedViewMonth) || (container.innerHTML.trim() === '');
 
-            STUDENTS.forEach(student => {
-                let colorTheme = student.gender === 'girl' ? 'text-pink-600 border-pink-200' : 'text-blue-600 border-blue-200';
-                let headerBg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
+            if (needsSkeleton) {
+                container.innerHTML = '';
                 
-                let tableHtml = `
-                <div class="paper-grid flex flex-col h-[75vh]">
-                    <div class="student-header ${headerBg}">
-                        <span class="uppercase tracking-widest ${colorTheme}">${student.name}</span>
-                        <span class="text-[11px] font-normal text-gray-500 bg-white px-2 py-1 rounded shadow-sm border">Click boxes to cycle (Missed &rarr; Done${student.gender === 'girl' ? ' &rarr; Excused' : ''})</span>
-                    </div>
-                    <div class="overflow-y-auto flex-grow">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="sticky top-0 bg-white shadow-sm z-10">
-                                <tr>
-                                    <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-gray-500 bg-gray-50 whitespace-nowrap">Date</th>
-                                    ${PRAYER_ARABIC.map(p => `<th class="p-2 border-b arabic-text font-normal text-lg">${p}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
+                STUDENTS.forEach(student => {
+                    let colorTheme = student.gender === 'girl' ? 'text-pink-600 border-pink-200' : 'text-blue-600 border-blue-200';
+                    let headerBg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
+                    let leaveHeader = student.gender === 'girl' ? `<th class="p-2 border-b border-l border-gray-100 text-xs text-pink-500 bg-pink-50/50">Leave</th>` : '';
+                    
+                    let tableHtml = `
+                    <div class="paper-grid flex flex-col h-[75vh]">
+                        <div class="student-header ${headerBg}">
+                            <span class="uppercase tracking-widest ${colorTheme}">${student.name}</span>
+                            <span class="text-[11px] font-normal text-gray-500 bg-white px-2 py-1 rounded shadow-sm border">Click boxes to cycle</span>
+                        </div>
+                        <div id="scroll-div-${student.name}" class="overflow-y-auto flex-grow">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="sticky top-0 bg-white shadow-sm z-10">
+                                    <tr>
+                                        <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-gray-500 bg-gray-50 whitespace-nowrap">Date</th>
+                                        ${PRAYER_ARABIC.map(p => `<th class="p-2 border-b arabic-text font-normal text-lg">${p}</th>`).join('')}
+                                        ${leaveHeader}
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-${student.name}">
+                                    <!-- Rows will be injected here without destroying the scroll container -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>`;
+                    container.innerHTML += tableHtml;
+                });
+                
+                lastRenderedMonthStr = selectedViewMonth;
+            }
 
+            // ONLY update the inner rows. This perfectly prevents the scroll jump!
+            STUDENTS.forEach(student => {
+                let rowsHtml = '';
+                
                 dates.forEach((date) => {
                     const [year, month, day] = date.split('-');
                     const displayDate = `${day}-${month}-${year}`;
@@ -393,7 +413,7 @@
                     
                     let cellsHtml = PRAYERS.map((p) => {
                         let val = record[p];
-                        if (isFullDayExcused) val = 'excused'; // Apply legacy global flag if it exists
+                        if (isFullDayExcused) val = 'excused';
                         
                         let done = val === true;
                         let excused = val === 'excused';
@@ -407,18 +427,30 @@
                         </td>`;
                     }).join('');
                     
+                    // Add the Leave Button column for girls
+                    let leaveCell = '';
+                    if (student.gender === 'girl') {
+                        let allExcused = PRAYERS.every(p => (record[p] === 'excused' || isFullDayExcused));
+                        if (allExcused && PRAYERS.length > 0) {
+                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="toggleExcuse('${date}', '${student.name}', false)" class="w-full h-8 rounded bg-pink-100 text-pink-700 hover:bg-pink-200 transition flex items-center justify-center" title="Remove Leave"><i class="fa-solid fa-xmark"></i></button></td>`;
+                        } else {
+                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="toggleExcuse('${date}', '${student.name}', true)" class="w-full h-8 rounded text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition flex items-center justify-center" title="Mark Whole Day Excused"><i class="fa-solid fa-moon"></i></button></td>`;
+                        }
+                    }
+
                     const rowClass = isToday ? 'bg-emerald-50' : 'bg-white';
 
-                    tableHtml += `
+                    rowsHtml += `
                         <tr class="${rowClass}">
                             <td class="p-2 text-center border-r font-bold sticky left-0 z-0 whitespace-nowrap ${isToday ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-700'}">${displayDate}</td>
                             ${cellsHtml}
+                            ${leaveCell}
                         </tr>
                     `;
                 });
 
-                tableHtml += `</tbody></table></div></div>`;
-                container.innerHTML += tableHtml;
+                // Directly target and update the specific student's tbody
+                document.getElementById(`tbody-${student.name}`).innerHTML = rowsHtml;
             });
         }
 
