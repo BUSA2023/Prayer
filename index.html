@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noorani Madrasa - Usthad Admin</title>
+    <title>HIM PULLANITHAZHAM - Usthad Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -129,7 +129,14 @@
                         <h2 class="text-lg font-bold text-gray-800">Monthly Tracker Sheets</h2>
                         <p class="text-xs text-gray-500">Click any box to tick the prayer. Data is saved automatically.</p>
                     </div>
-                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <input type="file" id="csv-upload" accept=".csv" class="hidden">
+                        <button onclick="document.getElementById('csv-upload').click()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-2 rounded text-sm font-bold border border-indigo-200 transition shadow-sm flex items-center">
+                            <i class="fa-solid fa-file-csv mr-2"></i> Import CSV
+                        </button>
+                        
+                        <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
+
                         <label class="text-sm font-bold text-gray-700 shrink-0">Select Month:</label>
                         <input type="month" id="admin-month-selector" class="w-full sm:w-auto px-3 py-2 rounded border border-gray-300 text-sm focus:ring-emerald-500 outline-none cursor-pointer bg-gray-50">
                     </div>
@@ -153,16 +160,16 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCwKSTl9ZXrLOF41kCmK5BVlNSEPecRK_Y",
-            authDomain: "prayer-5f162.firebaseapp.com",
-            projectId: "prayer-5f162",
-            storageBucket: "prayer-5f162.firebasestorage.app",
-            messagingSenderId: "728078267159",
-            appId: "1:728078267159:web:96ec460dc907f16f163d52",
-            measurementId: "G-1P878W2W5J"
+            apiKey: "AIzaSyA6ruQWH9yo2eVIzTytjg8QL51a3uQzhY0",
+            authDomain: "prayers-9.firebaseapp.com",
+            projectId: "prayers-9",
+            storageBucket: "prayers-9.firebasestorage.app",
+            messagingSenderId: "990655719635",
+            appId: "1:990655719635:web:b94075337b5f535784cc26",
+            measurementId: "G-GC2NZS7ZM6"
         };
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
@@ -210,13 +217,14 @@
             const year = parseInt(y);
             const month = parseInt(m) - 1; // JS months are 0-11
             
-            let startDay = 1;
-            // Strict requirement: If it's September 2026, start from the 9th
+            let startDay = 1; // By default, EVERY month automatically starts on the 1st
+            
+            // Strict requirement: ONLY September 2026 starts from the 9th
             if (year === 2026 && month === 8) { 
                 startDay = 9;
             }
             
-            // Get the exact number of days in the selected month
+            // Automatically gets the exact number of days in ANY selected month (e.g., Oct=31, Nov=30)
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const dates = [];
             
@@ -275,11 +283,29 @@
             });
         }
 
-        window.togglePrayer = async function(date, student, prayer, newValue) {
+        window.togglePrayer = async function(date, student, prayer, gender) {
             if(!authReady) return;
+            const record = (allRecords[date] && allRecords[date][student]) || {};
+            let current = record[prayer];
+            
+            // Support for legacy full-day flag
+            if (record.excused === true) current = 'excused';
+
+            let nextValue;
+            if (gender === 'girl') {
+                // Cycle: Missed -> Done -> Excused -> Missed
+                if (current === true) nextValue = 'excused';
+                else if (current === 'excused') nextValue = false;
+                else nextValue = true;
+            } else {
+                // Boys Cycle: Missed -> Done -> Missed
+                nextValue = current === true ? false : true;
+            }
+
             try {
                 const docRef = doc(db, 'salah_monthly', date);
-                await setDoc(docRef, { [student]: { [prayer]: newValue } }, { merge: true });
+                // When toggling individual waqths, ensure the legacy full-day flag is false so it doesn't override
+                await setDoc(docRef, { [student]: { [prayer]: nextValue, excused: false } }, { merge: true });
             } catch (error) { 
                 console.error(error);
                 showToast("Failed to update", "error"); 
@@ -290,13 +316,17 @@
             if(!authReady) return;
             try {
                 const docRef = doc(db, 'salah_monthly', date);
-                // When excused, set excused flag. When not excused, remove it.
-                await setDoc(docRef, { [student]: { excused: isExcused } }, { merge: true });
-                if(isExcused) {
-                    showToast(`Marked ${student} as Excused`, "success");
+                let updateData = { excused: false }; // Clear global flag to use per-waqth granularity
+                
+                if (isExcused) {
+                    PRAYERS.forEach(p => updateData[p] = 'excused');
+                    showToast(`Marked full day excused for ${student}`, "success");
                 } else {
+                    PRAYERS.forEach(p => updateData[p] = false);
                     showToast(`Removed leave for ${student}`, "success");
                 }
+                
+                await setDoc(docRef, { [student]: updateData }, { merge: true });
             } catch (error) { 
                 console.error(error);
                 showToast("Error updating leave", "error"); 
@@ -340,58 +370,48 @@
                 <div class="paper-grid flex flex-col h-[75vh]">
                     <div class="student-header ${headerBg}">
                         <span class="uppercase tracking-widest ${colorTheme}">${student.name}</span>
-                        ${student.gender === 'girl' ? '<span class="text-xs font-normal text-pink-500 bg-pink-100 px-2 py-1 rounded-md"><i class="fa-solid fa-moon"></i> Click E to mark Menses</span>' : ''}
+                        <span class="text-[11px] font-normal text-gray-500 bg-white px-2 py-1 rounded shadow-sm border">Click boxes to cycle (Missed &rarr; Done${student.gender === 'girl' ? ' &rarr; Excused' : ''})</span>
                     </div>
                     <div class="overflow-y-auto flex-grow">
                         <table class="w-full text-left border-collapse">
                             <thead class="sticky top-0 bg-white shadow-sm z-10">
                                 <tr>
-                                    <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-gray-500 bg-gray-50">Date</th>
+                                    <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-gray-500 bg-gray-50 whitespace-nowrap">Date</th>
                                     ${PRAYER_ARABIC.map(p => `<th class="p-2 border-b arabic-text font-normal text-lg">${p}</th>`).join('')}
-                                    ${student.gender === 'girl' ? '<th class="p-2 border-b text-pink-500" title="Excused Leave">E</th>' : ''}
                                 </tr>
                             </thead>
                             <tbody>
                 `;
 
                 dates.forEach((date) => {
-                    // Extract exactly the day number directly from the string to prevent timezone offset issues
-                    const displayDay = parseInt(date.split('-')[2]); 
+                    const [year, month, day] = date.split('-');
+                    const displayDate = `${day}-${month}-${year}`;
                     const isToday = date === todayStr;
                     
                     const record = (allRecords[date] && allRecords[date][student.name]) || {};
-                    const isExcused = record.excused === true;
+                    let isFullDayExcused = record.excused === true;
                     
-                    let cellsHtml = '';
-                    
-                    if (isExcused) {
-                        cellsHtml = `<td colspan="5" class="p-1 excused-row">
-                            <div class="excused-text" onclick="toggleExcuse('${date}', '${student.name}', false)">🌙 Excused Leave (Click to Remove)</div>
-                        </td>
-                        <td class="p-1 excused-row bg-pink-100 text-center cursor-pointer hover:bg-pink-200 transition" onclick="toggleExcuse('${date}', '${student.name}', false)">
-                            <i class="fa-solid fa-times text-pink-600"></i>
-                        </td>`;
-                    } else {
-                        cellsHtml = PRAYERS.map((p) => {
-                            let done = record[p] === true;
-                            let icon = done ? '<i class="fa-solid fa-check text-blue-700 font-bold text-xl drop-shadow-sm"></i>' : '';
-                            return `<td class="p-1 text-center cursor-pointer hover:bg-gray-50 transition" onclick="togglePrayer('${date}', '${student.name}', '${p}', ${!done})">
-                                <div class="w-full h-8 flex items-center justify-center text-lg">${icon}</div>
-                            </td>`;
-                        }).join('');
+                    let cellsHtml = PRAYERS.map((p) => {
+                        let val = record[p];
+                        if (isFullDayExcused) val = 'excused'; // Apply legacy global flag if it exists
                         
-                        if(student.gender === 'girl') {
-                             cellsHtml += `<td class="p-1 text-center cursor-pointer hover:bg-pink-100 transition text-gray-300 hover:text-pink-500" onclick="toggleExcuse('${date}', '${student.name}', true)">
-                                <i class="fa-solid fa-moon"></i>
-                             </td>`;
-                        }
-                    }
+                        let done = val === true;
+                        let excused = val === 'excused';
+                        
+                        let icon = '';
+                        if (done) icon = '<i class="fa-solid fa-check text-blue-700 font-bold text-xl drop-shadow-sm"></i>';
+                        else if (excused) icon = '<i class="fa-solid fa-moon text-pink-500 font-bold text-lg drop-shadow-sm"></i>';
+                        
+                        return `<td class="p-1 text-center cursor-pointer hover:bg-gray-100 transition border-l border-gray-100" onclick="togglePrayer('${date}', '${student.name}', '${p}', '${student.gender}')">
+                            <div class="w-full h-8 flex items-center justify-center text-lg">${icon}</div>
+                        </td>`;
+                    }).join('');
                     
                     const rowClass = isToday ? 'bg-emerald-50' : 'bg-white';
 
                     tableHtml += `
-                        <tr class="${rowClass} ${isExcused ? 'excused-row' : ''}">
-                            <td class="p-2 text-center border-r font-bold sticky left-0 z-0 ${isToday ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-700'}">${displayDay}</td>
+                        <tr class="${rowClass}">
+                            <td class="p-2 text-center border-r font-bold sticky left-0 z-0 whitespace-nowrap ${isToday ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-700'}">${displayDate}</td>
                             ${cellsHtml}
                         </tr>
                     `;
@@ -409,27 +429,41 @@
 
             STUDENTS.forEach((student) => {
                 const data = dateData[student.name] || {};
-                const isExcused = data.excused === true;
+                let isFullDayExcused = data.excused === true;
                 
-                let dotsHtml = '';
-                if (!isExcused) {
-                    dotsHtml = PRAYERS.map((p, i) => {
-                        const done = data[p] === true;
-                        const c = done ? 'bg-emerald-500 text-white border-emerald-600' : 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200';
-                        return `<button onclick="togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', ${!done})" 
-                                class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 ${c}" title="${p}">
-                                <i class="fa-solid ${done ? 'fa-check' : 'fa-xmark opacity-50'}"></i>
-                                </button>`;
-                    }).join('');
-                }
+                let dotsHtml = PRAYERS.map((p, i) => {
+                    let val = data[p];
+                    if (isFullDayExcused) val = 'excused';
+                    
+                    let done = val === true;
+                    let excused = val === 'excused';
+                    
+                    let c = 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200';
+                    let icon = 'fa-xmark opacity-50';
+                    
+                    if (done) {
+                        c = 'bg-emerald-500 text-white border-emerald-600';
+                        icon = 'fa-check';
+                    } else if (excused) {
+                        c = 'bg-pink-100 text-pink-600 border-pink-300';
+                        icon = 'fa-moon';
+                    }
+                    
+                    return `<button onclick="togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', '${student.gender}')" 
+                            class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 ${c}" title="${p}">
+                            <i class="fa-solid ${icon}"></i>
+                            </button>`;
+                }).join('');
 
                 let actionsHtml = '';
                 if (student.gender === 'girl') {
-                    if (isExcused) {
-                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', false)" class="px-4 py-2 bg-pink-100 text-pink-700 rounded-lg text-sm font-bold w-full hover:bg-pink-200 transition">Remove Leave</button>`;
-                        dotsHtml = `<div class="w-full text-center text-pink-500 text-sm font-bold py-2 bg-pink-50 rounded-lg border border-pink-100 flex items-center justify-center"><i class="fa-solid fa-moon mr-2"></i> On Leave (Excused)</div>`;
+                    // Check if all 5 prayers are set to 'excused'
+                    let allExcused = PRAYERS.every(p => (data[p] === 'excused' || isFullDayExcused));
+                    
+                    if (allExcused && PRAYERS.length > 0) {
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', false)" class="px-3 py-2 bg-pink-100 text-pink-700 rounded-lg text-xs font-bold w-full hover:bg-pink-200 transition">Remove Leave</button>`;
                     } else {
-                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', true)" class="w-10 h-10 bg-gray-100 text-gray-400 hover:bg-pink-100 hover:text-pink-600 rounded-lg flex items-center justify-center transition border border-gray-200 shadow-sm" title="Mark Excused"><i class="fa-solid fa-moon"></i></button>`;
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', true)" class="px-3 py-2 bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600 rounded-lg text-xs font-bold transition border border-gray-200 shadow-sm whitespace-nowrap">Mark Whole Day</button>`;
                     }
                 }
 
@@ -440,7 +474,7 @@
                             <span class="font-bold text-gray-800 uppercase tracking-wide text-sm">${student.name}</span>
                         </div>
                         <div class="flex-grow flex gap-2 justify-center sm:justify-start">${dotsHtml}</div>
-                        <div class="flex-shrink-0">${actionsHtml}</div>
+                        <div class="flex-shrink-0 flex items-center justify-center">${actionsHtml}</div>
                     </div>
                 `;
             });
@@ -456,6 +490,92 @@
             if (tabName === 'daily') document.getElementById('admin-daily-view').classList.remove('hidden');
             if (tabName === 'sheet') document.getElementById('sheet-view').classList.remove('hidden');
         };
+
+        document.getElementById('csv-upload').addEventListener('change', async (e) => {
+            if (!authReady) return;
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+            document.querySelector('#loading-overlay p').innerText = "Importing CSV Data...";
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const csvText = event.target.result;
+                    const rows = csvText.split('\n');
+                    const updatesByDate = {};
+
+                    // Start from 1 to skip header row
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i].trim();
+                        if (!row) continue;
+                        
+                        const cols = row.split(',');
+                        if (cols.length < 8) continue; // Ensure row has all required columns
+
+                        // Smart Date Converter: Accepts DD-MM-YYYY or DD/MM/YYYY and formats for database
+                        let rawDate = cols[0].trim();
+                        let dbDate = rawDate;
+                        if (/^\d{1,2}[-/]\d{1,2}[-/]\d{4}$/.test(rawDate)) {
+                            const parts = rawDate.split(/[-/]/);
+                            const d = parts[0].padStart(2, '0');
+                            const m = parts[1].padStart(2, '0');
+                            const y = parts[2];
+                            dbDate = `${y}-${m}-${d}`;
+                        }
+
+                        const student = cols[1].trim();
+                        
+                        const subhRaw = cols[2].trim() === '1' || cols[2].trim().toLowerCase() === 'true';
+                        const luhrRaw = cols[3].trim() === '1' || cols[3].trim().toLowerCase() === 'true';
+                        const asrRaw = cols[4].trim() === '1' || cols[4].trim().toLowerCase() === 'true';
+                        const magribRaw = cols[5].trim() === '1' || cols[5].trim().toLowerCase() === 'true';
+                        const ishaRaw = cols[6].trim() === '1' || cols[6].trim().toLowerCase() === 'true';
+                        const excused = cols[7] && (cols[7].trim() === '1' || cols[7].trim().toLowerCase() === 'true');
+
+                        let subh = subhRaw, luhr = luhrRaw, asr = asrRaw, magrib = magribRaw, isha = ishaRaw;
+                        
+                        // If CSV explicitly marks them as excused (1), override all waqths for that row
+                        if (excused) {
+                            subh = 'excused'; luhr = 'excused'; asr = 'excused'; magrib = 'excused'; isha = 'excused';
+                        }
+
+                        if (!updatesByDate[dbDate]) updatesByDate[dbDate] = {};
+                        updatesByDate[dbDate][student] = {
+                            Subh: subh, Luhr: luhr, Asr: asr, Magrib: magrib, Isha: isha, excused: false
+                        };
+                    }
+
+                    // Use Firestore Batch to safely upload all days at once
+                    const batch = writeBatch(db);
+                    let count = 0;
+
+                    for (const [date, studentsData] of Object.entries(updatesByDate)) {
+                        const docRef = doc(db, 'salah_monthly', date);
+                        batch.set(docRef, studentsData, { merge: true });
+                        count++;
+                    }
+
+                    if (count > 0) {
+                        await batch.commit();
+                        showToast(`Successfully imported data for ${count} days!`, "success");
+                    } else {
+                        showToast("No valid data found in CSV.", "error");
+                    }
+                } catch (error) {
+                    console.error("CSV Import Error:", error);
+                    showToast("Failed to parse CSV file.", "error");
+                } finally {
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                    document.getElementById('loading-overlay').classList.remove('flex');
+                    document.querySelector('#loading-overlay p').innerText = "Syncing Database...";
+                    e.target.value = ''; // Reset input to allow re-uploading the same file if needed
+                }
+            };
+            reader.readAsText(file);
+        });
 
         let toastTimeout;
         window.showToast = function(message, type = 'success') {
