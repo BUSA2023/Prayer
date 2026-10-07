@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HIM PULLANITHAZHAM - Usthad Admin</title>
+    <title>HIM PULLANITHAZHAM - Usthad Admin Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -19,8 +19,11 @@
 
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #10b981; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .fade-out { animation: fadeOut 0.2s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
 
         /* Paper-like grid layout */
         .paper-grid {
@@ -40,114 +43,236 @@
         .paper-grid td:first-child { font-weight: 600; color: #374151; background-color: #f9fafb; width: 60px;}
         .paper-grid tr:hover td { background-color: #f0fdf4; } 
         
-        .paper-grid tr.excused-row td { background-color: #fdf2f8 !important; }
-        .excused-text { color: #db2777; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; cursor: pointer; letter-spacing: 1px;}
-        
         .student-header {
             background: #f3f4f6; padding: 12px; font-weight: bold; font-size: 16px; color: #1f2937;
             border-bottom: 2px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;
         }
+        
+        /* Modal specific styles */
+        .modal-overlay { backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex flex-col overflow-hidden">
 
     <!-- Admin Login Modal -->
-    <div id="admin-login-modal" class="fixed inset-0 bg-emerald-900 z-[200] flex items-center justify-center p-4">
+    <div id="admin-login-modal" class="fixed inset-0 bg-emerald-900/95 modal-overlay z-[200] flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl relative fade-in">
             <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600 text-2xl">
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <h3 class="text-xl font-bold mb-4 text-gray-800">Usthad Access</h3>
-            <p class="text-sm text-gray-500 mb-4">Enter PIN to access the tracking dashboard.</p>
-            <input type="password" id="admin-pin" placeholder="Enter PIN (786)" class="w-full text-center px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 outline-none text-xl tracking-widest mb-4">
-            <p id="pin-error" class="text-red-500 text-sm mb-4 hidden">Incorrect PIN.</p>
-            <button onclick="verifyAdminPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition">Unlock Panel</button>
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Usthad Access</h3>
+            <p class="text-sm text-gray-500 mb-6">Enter PIN to access the tracking dashboard.</p>
+            <input type="password" id="admin-pin" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-xl tracking-widest mb-4 transition-all">
+            <p id="pin-error" class="text-red-500 text-sm mb-4 hidden font-medium">Incorrect PIN.</p>
+            <button onclick="verifyAdminPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                <span>Unlock Panel</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Class Selection Modal -->
+    <div id="class-selection-modal" class="hidden fixed inset-0 bg-gray-900/90 modal-overlay z-[150] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl relative fade-in flex flex-col max-h-[90vh]">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 text-indigo-600 text-xl">
+                    <i class="fa-solid fa-users-rectangle"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Select Class</h3>
+                <p class="text-sm text-gray-500 mt-1">Choose a class to manage or create a new one.</p>
+            </div>
+            
+            <div class="flex-grow overflow-y-auto mb-6 pr-2 space-y-3" id="classes-list-container">
+                <!-- Classes injected here -->
+                <div class="text-center py-8 text-gray-400 text-sm italic">Loading classes...</div>
+            </div>
+
+            <div class="border-t pt-4">
+                <div class="flex gap-2">
+                    <input type="text" id="new-class-name" placeholder="e.g., Class 10 A" class="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-sm">
+                    <button onclick="createNewClass()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap shadow-sm">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Class
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Students Modal -->
+    <div id="manage-class-modal" class="hidden fixed inset-0 bg-gray-900/80 modal-overlay z-[140] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl relative fade-in flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-user-graduate text-emerald-600"></i> Manage Students
+                    </h3>
+                    <p class="text-sm text-gray-500 mt-1" id="manage-class-title">Class Name</p>
+                </div>
+                <button onclick="closeManageClassModal()" class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-200 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 flex-grow overflow-hidden flex flex-col md:flex-row gap-6">
+                <!-- Add Student Form -->
+                <div class="md:w-1/3 bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col gap-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 text-sm uppercase tracking-wider mb-2">Class Settings</h4>
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" id="toggle-allow-excuses" onchange="toggleAllowExcuses(this)" class="w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500 cursor-pointer">
+                            <span class="text-xs font-medium text-gray-600 group-hover:text-gray-800 transition">Enable Leave for Girls</span>
+                        </label>
+                    </div>
+                    <hr class="border-gray-200">
+                    <h4 class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Add New Student</h4>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Student Name</label>
+                        <input type="text" id="new-student-name" placeholder="Enter full name" class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Gender</label>
+                        <div class="flex gap-2">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="student-gender" value="boy" class="peer sr-only" checked>
+                                <div class="text-center px-3 py-2 rounded-lg border border-gray-200 peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 text-sm font-medium text-gray-600 transition">
+                                    <i class="fa-solid fa-mars mr-1"></i> Boy
+                                </div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="student-gender" value="girl" class="peer sr-only">
+                                <div class="text-center px-3 py-2 rounded-lg border border-gray-200 peer-checked:bg-pink-50 peer-checked:border-pink-500 peer-checked:text-pink-700 text-sm font-medium text-gray-600 transition">
+                                    <i class="fa-solid fa-venus mr-1"></i> Girl
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <button onclick="addStudentToClass()" class="mt-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm shadow-sm">
+                        Add to List
+                    </button>
+                </div>
+
+                <!-- Current Students List -->
+                <div class="md:w-2/3 flex flex-col">
+                    <h4 class="font-semibold text-gray-700 text-sm uppercase tracking-wider mb-3">Enrolled Students (<span id="student-count">0</span>)</h4>
+                    <div class="flex-grow overflow-y-auto border border-gray-200 rounded-xl bg-white p-2">
+                        <ul id="manage-students-list" class="divide-y divide-gray-100">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="hidden fixed inset-0 bg-white z-[100] flex-col items-center justify-center">
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-white/90 backdrop-blur-sm z-[250] flex-col items-center justify-center">
         <div class="loader mb-4"></div>
-        <p class="text-emerald-700 font-bold text-lg animate-pulse">Syncing Database...</p>
+        <p class="text-emerald-700 font-bold text-lg animate-pulse" id="loading-text">Syncing Database...</p>
     </div>
 
-    <nav id="main-nav" class="bg-white border-b border-gray-200 shadow-sm z-40 flex-shrink-0 hidden">
+    <!-- Main Navigation -->
+    <nav id="main-nav" class="bg-white border-b border-gray-200 shadow-sm z-40 flex-shrink-0 hidden transition-all duration-300">
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3">
+                    <button onclick="showClassSelector()" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg text-gray-600 transition" title="Switch Class">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
                     <div class="bg-emerald-100 p-2 rounded-lg text-emerald-700">
                         <i class="fa-solid fa-user-shield"></i>
                     </div>
-                    <span class="font-bold text-lg text-emerald-800 hidden sm:block">Usthad Portal</span>
-                    <span class="font-bold text-lg text-emerald-800 sm:hidden">Usthad</span>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-lg text-emerald-800 leading-tight">Usthad Portal</span>
+                        <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block w-max mt-0.5" id="nav-class-name">Loading...</span>
+                    </div>
                 </div>
                 
-                <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-                    <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700">Daily Entry</button>
-                    <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Tracker Sheets</button>
+                <div class="flex items-center gap-4">
+                    <button onclick="openManageClassModal()" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition border border-indigo-100">
+                        <i class="fa-solid fa-users-gear"></i> Manage Class
+                    </button>
+                    <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                        <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700">Daily</button>
+                        <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Sheets</button>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main id="app-content" class="flex-grow overflow-y-auto bg-[#f8fafc] p-4 md:p-6 w-full fade-in hidden">
+    <main id="app-content" class="flex-grow overflow-y-auto bg-[#f8fafc] p-4 md:p-6 w-full hidden transition-all duration-300">
         <div class="max-w-[1400px] mx-auto space-y-6">
             
+            <!-- Mobile Manage Class Button -->
+            <button onclick="openManageClassModal()" class="sm:hidden w-full flex justify-center items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-3 rounded-xl transition border border-indigo-100 shadow-sm mb-4">
+                <i class="fa-solid fa-users-gear"></i> Manage Students in this Class
+            </button>
+
             <!-- Daily View -->
-            <div id="admin-daily-view" class="hidden space-y-6">
+            <div id="admin-daily-view" class="space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-wrap gap-2">
-                            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-calendar-check text-emerald-600 mr-2"></i>Daily Quick Entry</h3>
-                            <input type="date" id="daily-date-picker" class="px-3 py-1.5 rounded border border-gray-300 text-sm focus:ring-emerald-500 outline-none cursor-pointer">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-wrap gap-3">
+                            <h3 class="font-bold text-gray-800 flex items-center"><i class="fa-solid fa-calendar-check text-emerald-600 mr-2"></i>Daily Quick Entry</h3>
+                            <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                                <button onclick="changeDate(-1)" class="px-3 py-1.5 hover:bg-gray-100 border-r border-gray-300 text-gray-600"><i class="fa-solid fa-chevron-left"></i></button>
+                                <input type="date" id="daily-date-picker" class="px-3 py-1.5 text-sm font-medium text-gray-700 outline-none cursor-pointer border-none focus:ring-0">
+                                <button onclick="changeDate(1)" id="btn-next-day" class="px-3 py-1.5 hover:bg-gray-100 border-l border-gray-300 text-gray-600"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
                         </div>
-                        <div class="p-2 bg-blue-50 border-b border-blue-100 text-xs text-blue-800 flex justify-between px-4">
-                            <span>Legend:</span>
-                            <span class="arabic-text">صبح (S), ظهر (L), عصر (A), مغرب (M), عشاء (I)</span>
+                        <div class="p-2 bg-blue-50 border-b border-blue-100 text-xs text-blue-800 flex justify-between px-4 items-center">
+                            <span class="font-semibold">Legend:</span>
+                            <span class="arabic-text text-sm">صبح (S) • ظهر (L) • عصر (A) • مغرب (M) • عشاء (I)</span>
                         </div>
-                        <div id="admin-daily-list" class="divide-y divide-gray-100 p-2">
+                        <div id="admin-daily-list" class="divide-y divide-gray-100 p-2 min-h-[200px]">
                             <!-- Populated by JS -->
                         </div>
                     </div>
                     
                     <div class="space-y-6">
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-                            <h3 class="font-bold text-gray-800 mb-3"><i class="fa-solid fa-bullhorn text-amber-500 mr-2"></i>Broadcast Advisement</h3>
-                            <textarea id="admin-msg-input" rows="5" class="w-full p-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none mb-3" placeholder="Write a message, announcement, or advice for all students to see on their portal..."></textarea>
-                            <button id="save-msg-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                            <h3 class="font-bold text-gray-800 mb-3 flex items-center"><i class="fa-solid fa-bullhorn text-amber-500 mr-2"></i>Broadcast Advisement</h3>
+                            <textarea id="admin-msg-input" rows="4" class="w-full p-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none mb-3" placeholder="Write a message, announcement, or advice for all students to see on their portal..."></textarea>
+                            <button id="save-msg-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2 shadow-sm">
                                 <i class="fa-solid fa-paper-plane"></i> Publish to Students
                             </button>
+                        </div>
+                        
+                        <div class="bg-indigo-50 rounded-2xl border border-indigo-100 p-5 text-sm text-indigo-800">
+                            <h4 class="font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-circle-info"></i> How it works</h4>
+                            <ul class="list-disc pl-4 space-y-1 opacity-80">
+                                <li>Prayers are locked until their designated time.</li>
+                                <li>Girls have a 3-state cycle: Not Prayed -> Prayed -> Excused.</li>
+                                <li>Boys have a 2-state cycle: Not Prayed -> Prayed.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Bulk Tracking Sheets View -->
-            <div id="sheet-view" class="space-y-4">
-                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
+            <div id="sheet-view" class="space-y-4 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
                      <div>
                         <h2 class="text-lg font-bold text-gray-800">Monthly Tracker Sheets</h2>
                         <p class="text-xs text-gray-500">Click any box to tick the prayer. Data is saved automatically.</p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-                        <!-- Export Button Added Here -->
-                        <button onclick="exportDataToCSV()" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-3 py-2 rounded text-sm font-bold border border-emerald-200 transition shadow-sm flex items-center">
-                            <i class="fa-solid fa-file-export mr-2"></i> Export Data
-                        </button>
-
-                        <input type="file" id="csv-upload" accept=".csv" class="hidden">
-                        <button onclick="document.getElementById('csv-upload').click()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-2 rounded text-sm font-bold border border-indigo-200 transition shadow-sm flex items-center">
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <label class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-2 rounded-lg text-sm font-bold border border-indigo-200 transition shadow-sm flex items-center cursor-pointer m-0">
                             <i class="fa-solid fa-file-import mr-2"></i> Import CSV
+                            <input type="file" id="csv-upload" accept=".csv" class="hidden">
+                        </label>
+                        <button onclick="exportDataToCSV()" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-3 py-2 rounded-lg text-sm font-bold border border-emerald-200 transition shadow-sm flex items-center">
+                            <i class="fa-solid fa-file-export mr-2"></i> Export
                         </button>
                         
                         <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
 
                         <label class="text-sm font-bold text-gray-700 shrink-0">Select Month:</label>
-                        <input type="month" id="admin-month-selector" class="w-full sm:w-auto px-3 py-2 rounded border border-gray-300 text-sm focus:ring-emerald-500 outline-none cursor-pointer bg-gray-50">
+                        <input type="month" id="admin-month-selector" class="w-full sm:w-auto px-3 py-2 rounded-lg border border-gray-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer bg-gray-50 font-medium">
                     </div>
                 </div>
                 
-                <div id="paper-sheets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
+                <div id="paper-sheets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10 min-h-[400px]">
                     <!-- Populated by JS -->
                 </div>
             </div>
@@ -156,57 +281,534 @@
     </main>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4" role="alert">
-        <div id="toast-icon" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg"></div>
-        <div id="toast-msg" class="ml-3 text-sm font-medium mr-4"></div>
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-[300] flex items-center p-4 mb-4 text-gray-600 bg-white rounded-xl shadow-2xl border-l-4 font-medium" role="alert">
+        <div id="toast-icon" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg mr-3"></div>
+        <div id="toast-msg" class="text-sm"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, writeBatch, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyA6ruQWH9yo2eVIzTytjg8QL51a3uQzhY0",
-            authDomain: "prayers-9.firebaseapp.com",
-            projectId: "prayers-9",
-            storageBucket: "prayers-9.firebasestorage.app",
-            messagingSenderId: "990655719635",
-            appId: "1:990655719635:web:b94075337b5f535784cc26",
-            measurementId: "G-GC2NZS7ZM6"
+        // Environment provided variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // Dummy config for local testing if env vars missing
+            apiKey: "dummy", authDomain: "dummy", projectId: "dummy"
         };
+        const customToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        
+        // State Variables
         let authReady = false;
-
-        const STUDENTS = [
-            { name: 'Niswa', gender: 'girl' }, { name: 'Shahma', gender: 'girl' },
-            { name: 'Rashid', gender: 'boy' }, { name: 'Shamil', gender: 'boy' }, { name: 'Nafith', gender: 'boy' }
-        ];
+        let activeRecordsUnsubscribe = null;
+        let activeClassesUnsubscribe = null;
+        let globalSettingsUnsubscribe = null;
+        
+        let availableClasses = []; // Array of {id, name, students: []}
+        let currentClass = null; // Object
+        let allRecords = {}; // Data for current class
         
         const PRAYERS = ['Subh', 'Luhr', 'Asr', 'Magrib', 'Isha'];
         const PRAYER_ARABIC = ['صبح', 'ظهر', 'عصر', 'مغرب', 'عشاء']; 
         
-        // --- NEW TIME LOCK SYSTEM ---
         const PRAYER_UNLOCK_TIMES = {
-            'Subh': { h: 5, m: 0 },    // Unlocks at 5:00 AM
-            'Luhr': { h: 12, m: 15 },  // Unlocks at 12:15 PM
-            'Asr': { h: 15, m: 30 },   // Unlocks at 3:30 PM
-            'Magrib': { h: 18, m: 15 },// Unlocks at 6:15 PM
-            'Isha': { h: 19, m: 30 }   // Unlocks at 7:30 PM
+            'Subh': { h: 5, m: 0 },
+            'Luhr': { h: 12, m: 15 },
+            'Asr': { h: 15, m: 30 },
+            'Magrib': { h: 18, m: 15 },
+            'Isha': { h: 19, m: 30 }
+        };
+
+        const today = new Date();
+        const localTodayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        let selectedDailyDate = localTodayStr;
+        
+        const currentYearStr = today.getFullYear();
+        const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
+        let selectedViewMonth = `${currentYearStr}-${currentMonthStr}`;
+        let lastRenderedMonthStr = ""; 
+        let lastRenderedClassId = "";
+
+        const datePicker = document.getElementById('daily-date-picker');
+        datePicker.value = selectedDailyDate;
+        datePicker.max = localTodayStr; 
+        updateDateNavigationButtons();
+
+        const monthSelector = document.getElementById('admin-month-selector');
+        monthSelector.value = selectedViewMonth;
+
+        datePicker.addEventListener('change', (e) => {
+            selectedDailyDate = e.target.value;
+            updateDateNavigationButtons();
+            renderAdminDaily();
+        });
+
+        monthSelector.addEventListener('change', (e) => {
+            selectedViewMonth = e.target.value;
+            renderPaperSheets(getDatesForViewMonth());
+        });
+
+        window.changeDate = function(offset) {
+            let current = new Date(selectedDailyDate);
+            current.setDate(current.getDate() + offset);
+            
+            // Format back to YYYY-MM-DD
+            let newDateStr = current.getFullYear() + '-' + String(current.getMonth() + 1).padStart(2, '0') + '-' + String(current.getDate()).padStart(2, '0');
+            
+            if (newDateStr <= localTodayStr) {
+                selectedDailyDate = newDateStr;
+                datePicker.value = selectedDailyDate;
+                updateDateNavigationButtons();
+                renderAdminDaily();
+            }
+        };
+
+        function updateDateNavigationButtons() {
+            const btnNext = document.getElementById('btn-next-day');
+            if (selectedDailyDate >= localTodayStr) {
+                btnNext.disabled = true;
+                btnNext.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnNext.disabled = false;
+                btnNext.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function showLoading(msg = "Syncing Database...") {
+            const overlay = document.getElementById('loading-overlay');
+            document.getElementById('loading-text').innerText = msg;
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+
+        window.verifyAdminPin = async function() {
+            const pinInput = document.getElementById('admin-pin');
+            // Using 786 as default, or any logic you prefer. 
+            if (pinInput.value === '786' || pinInput.value === 'admin') {
+                document.getElementById('admin-login-modal').classList.add('fade-out');
+                setTimeout(() => {
+                    document.getElementById('admin-login-modal').classList.add('hidden');
+                    document.getElementById('admin-login-modal').classList.remove('fade-out');
+                }, 200);
+                
+                showLoading("Authenticating...");
+                
+                try {
+                    if (customToken) {
+                        await signInWithCustomToken(auth, customToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    
+                    onAuthStateChanged(auth, (user) => {
+                        if (user && !authReady) {
+                            authReady = true;
+                            initGlobalSettingsListener();
+                            loadClassesList();
+                        }
+                    });
+                } catch (err) {
+                    hideLoading();
+                    showToast("Authentication Failed. Check configuration.", "error");
+                    console.error("Auth Error:", err);
+                    document.getElementById('admin-login-modal').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('pin-error').classList.remove('hidden');
+                pinInput.classList.add('border-red-500', 'ring-red-200');
+                setTimeout(() => pinInput.classList.remove('border-red-500', 'ring-red-200'), 1000);
+            }
+        };
+
+        function initGlobalSettingsListener() {
+            const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'global_settings', 'madrasa');
+            
+            if (globalSettingsUnsubscribe) globalSettingsUnsubscribe();
+            
+            globalSettingsUnsubscribe = onSnapshot(settingsRef, (docSnap) => {
+                if(docSnap.exists()) {
+                    const data = docSnap.data();
+                    if(data.advisement) {
+                        document.getElementById('admin-msg-input').value = data.advisement;
+                    }
+                }
+            }, (error) => {
+                console.error("Settings sync error:", error);
+            });
+        }
+
+        function getClassesCollectionPath() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'classes');
+        }
+
+        function getRecordsCollectionPath(classId) {
+            return collection(db, 'artifacts', appId, 'public', 'data', `class_records_${classId}`);
+        }
+
+        function loadClassesList() {
+            showLoading("Loading Classes...");
+            const classesRef = getClassesCollectionPath();
+            
+            if (activeClassesUnsubscribe) activeClassesUnsubscribe();
+
+            activeClassesUnsubscribe = onSnapshot(classesRef, async (snapshot) => {
+                availableClasses = [];
+                snapshot.forEach(doc => {
+                    let data = doc.data();
+                    // Set default allowance based on class name if not explicitly set
+                    if (data.allowExcuses === undefined) {
+                        data.allowExcuses = !(data.name.toLowerCase().includes("class 4") || data.name.toLowerCase().includes("class 3"));
+                    }
+                    availableClasses.push({ id: doc.id, ...data });
+                });
+                
+                // Patch: If Class 9 exists but has no students, populate it with the original data
+                const class9 = availableClasses.find(c => c.name === "Class 9");
+                if (class9 && (!class9.students || class9.students.length === 0)) {
+                    const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', class9.id);
+                    await setDoc(classRef, { 
+                        students: [
+                            { name: 'Niswa', gender: 'girl', addedAt: new Date().toISOString() },
+                            { name: 'Shahma', gender: 'girl', addedAt: new Date().toISOString() },
+                            { name: 'Rashid', gender: 'boy', addedAt: new Date().toISOString() },
+                            { name: 'Shamil', gender: 'boy', addedAt: new Date().toISOString() },
+                            { name: 'Nafith', gender: 'boy', addedAt: new Date().toISOString() }
+                        ] 
+                    }, { merge: true });
+                    return; // Snapshot will re-trigger automatically
+                }
+                
+                // Sort classes alphabetically
+                availableClasses.sort((a, b) => a.name.localeCompare(b.name));
+                
+                hideLoading();
+                renderClassSelectorModal();
+                
+                // If this is the first load and we haven't selected a class yet, show the modal
+                if (!currentClass) {
+                    showClassSelector();
+                    
+                    // Auto-initialize default classes if the database is empty
+                    if (availableClasses.length === 0 && !window.defaultClassesInitialized) {
+                        window.defaultClassesInitialized = true;
+                        initDefaultClasses();
+                    }
+                }
+                
+                // If a class is currently active, update its data in case it changed (e.g., student added)
+                if (currentClass) {
+                    const updatedClass = availableClasses.find(c => c.id === currentClass.id);
+                    if (updatedClass) {
+                        currentClass = updatedClass;
+                        // Re-render views if student list changed
+                        renderAdminDaily();
+                        renderPaperSheets(getDatesForViewMonth(), true); // force re-render structure
+                        renderManageStudentsList();
+                    } else {
+                        // Current class was deleted by someone else
+                        showToast("Current class no longer exists.", "error");
+                        showClassSelector();
+                    }
+                }
+
+            }, (error) => {
+                 console.error("Classes Sync error:", error);
+                 hideLoading();
+                 showToast("Error loading classes.", "error");
+            });
+        }
+
+        window.showClassSelector = function() {
+            document.getElementById('app-content').classList.add('hidden');
+            document.getElementById('main-nav').classList.add('hidden');
+            
+            const modal = document.getElementById('class-selection-modal');
+            modal.classList.remove('hidden');
+            renderClassSelectorModal();
+        }
+
+        async function initDefaultClasses() {
+            showLoading("Setting up initial classes...");
+            const defaultClasses = [
+                { name: "Class 9", students: [
+                    { name: 'Niswa', gender: 'girl', addedAt: new Date().toISOString() },
+                    { name: 'Shahma', gender: 'girl', addedAt: new Date().toISOString() },
+                    { name: 'Rashid', gender: 'boy', addedAt: new Date().toISOString() },
+                    { name: 'Shamil', gender: 'boy', addedAt: new Date().toISOString() },
+                    { name: 'Nafith', gender: 'boy', addedAt: new Date().toISOString() }
+                ]},
+                { name: "Class 4", students: [] },
+                { name: "Class 3", students: [] }
+            ];
+            try {
+                const batch = writeBatch(db);
+                defaultClasses.forEach((cls, index) => {
+                    const classId = `default_class_${index}_${Date.now()}`;
+                    const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', classId);
+                    batch.set(classRef, {
+                        name: cls.name,
+                        students: cls.students,
+                        createdAt: new Date().toISOString()
+                    });
+                });
+                await batch.commit();
+                showToast("Default classes 9, 4, and 3 created!", "success");
+            } catch (error) {
+                console.error("Error creating default classes:", error);
+                showToast("Failed to setup default classes", "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderClassSelectorModal() {
+            const container = document.getElementById('classes-list-container');
+            container.innerHTML = '';
+
+            if (availableClasses.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 bg-gray-50 rounded-xl border border-gray-100">
+                        <i class="fa-solid fa-school text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 text-sm">No classes created yet.</p>
+                        <p class="text-gray-400 text-xs mt-1">Create one below to get started.</p>
+                    </div>`;
+                return;
+            }
+
+            availableClasses.forEach(cls => {
+                const studentCount = cls.students ? cls.students.length : 0;
+                container.innerHTML += `
+                    <div onclick="selectClass('${cls.id}')" class="group cursor-pointer bg-white border border-gray-200 hover:border-indigo-400 hover:shadow-md rounded-xl p-4 transition-all flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                ${cls.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-lg">${cls.name}</h4>
+                                <p class="text-xs text-gray-500">${studentCount} Students Enrolled</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-indigo-500 transition-colors"></i>
+                    </div>
+                `;
+            });
+        }
+
+        window.createNewClass = async function() {
+            if(!authReady) return;
+            const input = document.getElementById('new-class-name');
+            const className = input.value.trim();
+            
+            if (!className) {
+                showToast("Please enter a class name", "error");
+                return;
+            }
+
+            // Simple ID generation
+            const classId = className.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString().slice(-4);
+            
+            showLoading("Creating Class...");
+            try {
+                const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', classId);
+                await setDoc(classRef, {
+                    name: className,
+                    students: [],
+                    createdAt: new Date().toISOString()
+                });
+                
+                input.value = '';
+                showToast("Class created successfully!", "success");
+                // The snapshot listener will update the list automatically
+            } catch (error) {
+                console.error("Error creating class:", error);
+                showToast("Failed to create class", "error");
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.selectClass = function(classId) {
+            const cls = availableClasses.find(c => c.id === classId);
+            if (!cls) return;
+
+            currentClass = cls;
+            document.getElementById('class-selection-modal').classList.add('hidden');
+            
+            // Update UI with class name
+            document.getElementById('nav-class-name').innerText = currentClass.name;
+            document.getElementById('manage-class-title').innerText = currentClass.name;
+            
+            // Load records for this specific class
+            listenToClassRecords(classId);
+            
+            // Show main UI
+            document.getElementById('main-nav').classList.remove('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+        };
+
+        function listenToClassRecords(classId) {
+            showLoading(`Loading records for ${currentClass.name}...`);
+            const recordsRef = getRecordsCollectionPath(classId);
+
+            if (activeRecordsUnsubscribe) activeRecordsUnsubscribe();
+
+            activeRecordsUnsubscribe = onSnapshot(recordsRef, (snapshot) => {
+                allRecords = {};
+                snapshot.forEach(doc => { allRecords[doc.id] = doc.data(); });
+                
+                hideLoading();
+                
+                // Only render if we have a current class selected
+                if (currentClass) {
+                    renderAdminDaily();
+                    
+                    // Check if we need to force a structure redraw due to class change
+                    const forceRedraw = lastRenderedClassId !== currentClass.id;
+                    renderPaperSheets(getDatesForViewMonth(), forceRedraw);
+                    if (forceRedraw) lastRenderedClassId = currentClass.id;
+                }
+            }, (error) => {
+                 console.error("Records Sync error:", error);
+                 hideLoading();
+                 showToast("Error loading class records.", "error");
+            });
+        }
+
+        window.openManageClassModal = function() {
+            if (currentClass) {
+                document.getElementById('toggle-allow-excuses').checked = currentClass.allowExcuses !== false;
+            }
+            renderManageStudentsList();
+            document.getElementById('manage-class-modal').classList.remove('hidden');
+        };
+
+        window.toggleAllowExcuses = async function(checkbox) {
+            if (!currentClass) return;
+            const checked = checkbox.checked;
+            try {
+                const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', currentClass.id);
+                await setDoc(classRef, { allowExcuses: checked }, { merge: true });
+                showToast("Class settings updated!", "success");
+            } catch (error) {
+                console.error("Error updating class settings:", error);
+                showToast("Failed to update settings", "error");
+                checkbox.checked = !checked; // revert UI
+            }
+        };
+
+        window.closeManageClassModal = function() {
+            document.getElementById('manage-class-modal').classList.add('hidden');
+        };
+
+        function renderManageStudentsList() {
+            if (!currentClass) return;
+            const container = document.getElementById('manage-students-list');
+            document.getElementById('student-count').innerText = currentClass.students ? currentClass.students.length : 0;
+            container.innerHTML = '';
+
+            const students = currentClass.students || [];
+
+            if (students.length === 0) {
+                container.innerHTML = `<li class="p-4 text-center text-gray-500 text-sm">No students added yet.</li>`;
+                return;
+            }
+
+            students.forEach((student, index) => {
+                const icon = student.gender === 'girl' ? 'fa-venus text-pink-500' : 'fa-mars text-blue-500';
+                const bg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
+                
+                container.innerHTML += `
+                    <li class="p-3 flex justify-between items-center hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full ${bg} flex items-center justify-center">
+                                <i class="fa-solid ${icon}"></i>
+                            </div>
+                            <span class="font-semibold text-gray-800">${student.name}</span>
+                        </div>
+                        <button onclick="removeStudent(${index})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition" title="Remove Student">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </li>
+                `;
+            });
+        }
+
+        window.addStudentToClass = async function() {
+            if (!currentClass) return;
+            const nameInput = document.getElementById('new-student-name');
+            const name = nameInput.value.trim();
+            const gender = document.querySelector('input[name="student-gender"]:checked').value;
+
+            if (!name) {
+                showToast("Please enter a student name", "error");
+                return;
+            }
+
+            // Basic duplicate check (can be improved)
+            const exists = (currentClass.students || []).some(s => s.name.toLowerCase() === name.toLowerCase());
+            if (exists) {
+                showToast("Student with this name already exists", "error");
+                return;
+            }
+
+            const newStudent = { name, gender, addedAt: new Date().toISOString() };
+            const updatedStudents = [...(currentClass.students || []), newStudent];
+
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+            btn.disabled = true;
+
+            try {
+                const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', currentClass.id);
+                await setDoc(classRef, { students: updatedStudents }, { merge: true });
+                nameInput.value = '';
+                showToast("Student added successfully!", "success");
+            } catch (error) {
+                console.error("Error adding student:", error);
+                showToast("Failed to add student", "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        window.removeStudent = async function(index) {
+            if (!currentClass) return;
+            
+            // Simple confirmation replaced with direct action for speed, or add custom modal later.
+            // Since we can't use alert/confirm, we'll just do it. In a real app, use a custom confirm modal.
+            
+            const updatedStudents = [...currentClass.students];
+            updatedStudents.splice(index, 1);
+
+            try {
+                const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', currentClass.id);
+                await setDoc(classRef, { students: updatedStudents }, { merge: true });
+                showToast("Student removed", "success");
+            } catch (error) {
+                console.error("Error removing student:", error);
+                showToast("Failed to remove student", "error");
+            }
         };
 
         function isFuturePrayer(dateStr, prayer) {
-            const today = new Date();
             const localTodayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             
-            if (dateStr > localTodayStr) return true;  // Future days are entirely locked
-            if (dateStr < localTodayStr) return false; // Past days are entirely unlocked
+            if (dateStr > localTodayStr) return true;  
+            if (dateStr < localTodayStr) return false; 
             
-            // If it is today, check the specific clock time
             const currentHour = today.getHours();
             const currentMinute = today.getMinutes();
             const unlockTime = PRAYER_UNLOCK_TIMES[prayer];
@@ -214,150 +816,43 @@
             if (currentHour < unlockTime.h) return true;
             if (currentHour === unlockTime.h && currentMinute < unlockTime.m) return true;
             
-            return false; // It is past the prayer time today!
-        }
-        
-        let allRecords = {};
-        
-        const today = new Date();
-        const localTodayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-        let selectedDailyDate = localTodayStr;
-        
-        // Ensure standard local YYYY-MM format for the month selector
-        const currentYearStr = today.getFullYear();
-        const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
-        let selectedViewMonth = `${currentYearStr}-${currentMonthStr}`;
-        let lastRenderedMonthStr = ""; // Added to track skeleton rendering
-
-        const datePicker = document.getElementById('daily-date-picker');
-        datePicker.value = selectedDailyDate;
-        datePicker.max = localTodayStr; // BLOCK FUTURE DATES IN DATE PICKER
-
-        const monthSelector = document.getElementById('admin-month-selector');
-        monthSelector.value = selectedViewMonth;
-
-        datePicker.addEventListener('change', (e) => {
-            selectedDailyDate = e.target.value;
-            renderAdminDaily();
-        });
-
-        monthSelector.addEventListener('change', (e) => {
-            selectedViewMonth = e.target.value;
-            updateViews(); // Re-render sheets for the selected month
-        });
-
-        // Smart Month Date Generator
-        function getDatesForViewMonth() {
-            const [y, m] = selectedViewMonth.split('-');
-            const year = parseInt(y);
-            const month = parseInt(m) - 1; // JS months are 0-11
-            
-            let startDay = 1; // By default, EVERY month automatically starts on the 1st
-            
-            // Strict requirement: ONLY September 2026 starts from the 9th
-            if (year === 2026 && month === 8) { 
-                startDay = 9;
-            }
-            
-            // Automatically gets the exact number of days in ANY selected month (e.g., Oct=31, Nov=30)
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const dates = [];
-            
-            for (let d = startDay; d <= daysInMonth; d++) {
-                // Ensure proper YYYY-MM-DD formatting regardless of timezone shifts
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                dates.push(dateStr);
-            }
-            return dates;
+            return false;
         }
 
-        window.verifyAdminPin = async function() {
-            if (document.getElementById('admin-pin').value === '786') {
-                document.getElementById('admin-login-modal').classList.add('hidden');
-                document.getElementById('loading-overlay').classList.remove('hidden');
-                document.getElementById('loading-overlay').classList.add('flex');
-                
-                try {
-                    await signInAnonymously(auth);
-                    onAuthStateChanged(auth, (user) => {
-                        if (user && !authReady) {
-                            authReady = true;
-                            setupListeners();
-                        }
-                    });
-                } catch (err) {
-                    showToast("Database Login Failed. Check Rules.", "error");
-                }
-            } else {
-                document.getElementById('pin-error').classList.remove('hidden');
-            }
-        };
-
-        function setupListeners() {
-            // Using direct root collection for standalone external app (since this isn't on the platform anymore)
-            const settingsRef = doc(db, 'madrasa_settings', 'global');
-            const recordsRef = collection(db, 'salah_monthly');
-
-            onSnapshot(settingsRef, (docSnap) => {
-                if(docSnap.exists()) document.getElementById('admin-msg-input').value = docSnap.data().advisement || '';
-            });
-
-            onSnapshot(recordsRef, (snapshot) => {
-                allRecords = {};
-                snapshot.forEach(doc => { allRecords[doc.id] = doc.data(); });
-                
-                document.getElementById('loading-overlay').classList.add('hidden');
-                document.getElementById('loading-overlay').classList.remove('flex');
-                document.getElementById('main-nav').classList.remove('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-                
-                updateViews();
-            }, (error) => {
-                 console.error("Sync error:", error);
-                 showToast("Sync error. Please check Firebase rules.", "error");
-            });
-        }
-
-        window.togglePrayer = async function(date, student, prayer, gender) {
-            if(!authReady) return;
+        window.togglePrayer = async function(date, studentName, prayer, gender) {
+            if(!authReady || !currentClass) return;
             
-            // SECURITY CHECK: Block future dates AND future Waqths today!
             if (isFuturePrayer(date, prayer)) {
                 showToast(`Cannot mark ${prayer} before its time!`, "error");
                 return;
             }
 
-            const record = (allRecords[date] && allRecords[date][student]) || {};
+            const record = (allRecords[date] && allRecords[date][studentName]) || {};
             let current = record[prayer];
             
-            // Support for legacy full-day flag
             if (record.excused === true) current = 'excused';
 
             let nextValue;
-            if (gender === 'girl') {
-                // Cycle: Missed -> Done -> Excused -> Missed
+            if (gender === 'girl' && currentClass.allowExcuses !== false) {
                 if (current === true) nextValue = 'excused';
                 else if (current === 'excused') nextValue = false;
                 else nextValue = true;
             } else {
-                // Boys Cycle: Missed -> Done -> Missed
                 nextValue = current === true ? false : true;
             }
 
             try {
-                const docRef = doc(db, 'salah_monthly', date);
-                // When toggling individual waqths, ensure the legacy full-day flag is false so it doesn't override
-                await setDoc(docRef, { [student]: { [prayer]: nextValue, excused: false } }, { merge: true });
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', `class_records_${currentClass.id}`, date);
+                await setDoc(docRef, { [studentName]: { [prayer]: nextValue, excused: false } }, { merge: true });
             } catch (error) { 
                 console.error(error);
-                showToast("Failed to update", "error"); 
+                showToast("Failed to update record", "error"); 
             }
         };
 
-        window.toggleExcuse = async function(date, student, isExcused) {
-            if(!authReady) return;
+        window.toggleExcuse = async function(date, studentName, isExcused) {
+            if(!authReady || !currentClass) return;
             
-            // SECURITY CHECK: Block future clicks
             const localTodayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
             if (date > localTodayStr) {
                 showToast("Cannot mark future dates!", "error");
@@ -365,18 +860,18 @@
             }
 
             try {
-                const docRef = doc(db, 'salah_monthly', date);
-                let updateData = { excused: false }; // Clear global flag to use per-waqth granularity
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', `class_records_${currentClass.id}`, date);
+                let updateData = { excused: false }; 
                 
                 if (isExcused) {
                     PRAYERS.forEach(p => updateData[p] = 'excused');
-                    showToast(`Marked full day excused for ${student}`, "success");
+                    showToast(`Marked full day excused for ${studentName}`, "success");
                 } else {
                     PRAYERS.forEach(p => updateData[p] = false);
-                    showToast(`Removed leave for ${student}`, "success");
+                    showToast(`Removed leave for ${studentName}`, "success");
                 }
                 
-                await setDoc(docRef, { [student]: updateData }, { merge: true });
+                await setDoc(docRef, { [studentName]: updateData }, { merge: true });
             } catch (error) { 
                 console.error(error);
                 showToast("Error updating leave", "error"); 
@@ -387,57 +882,159 @@
             if (!authReady) return;
             const btn = document.getElementById('save-msg-btn');
             const msg = document.getElementById('admin-msg-input').value.trim();
+            const originalText = btn.innerHTML;
+            
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
             try {
-                await setDoc(doc(db, 'madrasa_settings', 'global'), { advisement: msg }, { merge: true });
+                const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'global_settings', 'madrasa');
+                await setDoc(settingsRef, { advisement: msg }, { merge: true });
                 showToast("Published to Students!", "success");
             } catch (err) { 
                 console.error(err);
-                showToast("Failed to save", "error"); 
+                showToast("Failed to save message", "error"); 
             } 
-            finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish to Students'; }
+            finally { 
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         });
 
-        function updateViews() {
-            renderAdminDaily();
+        function getDatesForViewMonth() {
+            const [y, m] = selectedViewMonth.split('-');
+            const year = parseInt(y);
+            const month = parseInt(m) - 1; 
             
-            // Get dates dynamically based on the selected month
-            const dates = getDatesForViewMonth();
-            renderPaperSheets(dates);
+            let startDay = 1; 
+            if (year === 2026 && month === 8) startDay = 9; // specific requirement retained
+            
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const dates = [];
+            
+            for (let d = startDay; d <= daysInMonth; d++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                dates.push(dateStr);
+            }
+            return dates;
         }
 
-        function renderPaperSheets(dates) {
-            const container = document.getElementById('paper-sheets-container');
-            const todayStr = new Date().toISOString().split('T')[0];
+        function renderAdminDaily() {
+            if (!currentClass) return;
+            const container = document.getElementById('admin-daily-list');
+            container.innerHTML = '';
             
-            // Check if we need to rebuild the entire framework (e.g., month changed or first load)
-            const needsSkeleton = (lastRenderedMonthStr !== selectedViewMonth) || (container.innerHTML.trim() === '');
+            const students = currentClass.students || [];
+            
+            if (students.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-500">No students in this class yet.<br><button onclick="openManageClassModal()" class="mt-2 text-indigo-600 font-semibold hover:underline">Add Students</button></div>`;
+                return;
+            }
+
+            const dateData = allRecords[selectedDailyDate] || {};
+
+            students.forEach((student) => {
+                const data = dateData[student.name] || {};
+                let isFullDayExcused = data.excused === true;
+                
+                let dotsHtml = PRAYERS.map((p) => {
+                    let val = data[p];
+                    if (isFullDayExcused) val = 'excused';
+                    
+                    let done = val === true;
+                    let excused = val === 'excused';
+                    let isFutureWaqth = isFuturePrayer(selectedDailyDate, p);
+                    
+                    let c = 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200';
+                    let icon = 'fa-xmark opacity-50';
+                    let clickAction = `togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', '${student.gender}')`;
+                    
+                    if (done) {
+                        c = 'bg-emerald-500 text-white border-emerald-600 shadow-inner';
+                        icon = 'fa-check';
+                    } else if (excused) {
+                        c = 'bg-pink-100 text-pink-600 border-pink-300';
+                        icon = 'fa-moon';
+                    } else if (isFutureWaqth) {
+                        c = 'bg-gray-50 text-gray-300 border-gray-100 opacity-60 cursor-not-allowed hover:bg-gray-50';
+                        icon = 'fa-clock';
+                        clickAction = `showToast('Cannot mark ${p} before its time!', 'error')`;
+                    }
+                    
+                    return `<button onclick="${clickAction}" 
+                            class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 active:scale-95 ${c}" title="${p}">
+                            <i class="fa-solid ${icon}"></i>
+                            </button>`;
+                }).join('');
+
+                let actionsHtml = '';
+                if (student.gender === 'girl' && currentClass.allowExcuses !== false) {
+                    let allExcused = PRAYERS.every(p => (data[p] === 'excused' || isFullDayExcused));
+                    
+                    if (allExcused && PRAYERS.length > 0) {
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', false)" class="px-3 py-2 bg-pink-100 text-pink-700 rounded-lg text-xs font-bold w-full hover:bg-pink-200 transition active:scale-95">Remove Leave</button>`;
+                    } else {
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', true)" class="px-3 py-2 bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600 rounded-lg text-xs font-bold transition border border-gray-200 shadow-sm whitespace-nowrap active:scale-95">Mark Whole Day</button>`;
+                    }
+                } else {
+                    actionsHtml = `<div class="w-full text-center text-xs text-gray-400 italic px-2 py-2">N/A</div>`;
+                }
+
+                container.innerHTML += `
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/50 transition border-b border-gray-50 last:border-0 fade-in">
+                        <div class="flex items-center gap-3 w-40">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-sm ${student.gender === 'girl' ? 'bg-gradient-to-br from-pink-100 to-pink-200 text-pink-700 border border-pink-200' : 'bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 border border-blue-200'}">${student.name.charAt(0).toUpperCase()}</div>
+                            <span class="font-bold text-gray-800 tracking-wide text-sm truncate" title="${student.name}">${student.name}</span>
+                        </div>
+                        <div class="flex-grow flex gap-2 justify-center sm:justify-start">${dotsHtml}</div>
+                        <div class="flex-shrink-0 flex items-center justify-center w-full sm:w-28">${actionsHtml}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderPaperSheets(dates, forceStructureRedraw = false) {
+            if (!currentClass) return;
+            const container = document.getElementById('paper-sheets-container');
+            const students = currentClass.students || [];
+            
+            if (students.length === 0) {
+                container.innerHTML = `<div class="col-span-full p-8 text-center bg-white rounded-xl border border-gray-200 shadow-sm text-gray-500">No students to display sheets for.</div>`;
+                return;
+            }
+
+            const needsSkeleton = forceStructureRedraw || (lastRenderedMonthStr !== selectedViewMonth) || (container.innerHTML.trim() === '');
 
             if (needsSkeleton) {
                 container.innerHTML = '';
                 
-                STUDENTS.forEach(student => {
+                students.forEach(student => {
                     let colorTheme = student.gender === 'girl' ? 'text-pink-600 border-pink-200' : 'text-blue-600 border-blue-200';
                     let headerBg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
-                    let leaveHeader = student.gender === 'girl' ? `<th class="p-2 border-b border-l border-gray-100 text-xs text-pink-500 bg-pink-50/50">Leave</th>` : '';
+                    let leaveHeader = (student.gender === 'girl' && currentClass.allowExcuses !== false) ? `<th class="p-2 border-b border-l border-gray-100 text-xs text-pink-500 bg-pink-50/50 w-12">Leave</th>` : '';
+                    
+                    // Sanitize name for DOM ID
+                    const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
                     
                     let tableHtml = `
-                    <div class="paper-grid flex flex-col h-[75vh]">
+                    <div class="paper-grid flex flex-col h-[75vh] fade-in shadow-sm hover:shadow-md transition-shadow">
                         <div class="student-header ${headerBg}">
-                            <span class="uppercase tracking-widest ${colorTheme}">${student.name}</span>
-                            <span class="text-[11px] font-normal text-gray-500 bg-white px-2 py-1 rounded shadow-sm border">Click boxes to cycle</span>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid ${student.gender==='girl' ? 'fa-venus' : 'fa-mars'} ${colorTheme} opacity-70"></i>
+                                <span class="uppercase tracking-widest ${colorTheme} truncate max-w-[150px]" title="${student.name}">${student.name}</span>
+                            </div>
+                            <span class="text-[10px] font-medium text-gray-500 bg-white/80 px-2 py-1 rounded-md shadow-sm border border-gray-200/50">Click to cycle</span>
                         </div>
-                        <div id="scroll-div-${student.name}" class="overflow-y-auto flex-grow">
+                        <div id="scroll-div-${safeId}" class="overflow-y-auto flex-grow bg-white">
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-white shadow-sm z-10">
                                     <tr>
-                                        <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-gray-500 bg-gray-50 whitespace-nowrap">Date</th>
-                                        ${PRAYER_ARABIC.map(p => `<th class="p-2 border-b arabic-text font-normal text-lg">${p}</th>`).join('')}
+                                        <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-gray-500 bg-gray-50/95 backdrop-blur-sm whitespace-nowrap w-20">Date</th>
+                                        ${PRAYER_ARABIC.map(p => `<th class="p-2 border-b border-gray-200 arabic-text font-normal text-lg bg-white/95 backdrop-blur-sm">${p}</th>`).join('')}
                                         ${leaveHeader}
                                     </tr>
                                 </thead>
-                                <tbody id="tbody-${student.name}">
-                                    <!-- Rows will be injected here without destroying the scroll container -->
+                                <tbody id="tbody-${safeId}">
+                                    <!-- Rows injected here -->
                                 </tbody>
                             </table>
                         </div>
@@ -448,13 +1045,18 @@
                 lastRenderedMonthStr = selectedViewMonth;
             }
 
-            // ONLY update the inner rows. This perfectly prevents the scroll jump!
-            STUDENTS.forEach(student => {
+            students.forEach(student => {
+                const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
+                const tbody = document.getElementById(`tbody-${safeId}`);
+                if(!tbody) return; // safety
+
                 let rowsHtml = '';
                 const localTodayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
                 
                 dates.forEach((date) => {
                     const [year, month, day] = date.split('-');
+                    const dateObj = new Date(year, parseInt(month) - 1, day);
+                    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
                     const displayDate = `${day}-${month}-${year}`;
                     const isToday = date === localTodayStr;
                     const isFuture = date > localTodayStr;
@@ -471,184 +1073,189 @@
                         let isFutureWaqth = isFuturePrayer(date, p);
                         
                         let icon = '';
-                        if (done) icon = '<i class="fa-solid fa-check text-blue-700 font-bold text-xl drop-shadow-sm"></i>';
+                        if (done) icon = '<i class="fa-solid fa-check text-blue-600 font-bold text-xl drop-shadow-sm"></i>';
                         else if (excused) icon = '<i class="fa-solid fa-moon text-pink-500 font-bold text-lg drop-shadow-sm"></i>';
-                        else if (isFutureWaqth) icon = '<i class="fa-solid fa-clock text-gray-300 font-bold text-lg"></i>'; // Tiny clock for locked prayers
+                        else if (isFutureWaqth) icon = '<i class="fa-solid fa-clock text-gray-300 font-bold text-lg"></i>'; 
                         
-                        let clickAction = isFutureWaqth ? `showToast('Cannot mark ${p} before its time!', 'error')` : `togglePrayer('${date}', '${student.name}', '${p}', '${student.gender}')`;
-                        let cursorClass = isFutureWaqth ? 'cursor-not-allowed opacity-40 bg-gray-50' : 'cursor-pointer hover:bg-gray-100 transition';
+                        let clickAction = isFutureWaqth ? `showToast('Cannot mark ${p} before its time!', 'error')` : `togglePrayer('${date}', '${student.name.replace(/'/g, "\\'")}', '${p}', '${student.gender}')`;
+                        let cursorClass = isFutureWaqth ? 'cursor-not-allowed opacity-50 bg-gray-50' : 'cursor-pointer hover:bg-blue-50/50 transition-colors active:bg-blue-100';
 
-                        return `<td class="p-1 text-center border-l border-gray-100 ${cursorClass}" onclick="${clickAction}">
-                            <div class="w-full h-8 flex items-center justify-center text-lg">${icon}</div>
+                        return `<td class="p-1 text-center border-l border-b border-gray-100 ${cursorClass}" onclick="${clickAction}">
+                            <div class="w-full h-10 flex items-center justify-center text-lg">${icon}</div>
                         </td>`;
                     }).join('');
                     
-                    // Add the Leave Button column for girls
                     let leaveCell = '';
-                    if (student.gender === 'girl') {
+                    if (student.gender === 'girl' && currentClass.allowExcuses !== false) {
                         let allExcused = PRAYERS.every(p => (record[p] === 'excused' || isFullDayExcused));
                         
-                        let actionRemove = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name}', false)`;
-                        let actionAdd = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name}', true)`;
+                        let actionRemove = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name.replace(/'/g, "\\'")}', false)`;
+                        let actionAdd = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name.replace(/'/g, "\\'")}', true)`;
                         
                         if (allExcused && PRAYERS.length > 0) {
-                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="${actionRemove}" class="w-full h-8 rounded bg-pink-100 text-pink-700 hover:bg-pink-200 transition flex items-center justify-center" title="Remove Leave"><i class="fa-solid fa-xmark"></i></button></td>`;
+                            leaveCell = `<td class="p-1 border-l border-b border-gray-100 text-center"><button onclick="${actionRemove}" class="w-full h-10 rounded bg-pink-100/50 text-pink-600 hover:bg-pink-200 transition flex items-center justify-center" title="Remove Leave"><i class="fa-solid fa-xmark"></i></button></td>`;
                         } else {
                             let btnClass = isFuture ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition';
-                            leaveCell = `<td class="p-1 border-l border-gray-100 text-center"><button onclick="${actionAdd}" class="w-full h-8 rounded flex items-center justify-center ${btnClass}" title="Mark Whole Day Excused"><i class="fa-solid fa-moon"></i></button></td>`;
+                            leaveCell = `<td class="p-1 border-l border-b border-gray-100 text-center"><button onclick="${actionAdd}" class="w-full h-10 rounded flex items-center justify-center ${btnClass}" title="Mark Whole Day Excused"><i class="fa-solid fa-moon text-sm"></i></button></td>`;
                         }
                     }
 
-                    const rowClass = isToday ? 'bg-emerald-50' : (isFuture ? 'bg-gray-50/50 opacity-75' : 'bg-white');
+                    const rowClass = isToday ? 'bg-emerald-50/30' : (isFuture ? 'bg-gray-50/30 opacity-80' : 'bg-white hover:bg-gray-50/30');
 
                     rowsHtml += `
-                        <tr class="${rowClass}">
-                            <td class="p-2 text-center border-r font-bold sticky left-0 z-0 whitespace-nowrap ${isToday ? 'bg-emerald-50 text-emerald-700' : (isFuture ? 'bg-gray-100 text-gray-400' : 'bg-gray-50 text-gray-700')}">${displayDate}</td>
+                        <tr class="${rowClass} transition-colors">
+                            <td class="p-1.5 text-center border-r border-b border-gray-100 font-bold sticky left-0 z-0 whitespace-nowrap text-xs ${isToday ? 'bg-emerald-50 text-emerald-700 shadow-[inset_-1px_0_0_rgba(16,185,129,0.2)]' : (isFuture ? 'bg-gray-50 text-gray-400 shadow-[inset_-1px_0_0_rgba(229,231,235,1)]' : 'bg-white text-gray-600 shadow-[inset_-1px_0_0_rgba(229,231,235,1)]')}">
+                                <div class="flex flex-col items-center justify-center leading-tight">
+                                    <span class="text-[9px] uppercase tracking-wider opacity-75 mb-0.5">${dayName}</span>
+                                    <span>${displayDate}</span>
+                                </div>
+                            </td>
                             ${cellsHtml}
                             ${leaveCell}
                         </tr>
                     `;
                 });
 
-                // Directly target and update the specific student's tbody
-                document.getElementById(`tbody-${student.name}`).innerHTML = rowsHtml;
-            });
-        }
-
-        function renderAdminDaily() {
-            const container = document.getElementById('admin-daily-list');
-            container.innerHTML = '';
-            const dateData = allRecords[selectedDailyDate] || {};
-
-            STUDENTS.forEach((student) => {
-                const data = dateData[student.name] || {};
-                let isFullDayExcused = data.excused === true;
+                tbody.innerHTML = rowsHtml;
                 
-                let dotsHtml = PRAYERS.map((p, i) => {
-                    let val = data[p];
-                    if (isFullDayExcused) val = 'excused';
-                    
-                    let done = val === true;
-                    let excused = val === 'excused';
-                    let isFutureWaqth = isFuturePrayer(selectedDailyDate, p);
-                    
-                    let c = 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200';
-                    let icon = 'fa-xmark opacity-50';
-                    let clickAction = `togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', '${student.gender}')`;
-                    
-                    if (done) {
-                        c = 'bg-emerald-500 text-white border-emerald-600';
-                        icon = 'fa-check';
-                    } else if (excused) {
-                        c = 'bg-pink-100 text-pink-600 border-pink-300';
-                        icon = 'fa-moon';
-                    } else if (isFutureWaqth) {
-                        c = 'bg-gray-50 text-gray-300 border-gray-100 opacity-60 cursor-not-allowed hover:bg-gray-50';
-                        icon = 'fa-clock';
-                        clickAction = `showToast('Cannot mark ${p} before its time!', 'error')`;
-                    }
-                    
-                    return `<button onclick="${clickAction}" 
-                            class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 ${c}" title="${p}">
-                            <i class="fa-solid ${icon}"></i>
-                            </button>`;
-                }).join('');
-
-                let actionsHtml = '';
-                if (student.gender === 'girl') {
-                    // Check if all 5 prayers are set to 'excused'
-                    let allExcused = PRAYERS.every(p => (data[p] === 'excused' || isFullDayExcused));
-                    
-                    if (allExcused && PRAYERS.length > 0) {
-                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', false)" class="px-3 py-2 bg-pink-100 text-pink-700 rounded-lg text-xs font-bold w-full hover:bg-pink-200 transition">Remove Leave</button>`;
-                    } else {
-                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', true)" class="px-3 py-2 bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600 rounded-lg text-xs font-bold transition border border-gray-200 shadow-sm whitespace-nowrap">Mark Whole Day</button>`;
-                    }
+                // Auto-scroll to today if rendering current month
+                if (needsSkeleton && selectedViewMonth === `${currentYearStr}-${currentMonthStr}`) {
+                    setTimeout(() => {
+                        const scrollDiv = document.getElementById(`scroll-div-${safeId}`);
+                        const todayRow = tbody.querySelector('.bg-emerald-50\\/30'); // Escape slash
+                        if (scrollDiv && todayRow) {
+                            scrollDiv.scrollTop = todayRow.offsetTop - (scrollDiv.clientHeight / 2) + (todayRow.clientHeight / 2);
+                        }
+                    }, 100);
                 }
-
-                container.innerHTML += `
-                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition border-b border-gray-50 last:border-0">
-                        <div class="flex items-center gap-3 w-40">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${student.gender === 'girl' ? 'bg-pink-100 text-pink-600' : 'bg-blue-100 text-blue-600'}">${student.name.charAt(0)}</div>
-                            <span class="font-bold text-gray-800 uppercase tracking-wide text-sm">${student.name}</span>
-                        </div>
-                        <div class="flex-grow flex gap-2 justify-center sm:justify-start">${dotsHtml}</div>
-                        <div class="flex-shrink-0 flex items-center justify-center">${actionsHtml}</div>
-                    </div>
-                `;
             });
         }
 
         window.switchTab = function(tabName) {
             document.getElementById('admin-daily-view').classList.add('hidden');
             document.getElementById('sheet-view').classList.add('hidden');
-            document.getElementById('tab-daily').className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700";
-            document.getElementById('tab-sheet').className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700";
             
-            document.getElementById(`tab-${tabName}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800";
-            if (tabName === 'daily') document.getElementById('admin-daily-view').classList.remove('hidden');
-            if (tabName === 'sheet') document.getElementById('sheet-view').classList.remove('hidden');
+            // Reset tab styles
+            const tabs = ['daily', 'sheet'];
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700 hover:bg-gray-200/50";
+            });
+            
+            // Active tab style
+            document.getElementById(`tab-${tabName}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800 border border-gray-200/50";
+            
+            if (tabName === 'daily') {
+                document.getElementById('admin-daily-view').classList.remove('hidden');
+                document.getElementById('admin-daily-view').classList.add('fade-in');
+            }
+            if (tabName === 'sheet') {
+                document.getElementById('sheet-view').classList.remove('hidden');
+                document.getElementById('sheet-view').classList.add('fade-in');
+                // Force a render to ensure layout is correct when unhidden
+                renderPaperSheets(getDatesForViewMonth());
+            }
         };
 
-        // --- NEW EXPORT FUNCTIONALITY ---
+        let toastTimeout;
+        window.showToast = function(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            const icon = document.getElementById('toast-icon');
+            
+            toast.className = 'fixed bottom-5 right-5 transform z-[300] flex items-center p-4 mb-4 text-gray-700 bg-white rounded-xl shadow-2xl border-l-4 font-medium transition-all duration-300';
+            
+            if (type === 'success') {
+                toast.classList.add('border-emerald-500');
+                icon.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 mr-3';
+                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else {
+                toast.classList.add('border-red-500');
+                icon.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-red-100 text-red-600 mr-3';
+                icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            }
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        };
+        
+        // Ensure enter key works for login
+        document.getElementById('admin-pin').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') verifyAdminPin();
+        });
+
         window.exportDataToCSV = function() {
-            if (!authReady || Object.keys(allRecords).length === 0) {
-                showToast("No data available to export yet.", "error");
+            if (!authReady || !currentClass) {
+                showToast("Please select a class first", "error");
                 return;
             }
 
-            // Create CSV Header matching the Import structure
             let csvContent = "Date,Student,Subh,Luhr,Asr,Magrib,Isha,Excused\n";
+            let hasData = Object.keys(allRecords).length > 0;
 
-            // Sort dates chronologically for neatness
-            const dates = Object.keys(allRecords).sort();
-
-            dates.forEach(date => {
-                STUDENTS.forEach(student => {
-                    const data = allRecords[date][student.name] || {};
-                    
-                    // Helper to map values correctly (1 for true, 0 for false, 'excused' for leaves)
-                    const mapVal = (val) => {
-                        if (val === true) return '1';
-                        if (val === 'excused') return 'excused';
-                        return '0';
-                    };
-
-                    const subh = mapVal(data['Subh']);
-                    const luhr = mapVal(data['Luhr']);
-                    const asr = mapVal(data['Asr']);
-                    const magrib = mapVal(data['Magrib']);
-                    const isha = mapVal(data['Isha']);
-                    const excusedAll = data.excused === true ? '1' : '0';
-
-                    csvContent += `${date},${student.name},${subh},${luhr},${asr},${magrib},${isha},${excusedAll}\n`;
+            if (!hasData) {
+                // Generate a blank template for the current month
+                const dates = getDatesForViewMonth();
+                const students = currentClass.students || [];
+                if (students.length === 0) {
+                    showToast("Add students to this class first to export a template.", "error");
+                    return;
+                }
+                dates.forEach(date => {
+                    students.forEach(student => {
+                        csvContent += `${date},${student.name},0,0,0,0,0,0\n`;
+                    });
                 });
-            });
+                showToast("Generating blank template...", "success");
+            } else {
+                const sortedDates = Object.keys(allRecords).sort();
 
-            // Trigger the download
+                sortedDates.forEach(date => {
+                    const studentsData = allRecords[date];
+                    for (const studentName in studentsData) {
+                        const data = studentsData[studentName];
+                        const formatVal = (val) => val === 'excused' ? 'excused' : (val ? '1' : '0');
+                        
+                        const s = formatVal(data.Subh);
+                        const l = formatVal(data.Luhr);
+                        const a = formatVal(data.Asr);
+                        const m = formatVal(data.Magrib);
+                        const i = formatVal(data.Isha);
+                        const e = data.excused ? '1' : '0';
+
+                        csvContent += `${date},${studentName},${s},${l},${a},${m},${i},${e}\n`;
+                    }
+                });
+            }
+
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", `madrasa_backup_${new Date().toISOString().split('T')[0]}.csv`);
+            const sanitizedClassName = currentClass.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const prefix = hasData ? 'swalath_export' : 'swalath_template';
+            link.setAttribute("download", `${prefix}_${sanitizedClassName}_${new Date().toISOString().split('T')[0]}.csv`);
             link.style.visibility = 'hidden';
-            
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            showToast("Backup exported successfully!", "success");
+            if (hasData) showToast("Export downloaded successfully!", "success");
         };
 
-        // --- CSV IMPORT ---
+        // Restore CSV Upload functionality
         document.getElementById('csv-upload').addEventListener('change', async (e) => {
-            if (!authReady) return;
+            if (!authReady || !currentClass) {
+                showToast("Please select a class first", "error");
+                return;
+            }
             const file = e.target.files[0];
             if (!file) return;
 
-            document.getElementById('loading-overlay').classList.remove('hidden');
-            document.getElementById('loading-overlay').classList.add('flex');
-            document.querySelector('#loading-overlay p').innerText = "Importing CSV Data...";
+            showLoading("Importing CSV Data...");
 
             const reader = new FileReader();
             reader.onload = async (event) => {
@@ -656,6 +1263,8 @@
                     const csvText = event.target.result;
                     const rows = csvText.split('\n');
                     const updatesByDate = {};
+                    let skippedStudents = new Set();
+                    let importedRowsCount = 0;
 
                     // Start from 1 to skip header row
                     for (let i = 1; i < rows.length; i++) {
@@ -663,9 +1272,8 @@
                         if (!row) continue;
                         
                         const cols = row.split(',');
-                        if (cols.length < 8) continue; // Ensure row has all required columns
+                        if (cols.length < 8) continue;
 
-                        // Smart Date Converter: Accepts DD-MM-YYYY or DD/MM/YYYY and formats for database
                         let rawDate = cols[0].trim();
                         let dbDate = rawDate;
                         if (/^\d{1,2}[-/]\d{1,2}[-/]\d{4}$/.test(rawDate)) {
@@ -678,20 +1286,24 @@
 
                         const student = cols[1].trim();
                         
-                        const subhRaw = cols[2].trim() === '1' || cols[2].trim().toLowerCase() === 'true' || cols[2].trim() === 'excused';
-                        const luhrRaw = cols[3].trim() === '1' || cols[3].trim().toLowerCase() === 'true' || cols[3].trim() === 'excused';
-                        const asrRaw = cols[4].trim() === '1' || cols[4].trim().toLowerCase() === 'true' || cols[4].trim() === 'excused';
-                        const magribRaw = cols[5].trim() === '1' || cols[5].trim().toLowerCase() === 'true' || cols[5].trim() === 'excused';
-                        const ishaRaw = cols[6].trim() === '1' || cols[6].trim().toLowerCase() === 'true' || cols[6].trim() === 'excused';
+                        // Only import data for students currently in this class
+                        const studentExists = currentClass.students.some(s => s.name.toLowerCase() === student.toLowerCase());
+                        if (!studentExists) {
+                            skippedStudents.add(student);
+                            continue;
+                        }
+                        
+                        const parseWaqth = (val) => val === 'excused' ? 'excused' : (val === '1' || val.toLowerCase() === 'true');
+
+                        const subhRaw = parseWaqth(cols[2].trim());
+                        const luhrRaw = parseWaqth(cols[3].trim());
+                        const asrRaw = parseWaqth(cols[4].trim());
+                        const magribRaw = parseWaqth(cols[5].trim());
+                        const ishaRaw = parseWaqth(cols[6].trim());
                         const excused = cols[7] && (cols[7].trim() === '1' || cols[7].trim().toLowerCase() === 'true');
 
-                        let subh = cols[2].trim() === 'excused' ? 'excused' : (cols[2].trim() === '1' || cols[2].trim().toLowerCase() === 'true');
-                        let luhr = cols[3].trim() === 'excused' ? 'excused' : (cols[3].trim() === '1' || cols[3].trim().toLowerCase() === 'true');
-                        let asr = cols[4].trim() === 'excused' ? 'excused' : (cols[4].trim() === '1' || cols[4].trim().toLowerCase() === 'true');
-                        let magrib = cols[5].trim() === 'excused' ? 'excused' : (cols[5].trim() === '1' || cols[5].trim().toLowerCase() === 'true');
-                        let isha = cols[6].trim() === 'excused' ? 'excused' : (cols[6].trim() === '1' || cols[6].trim().toLowerCase() === 'true');
+                        let subh = subhRaw, luhr = luhrRaw, asr = asrRaw, magrib = magribRaw, isha = ishaRaw;
                         
-                        // If CSV explicitly marks them as excused (1) globally, override all waqths for that row
                         if (excused) {
                             subh = 'excused'; luhr = 'excused'; asr = 'excused'; magrib = 'excused'; isha = 'excused';
                         }
@@ -700,14 +1312,22 @@
                         updatesByDate[dbDate][student] = {
                             Subh: subh, Luhr: luhr, Asr: asr, Magrib: magrib, Isha: isha, excused: false
                         };
+                        importedRowsCount++;
                     }
 
-                    // Use Firestore Batch to safely upload all days at once
+                    if (importedRowsCount === 0 && skippedStudents.size > 0) {
+                        let names = Array.from(skippedStudents).slice(0, 3).join(', ');
+                        let more = skippedStudents.size > 3 ? '...' : '';
+                        showToast(`No matching students found in this class. (Found: ${names}${more})`, "error");
+                        hideLoading();
+                        return;
+                    }
+
                     const batch = writeBatch(db);
                     let count = 0;
 
                     for (const [date, studentsData] of Object.entries(updatesByDate)) {
-                        const docRef = doc(db, 'salah_monthly', date);
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', `class_records_${currentClass.id}`, date);
                         batch.set(docRef, studentsData, { merge: true });
                         count++;
                     }
@@ -716,40 +1336,25 @@
                         await batch.commit();
                         showToast(`Successfully imported data for ${count} days!`, "success");
                     } else {
-                        showToast("No valid data found in CSV.", "error");
+                        showToast("No valid data found in CSV for current students.", "error");
                     }
                 } catch (error) {
                     console.error("CSV Import Error:", error);
                     showToast("Failed to parse CSV file.", "error");
                 } finally {
-                    document.getElementById('loading-overlay').classList.add('hidden');
-                    document.getElementById('loading-overlay').classList.remove('flex');
-                    document.querySelector('#loading-overlay p').innerText = "Syncing Database...";
-                    e.target.value = ''; // Reset input to allow re-uploading the same file if needed
+                    hideLoading();
+                    e.target.value = '';
                 }
             };
+            
+            reader.onerror = () => {
+                showToast("Error reading file.", "error");
+                hideLoading();
+            };
+            
             reader.readAsText(file);
         });
 
-        let toastTimeout;
-        window.showToast = function(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = message;
-            const icon = document.getElementById('toast-icon');
-            
-            if (type === 'success') {
-                toast.className = 'fixed bottom-5 right-5 transform z-[100] flex items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4 border-emerald-500 transition-all duration-300';
-                icon.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 text-emerald-500';
-                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
-            } else {
-                toast.className = 'fixed bottom-5 right-5 transform z-[100] flex items-center p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-xl border-l-4 border-red-500 transition-all duration-300';
-                icon.className = 'inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-red-100 text-red-500';
-                icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-            }
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2000);
-        };
     </script>
 </body>
 </html>
