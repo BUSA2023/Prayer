@@ -124,15 +124,20 @@
 
             <!-- Bulk Tracking Sheets View -->
             <div id="sheet-view" class="space-y-4">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
+                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
                      <div>
                         <h2 class="text-lg font-bold text-gray-800">Monthly Tracker Sheets</h2>
                         <p class="text-xs text-gray-500">Click any box to tick the prayer. Data is saved automatically.</p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+                        <!-- Export Button Added Here -->
+                        <button onclick="exportDataToCSV()" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-3 py-2 rounded text-sm font-bold border border-emerald-200 transition shadow-sm flex items-center">
+                            <i class="fa-solid fa-file-export mr-2"></i> Export Data
+                        </button>
+
                         <input type="file" id="csv-upload" accept=".csv" class="hidden">
                         <button onclick="document.getElementById('csv-upload').click()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-2 rounded text-sm font-bold border border-indigo-200 transition shadow-sm flex items-center">
-                            <i class="fa-solid fa-file-csv mr-2"></i> Import CSV
+                            <i class="fa-solid fa-file-import mr-2"></i> Import CSV
                         </button>
                         
                         <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
@@ -585,6 +590,57 @@
             if (tabName === 'sheet') document.getElementById('sheet-view').classList.remove('hidden');
         };
 
+        // --- NEW EXPORT FUNCTIONALITY ---
+        window.exportDataToCSV = function() {
+            if (!authReady || Object.keys(allRecords).length === 0) {
+                showToast("No data available to export yet.", "error");
+                return;
+            }
+
+            // Create CSV Header matching the Import structure
+            let csvContent = "Date,Student,Subh,Luhr,Asr,Magrib,Isha,Excused\n";
+
+            // Sort dates chronologically for neatness
+            const dates = Object.keys(allRecords).sort();
+
+            dates.forEach(date => {
+                STUDENTS.forEach(student => {
+                    const data = allRecords[date][student.name] || {};
+                    
+                    // Helper to map values correctly (1 for true, 0 for false, 'excused' for leaves)
+                    const mapVal = (val) => {
+                        if (val === true) return '1';
+                        if (val === 'excused') return 'excused';
+                        return '0';
+                    };
+
+                    const subh = mapVal(data['Subh']);
+                    const luhr = mapVal(data['Luhr']);
+                    const asr = mapVal(data['Asr']);
+                    const magrib = mapVal(data['Magrib']);
+                    const isha = mapVal(data['Isha']);
+                    const excusedAll = data.excused === true ? '1' : '0';
+
+                    csvContent += `${date},${student.name},${subh},${luhr},${asr},${magrib},${isha},${excusedAll}\n`;
+                });
+            });
+
+            // Trigger the download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `madrasa_backup_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast("Backup exported successfully!", "success");
+        };
+
+        // --- CSV IMPORT ---
         document.getElementById('csv-upload').addEventListener('change', async (e) => {
             if (!authReady) return;
             const file = e.target.files[0];
@@ -622,16 +678,20 @@
 
                         const student = cols[1].trim();
                         
-                        const subhRaw = cols[2].trim() === '1' || cols[2].trim().toLowerCase() === 'true';
-                        const luhrRaw = cols[3].trim() === '1' || cols[3].trim().toLowerCase() === 'true';
-                        const asrRaw = cols[4].trim() === '1' || cols[4].trim().toLowerCase() === 'true';
-                        const magribRaw = cols[5].trim() === '1' || cols[5].trim().toLowerCase() === 'true';
-                        const ishaRaw = cols[6].trim() === '1' || cols[6].trim().toLowerCase() === 'true';
+                        const subhRaw = cols[2].trim() === '1' || cols[2].trim().toLowerCase() === 'true' || cols[2].trim() === 'excused';
+                        const luhrRaw = cols[3].trim() === '1' || cols[3].trim().toLowerCase() === 'true' || cols[3].trim() === 'excused';
+                        const asrRaw = cols[4].trim() === '1' || cols[4].trim().toLowerCase() === 'true' || cols[4].trim() === 'excused';
+                        const magribRaw = cols[5].trim() === '1' || cols[5].trim().toLowerCase() === 'true' || cols[5].trim() === 'excused';
+                        const ishaRaw = cols[6].trim() === '1' || cols[6].trim().toLowerCase() === 'true' || cols[6].trim() === 'excused';
                         const excused = cols[7] && (cols[7].trim() === '1' || cols[7].trim().toLowerCase() === 'true');
 
-                        let subh = subhRaw, luhr = luhrRaw, asr = asrRaw, magrib = magribRaw, isha = ishaRaw;
+                        let subh = cols[2].trim() === 'excused' ? 'excused' : (cols[2].trim() === '1' || cols[2].trim().toLowerCase() === 'true');
+                        let luhr = cols[3].trim() === 'excused' ? 'excused' : (cols[3].trim() === '1' || cols[3].trim().toLowerCase() === 'true');
+                        let asr = cols[4].trim() === 'excused' ? 'excused' : (cols[4].trim() === '1' || cols[4].trim().toLowerCase() === 'true');
+                        let magrib = cols[5].trim() === 'excused' ? 'excused' : (cols[5].trim() === '1' || cols[5].trim().toLowerCase() === 'true');
+                        let isha = cols[6].trim() === 'excused' ? 'excused' : (cols[6].trim() === '1' || cols[6].trim().toLowerCase() === 'true');
                         
-                        // If CSV explicitly marks them as excused (1), override all waqths for that row
+                        // If CSV explicitly marks them as excused (1) globally, override all waqths for that row
                         if (excused) {
                             subh = 'excused'; luhr = 'excused'; asr = 'excused'; magrib = 'excused'; isha = 'excused';
                         }
