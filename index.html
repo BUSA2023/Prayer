@@ -292,11 +292,20 @@
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, writeBatch, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Environment provided variables
+        const isImmersive = typeof __firebase_config !== 'undefined';
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            // Dummy config for local testing if env vars missing
-            apiKey: "dummy", authDomain: "dummy", projectId: "dummy"
+        
+        // Use provided config inside the editor, but fallback to your original project if running locally
+        const firebaseConfig = isImmersive ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyA6ruQWH9yo2eVIzTytjg8QL51a3uQzhY0",
+            authDomain: "prayers-9.firebaseapp.com",
+            projectId: "prayers-9",
+            storageBucket: "prayers-9.firebasestorage.app",
+            messagingSenderId: "990655719635",
+            appId: "1:990655719635:web:b94075337b5f535784cc26",
+            measurementId: "G-GC2NZS7ZM6"
         };
+        
         const customToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         const app = initializeApp(firebaseConfig);
@@ -405,8 +414,14 @@
                 showLoading("Authenticating...");
                 
                 try {
-                    if (customToken) {
-                        await signInWithCustomToken(auth, customToken);
+                    // Robust authentication fallback chain
+                    if (isImmersive && customToken) {
+                        try {
+                            await signInWithCustomToken(auth, customToken);
+                        } catch (tokenErr) {
+                            console.warn("Custom token failed, falling back to anonymous:", tokenErr);
+                            await signInAnonymously(auth);
+                        }
                     } else {
                         await signInAnonymously(auth);
                     }
@@ -420,7 +435,8 @@
                     });
                 } catch (err) {
                     hideLoading();
-                    showToast("Authentication Failed. Check configuration.", "error");
+                    // Display the exact error message so we know what went wrong
+                    showToast("Auth Failed: " + (err.message || "Unknown error"), "error");
                     console.error("Auth Error:", err);
                     document.getElementById('admin-login-modal').classList.remove('hidden');
                 }
