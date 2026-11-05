@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIM PULLANITHAZHAM - Usthad Admin Pro</title>
+    <!-- Primary Tailwind CDN & Fallback CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        /* Crucial Fallback Rules: Prevents unstyled vertical stacking if CDN lags or is blocked */
+        .hidden { display: none !important; }
+        
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; }
         .arabic-text { font-family: 'Amiri', serif; }
         
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -60,11 +64,12 @@
             <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600 text-2xl">
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2 text-gray-800">Usthad Access</h3>
+            <h3 class="text-xl font-bold mb-1 text-gray-800">Usthad Access</h3>
+            <p id="login-target-class" class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full inline-block mb-3 hidden"></p>
             <p class="text-sm text-gray-500 mb-6">Enter PIN to access the tracking dashboard.</p>
-            <input type="password" id="admin-pin" placeholder="Enter PIN" class="w-full text-center px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-xl tracking-widest mb-4 transition-all">
+            <input type="password" id="admin-pin" placeholder="Enter PIN (786)" class="w-full text-center px-4 py-3 rounded-lg border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-xl tracking-widest mb-4 transition-all">
             <p id="pin-error" class="text-red-500 text-sm mb-4 hidden font-medium">Incorrect PIN.</p>
-            <button onclick="verifyAdminPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+            <button onclick="verifyAdminPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer">
                 <span>Unlock Panel</span> <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
@@ -72,16 +77,16 @@
 
     <!-- Class Selection Modal -->
     <div id="class-selection-modal" class="hidden fixed inset-0 bg-gray-900/90 modal-overlay z-[150] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl relative fade-in flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative fade-in flex flex-col max-h-[90vh]">
             <div class="text-center mb-6">
                 <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 text-indigo-600 text-xl">
                     <i class="fa-solid fa-users-rectangle"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-800">Select Class</h3>
-                <p class="text-sm text-gray-500 mt-1">Choose a class to manage or create a new one.</p>
+                <p class="text-sm text-gray-500 mt-1">Choose a class to manage, copy its direct link, or create a new one.</p>
             </div>
             
-            <div class="flex-grow overflow-y-auto mb-6 pr-2 space-y-3" id="classes-list-container">
+            <div class="flex-grow overflow-y-auto mb-6 pr-1 space-y-3" id="classes-list-container">
                 <!-- Classes injected here -->
                 <div class="text-center py-8 text-gray-400 text-sm italic">Loading classes...</div>
             </div>
@@ -89,7 +94,7 @@
             <div class="border-t pt-4">
                 <div class="flex gap-2">
                     <input type="text" id="new-class-name" placeholder="e.g., Class 10 A" class="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-sm">
-                    <button onclick="createNewClass()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap shadow-sm">
+                    <button onclick="createNewClass()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm whitespace-nowrap shadow-sm cursor-pointer">
                         <i class="fa-solid fa-plus mr-1"></i> Add Class
                     </button>
                 </div>
@@ -107,7 +112,7 @@
                     </h3>
                     <p class="text-sm text-gray-500 mt-1" id="manage-class-title">Class Name</p>
                 </div>
-                <button onclick="closeManageClassModal()" class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-200 transition">
+                <button onclick="closeManageClassModal()" class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-200 transition cursor-pointer">
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
@@ -145,7 +150,7 @@
                             </label>
                         </div>
                     </div>
-                    <button onclick="addStudentToClass()" class="mt-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm shadow-sm">
+                    <button onclick="addStudentToClass(event)" class="mt-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm shadow-sm cursor-pointer">
                         Add to List
                     </button>
                 </div>
@@ -174,7 +179,7 @@
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3">
-                    <button onclick="showClassSelector()" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg text-gray-600 transition" title="Switch Class">
+                    <button onclick="showClassSelector()" class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg text-gray-600 transition cursor-pointer" title="Switch Class">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                     <div class="bg-emerald-100 p-2 rounded-lg text-emerald-700">
@@ -182,17 +187,22 @@
                     </div>
                     <div class="flex flex-col">
                         <span class="font-bold text-lg text-emerald-800 leading-tight">Usthad Portal</span>
-                        <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block w-max mt-0.5" id="nav-class-name">Loading...</span>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full inline-block" id="nav-class-name">Loading...</span>
+                            <button onclick="copyCurrentClassLink()" class="text-xs text-gray-400 hover:text-indigo-600 px-1.5 py-0.5 rounded hover:bg-indigo-50 transition cursor-pointer flex items-center gap-1" title="Copy direct link to this class">
+                                <i class="fa-solid fa-link"></i> <span class="hidden md:inline">Copy Link</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-4">
-                    <button onclick="openManageClassModal()" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition border border-indigo-100">
+                <div class="flex items-center gap-3">
+                    <button onclick="openManageClassModal()" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition border border-indigo-100 cursor-pointer">
                         <i class="fa-solid fa-users-gear"></i> Manage Class
                     </button>
                     <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-                        <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700">Daily</button>
-                        <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800">Sheets</button>
+                        <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800 cursor-pointer">Daily</button>
+                        <button onclick="switchTab('sheet')" id="tab-sheet" class="px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700 cursor-pointer">Sheets</button>
                     </div>
                 </div>
             </div>
@@ -202,10 +212,15 @@
     <main id="app-content" class="flex-grow overflow-y-auto bg-[#f8fafc] p-4 md:p-6 w-full hidden transition-all duration-300">
         <div class="max-w-[1400px] mx-auto space-y-6">
             
-            <!-- Mobile Manage Class Button -->
-            <button onclick="openManageClassModal()" class="sm:hidden w-full flex justify-center items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-3 rounded-xl transition border border-indigo-100 shadow-sm mb-4">
-                <i class="fa-solid fa-users-gear"></i> Manage Students in this Class
-            </button>
+            <!-- Mobile Manage Class & Link Buttons -->
+            <div class="sm:hidden flex gap-2 mb-4">
+                <button onclick="openManageClassModal()" class="flex-1 flex justify-center items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-4 py-3 rounded-xl transition border border-indigo-100 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-users-gear"></i> Manage Students
+                </button>
+                <button onclick="copyCurrentClassLink()" class="flex items-center justify-center gap-2 text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-4 py-3 rounded-xl transition border border-emerald-200 shadow-sm cursor-pointer" title="Share Class Link">
+                    <i class="fa-solid fa-share-nodes"></i> Link
+                </button>
+            </div>
 
             <!-- Daily View -->
             <div id="admin-daily-view" class="space-y-6">
@@ -214,9 +229,9 @@
                         <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-wrap gap-3">
                             <h3 class="font-bold text-gray-800 flex items-center"><i class="fa-solid fa-calendar-check text-emerald-600 mr-2"></i>Daily Quick Entry</h3>
                             <div class="flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                                <button onclick="changeDate(-1)" class="px-3 py-1.5 hover:bg-gray-100 border-r border-gray-300 text-gray-600"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button onclick="changeDate(-1)" class="px-3 py-1.5 hover:bg-gray-100 border-r border-gray-300 text-gray-600 cursor-pointer"><i class="fa-solid fa-chevron-left"></i></button>
                                 <input type="date" id="daily-date-picker" class="px-3 py-1.5 text-sm font-medium text-gray-700 outline-none cursor-pointer border-none focus:ring-0">
-                                <button onclick="changeDate(1)" id="btn-next-day" class="px-3 py-1.5 hover:bg-gray-100 border-l border-gray-300 text-gray-600"><i class="fa-solid fa-chevron-right"></i></button>
+                                <button onclick="changeDate(1)" id="btn-next-day" class="px-3 py-1.5 hover:bg-gray-100 border-l border-gray-300 text-gray-600 cursor-pointer"><i class="fa-solid fa-chevron-right"></i></button>
                             </div>
                         </div>
                         <div class="p-2 bg-blue-50 border-b border-blue-100 text-xs text-blue-800 flex justify-between px-4 items-center">
@@ -232,17 +247,31 @@
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
                             <h3 class="font-bold text-gray-800 mb-3 flex items-center"><i class="fa-solid fa-bullhorn text-amber-500 mr-2"></i>Broadcast Advisement</h3>
                             <textarea id="admin-msg-input" rows="4" class="w-full p-3 rounded-lg border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none mb-3" placeholder="Write a message, announcement, or advice for all students to see on their portal..."></textarea>
-                            <button id="save-msg-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2 shadow-sm">
+                            <button id="save-msg-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2 shadow-sm cursor-pointer">
                                 <i class="fa-solid fa-paper-plane"></i> Publish to Students
                             </button>
+                        </div>
+
+                        <!-- Class Direct Link Card -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+                            <h4 class="font-bold text-gray-800 mb-2 flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-link text-indigo-600"></i> Direct Class Link
+                            </h4>
+                            <p class="text-xs text-gray-500 mb-3">Bookmark or share this specific link to open <span id="card-class-name" class="font-semibold text-gray-700">this class</span> directly.</p>
+                            <div class="flex gap-2">
+                                <input type="text" id="direct-class-url" readonly class="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-lg text-gray-600 outline-none select-all">
+                                <button onclick="copyCurrentClassLink()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold px-3 py-2 rounded-lg text-xs transition border border-indigo-200 whitespace-nowrap cursor-pointer">
+                                    <i class="fa-regular fa-copy mr-1"></i> Copy
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="bg-indigo-50 rounded-2xl border border-indigo-100 p-5 text-sm text-indigo-800">
                             <h4 class="font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-circle-info"></i> How it works</h4>
                             <ul class="list-disc pl-4 space-y-1 opacity-80">
                                 <li>Prayers are locked until their designated time.</li>
-                                <li>Girls have a 3-state cycle: Not Prayed -> Prayed -> Excused.</li>
-                                <li>Boys have a 2-state cycle: Not Prayed -> Prayed.</li>
+                                <li>Girls have a 3-state cycle: Not Prayed &rarr; Prayed &rarr; Excused.</li>
+                                <li>Boys have a 2-state cycle: Not Prayed &rarr; Prayed.</li>
                             </ul>
                         </div>
                     </div>
@@ -261,7 +290,7 @@
                             <i class="fa-solid fa-file-import mr-2"></i> Import CSV
                             <input type="file" id="csv-upload" accept=".csv" class="hidden">
                         </label>
-                        <button onclick="exportDataToCSV()" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-3 py-2 rounded-lg text-sm font-bold border border-emerald-200 transition shadow-sm flex items-center">
+                        <button onclick="exportDataToCSV()" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-3 py-2 rounded-lg text-sm font-bold border border-emerald-200 transition shadow-sm flex items-center cursor-pointer">
                             <i class="fa-solid fa-file-export mr-2"></i> Export
                         </button>
                         
@@ -281,7 +310,7 @@
     </main>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-[300] flex items-center p-4 mb-4 text-gray-600 bg-white rounded-xl shadow-2xl border-l-4 font-medium" role="alert">
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 z-[300] flex items-center p-4 mb-4 text-gray-600 bg-white rounded-xl shadow-2xl border-l-4 font-medium" role="alert">
         <div id="toast-icon" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg mr-3"></div>
         <div id="toast-msg" class="text-sm"></div>
     </div>
@@ -295,7 +324,6 @@
         const isImmersive = typeof __firebase_config !== 'undefined';
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         
-        // Use provided config inside the editor, but fallback to your original project if running locally
         const firebaseConfig = isImmersive ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyA6ruQWH9yo2eVIzTytjg8QL51a3uQzhY0",
             authDomain: "prayers-9.firebaseapp.com",
@@ -312,15 +340,24 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         
+        // Check URL parameters for direct class link (?class=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        let initialClassParam = urlParams.get('class');
+        if (initialClassParam) {
+            const badge = document.getElementById('login-target-class');
+            badge.innerHTML = `<i class="fa-solid fa-link mr-1"></i> Direct Link: ${decodeURIComponent(initialClassParam)}`;
+            badge.classList.remove('hidden');
+        }
+
         // State Variables
         let authReady = false;
         let activeRecordsUnsubscribe = null;
         let activeClassesUnsubscribe = null;
         let globalSettingsUnsubscribe = null;
         
-        let availableClasses = []; // Array of {id, name, students: []}
-        let currentClass = null; // Object
-        let allRecords = {}; // Data for current class
+        let availableClasses = []; 
+        let currentClass = null; 
+        let allRecords = {}; 
         
         const PRAYERS = ['Subh', 'Luhr', 'Asr', 'Magrib', 'Isha'];
         const PRAYER_ARABIC = ['صبح', 'ظهر', 'عصر', 'مغرب', 'عشاء']; 
@@ -366,7 +403,6 @@
             let current = new Date(selectedDailyDate);
             current.setDate(current.getDate() + offset);
             
-            // Format back to YYYY-MM-DD
             let newDateStr = current.getFullYear() + '-' + String(current.getMonth() + 1).padStart(2, '0') + '-' + String(current.getDate()).padStart(2, '0');
             
             if (newDateStr <= localTodayStr) {
@@ -401,9 +437,37 @@
             overlay.classList.remove('flex');
         }
 
+        // Generate URL for a specific class
+        function getClassShareUrl(cls) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('class', cls.name);
+            return url.toString();
+        }
+
+        window.copyClassLinkById = function(classId, event) {
+            if (event) event.stopPropagation();
+            const cls = availableClasses.find(c => c.id === classId);
+            if (!cls) return;
+            const shareUrl = getClassShareUrl(cls);
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast(`Direct link for "${cls.name}" copied!`, "success");
+            }).catch(() => {
+                showToast("Could not copy link automatically.", "error");
+            });
+        };
+
+        window.copyCurrentClassLink = function() {
+            if (!currentClass) return;
+            const shareUrl = getClassShareUrl(currentClass);
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showToast(`Link for ${currentClass.name} copied to clipboard!`, "success");
+            }).catch(() => {
+                showToast("Could not copy link automatically.", "error");
+            });
+        };
+
         window.verifyAdminPin = async function() {
             const pinInput = document.getElementById('admin-pin');
-            // Using 786 as default, or any logic you prefer. 
             if (pinInput.value === '786' || pinInput.value === 'admin') {
                 document.getElementById('admin-login-modal').classList.add('fade-out');
                 setTimeout(() => {
@@ -414,7 +478,6 @@
                 showLoading("Authenticating...");
                 
                 try {
-                    // Robust authentication fallback chain
                     if (isImmersive && customToken) {
                         try {
                             await signInWithCustomToken(auth, customToken);
@@ -435,7 +498,6 @@
                     });
                 } catch (err) {
                     hideLoading();
-                    // Display the exact error message so we know what went wrong
                     showToast("Auth Failed: " + (err.message || "Unknown error"), "error");
                     console.error("Auth Error:", err);
                     document.getElementById('admin-login-modal').classList.remove('hidden');
@@ -482,14 +544,12 @@
                 availableClasses = [];
                 snapshot.forEach(doc => {
                     let data = doc.data();
-                    // Set default allowance based on class name if not explicitly set
                     if (data.allowExcuses === undefined) {
                         data.allowExcuses = !(data.name.toLowerCase().includes("class 4") || data.name.toLowerCase().includes("class 3"));
                     }
                     availableClasses.push({ id: doc.id, ...data });
                 });
                 
-                // Patch: If Class 9 exists but has no students, populate it with the original data
                 const class9 = availableClasses.find(c => c.name === "Class 9");
                 if (class9 && (!class9.students || class9.students.length === 0)) {
                     const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', class9.id);
@@ -502,37 +562,47 @@
                             { name: 'Nafith', gender: 'boy', addedAt: new Date().toISOString() }
                         ] 
                     }, { merge: true });
-                    return; // Snapshot will re-trigger automatically
+                    return;
                 }
                 
-                // Sort classes alphabetically
                 availableClasses.sort((a, b) => a.name.localeCompare(b.name));
                 
                 hideLoading();
                 renderClassSelectorModal();
                 
-                // If this is the first load and we haven't selected a class yet, show the modal
                 if (!currentClass) {
-                    showClassSelector();
-                    
-                    // Auto-initialize default classes if the database is empty
                     if (availableClasses.length === 0 && !window.defaultClassesInitialized) {
                         window.defaultClassesInitialized = true;
-                        initDefaultClasses();
+                        await initDefaultClasses();
+                        return;
                     }
-                }
-                
-                // If a class is currently active, update its data in case it changed (e.g., student added)
-                if (currentClass) {
+
+                    // If URL has ?class=... parameter, auto-select that class directly
+                    if (initialClassParam) {
+                        const target = initialClassParam.toLowerCase().trim();
+                        const matched = availableClasses.find(c => 
+                            c.id.toLowerCase() === target || 
+                            c.name.toLowerCase() === target ||
+                            c.name.toLowerCase().replace(/[^a-z0-9]/g, '') === target.replace(/[^a-z0-9]/g, '')
+                        );
+                        initialClassParam = null; // Clear so manual switching works afterwards
+                        if (matched) {
+                            selectClass(matched.id);
+                            return;
+                        } else {
+                            showToast("Class from link not found. Please select below.", "error");
+                        }
+                    }
+
+                    showClassSelector();
+                } else {
                     const updatedClass = availableClasses.find(c => c.id === currentClass.id);
                     if (updatedClass) {
                         currentClass = updatedClass;
-                        // Re-render views if student list changed
                         renderAdminDaily();
-                        renderPaperSheets(getDatesForViewMonth(), true); // force re-render structure
+                        renderPaperSheets(getDatesForViewMonth(), true);
                         renderManageStudentsList();
                     } else {
-                        // Current class was deleted by someone else
                         showToast("Current class no longer exists.", "error");
                         showClassSelector();
                     }
@@ -549,10 +619,15 @@
             document.getElementById('app-content').classList.add('hidden');
             document.getElementById('main-nav').classList.add('hidden');
             
+            // Clear URL parameter when going back to class list
+            const url = new URL(window.location.href);
+            url.searchParams.delete('class');
+            window.history.replaceState({}, '', url);
+
             const modal = document.getElementById('class-selection-modal');
             modal.classList.remove('hidden');
             renderClassSelectorModal();
-        }
+        };
 
         async function initDefaultClasses() {
             showLoading("Setting up initial classes...");
@@ -604,18 +679,24 @@
 
             availableClasses.forEach(cls => {
                 const studentCount = cls.students ? cls.students.length : 0;
+                const shareUrl = getClassShareUrl(cls);
                 container.innerHTML += `
-                    <div onclick="selectClass('${cls.id}')" class="group cursor-pointer bg-white border border-gray-200 hover:border-indigo-400 hover:shadow-md rounded-xl p-4 transition-all flex justify-between items-center">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                    <div onclick="selectClass('${cls.id}')" class="group cursor-pointer bg-white border border-gray-200 hover:border-indigo-400 hover:shadow-md rounded-xl p-4 transition-all flex justify-between items-center gap-2">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-10 h-10 shrink-0 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                                 ${cls.name.charAt(0).toUpperCase()}
                             </div>
-                            <div>
-                                <h4 class="font-bold text-gray-800 text-lg">${cls.name}</h4>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-gray-800 text-lg truncate">${cls.name}</h4>
                                 <p class="text-xs text-gray-500">${studentCount} Students Enrolled</p>
                             </div>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-indigo-500 transition-colors"></i>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button onclick="copyClassLinkById('${cls.id}', event)" class="px-2.5 py-1.5 rounded-lg bg-gray-50 hover:bg-indigo-50 text-gray-500 hover:text-indigo-600 border border-gray-200 hover:border-indigo-200 text-xs font-medium transition flex items-center gap-1.5" title="Copy direct link for ${cls.name}">
+                                <i class="fa-solid fa-link"></i> <span>Copy Link</span>
+                            </button>
+                            <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-indigo-500 transition-colors ml-1"></i>
+                        </div>
                     </div>
                 `;
             });
@@ -631,7 +712,6 @@
                 return;
             }
 
-            // Simple ID generation
             const classId = className.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString().slice(-4);
             
             showLoading("Creating Class...");
@@ -645,7 +725,6 @@
                 
                 input.value = '';
                 showToast("Class created successfully!", "success");
-                // The snapshot listener will update the list automatically
             } catch (error) {
                 console.error("Error creating class:", error);
                 showToast("Failed to create class", "error");
@@ -661,14 +740,19 @@
             currentClass = cls;
             document.getElementById('class-selection-modal').classList.add('hidden');
             
-            // Update UI with class name
+            // Update browser URL query param so this class has its own unique link
+            const url = new URL(window.location.href);
+            url.searchParams.set('class', currentClass.name);
+            window.history.replaceState({}, '', url);
+
+            // Update UI with class name & direct URL
             document.getElementById('nav-class-name').innerText = currentClass.name;
             document.getElementById('manage-class-title').innerText = currentClass.name;
+            document.getElementById('card-class-name').innerText = currentClass.name;
+            document.getElementById('direct-class-url').value = getClassShareUrl(currentClass);
             
-            // Load records for this specific class
             listenToClassRecords(classId);
             
-            // Show main UI
             document.getElementById('main-nav').classList.remove('hidden');
             document.getElementById('app-content').classList.remove('hidden');
         };
@@ -685,11 +769,8 @@
                 
                 hideLoading();
                 
-                // Only render if we have a current class selected
                 if (currentClass) {
                     renderAdminDaily();
-                    
-                    // Check if we need to force a structure redraw due to class change
                     const forceRedraw = lastRenderedClassId !== currentClass.id;
                     renderPaperSheets(getDatesForViewMonth(), forceRedraw);
                     if (forceRedraw) lastRenderedClassId = currentClass.id;
@@ -719,7 +800,7 @@
             } catch (error) {
                 console.error("Error updating class settings:", error);
                 showToast("Failed to update settings", "error");
-                checkbox.checked = !checked; // revert UI
+                checkbox.checked = !checked;
             }
         };
 
@@ -752,7 +833,7 @@
                             </div>
                             <span class="font-semibold text-gray-800">${student.name}</span>
                         </div>
-                        <button onclick="removeStudent(${index})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition" title="Remove Student">
+                        <button onclick="removeStudent(${index})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition cursor-pointer" title="Remove Student">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </li>
@@ -760,7 +841,7 @@
             });
         }
 
-        window.addStudentToClass = async function() {
+        window.addStudentToClass = async function(ev) {
             if (!currentClass) return;
             const nameInput = document.getElementById('new-student-name');
             const name = nameInput.value.trim();
@@ -771,7 +852,6 @@
                 return;
             }
 
-            // Basic duplicate check (can be improved)
             const exists = (currentClass.students || []).some(s => s.name.toLowerCase() === name.toLowerCase());
             if (exists) {
                 showToast("Student with this name already exists", "error");
@@ -781,10 +861,12 @@
             const newStudent = { name, gender, addedAt: new Date().toISOString() };
             const updatedStudents = [...(currentClass.students || []), newStudent];
 
-            const btn = event.currentTarget;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
-            btn.disabled = true;
+            const btn = ev ? ev.currentTarget : null;
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+                btn.disabled = true;
+            }
 
             try {
                 const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', currentClass.id);
@@ -795,16 +877,15 @@
                 console.error("Error adding student:", error);
                 showToast("Failed to add student", "error");
             } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                if (btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
             }
         };
 
         window.removeStudent = async function(index) {
             if (!currentClass) return;
-            
-            // Simple confirmation replaced with direct action for speed, or add custom modal later.
-            // Since we can't use alert/confirm, we'll just do it. In a real app, use a custom confirm modal.
             
             const updatedStudents = [...currentClass.students];
             updatedStudents.splice(index, 1);
@@ -820,13 +901,14 @@
         };
 
         function isFuturePrayer(dateStr, prayer) {
-            const localTodayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            const now = new Date();
+            const todayFormatted = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
             
-            if (dateStr > localTodayStr) return true;  
-            if (dateStr < localTodayStr) return false; 
+            if (dateStr > todayFormatted) return true;  
+            if (dateStr < todayFormatted) return false; 
             
-            const currentHour = today.getHours();
-            const currentMinute = today.getMinutes();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
             const unlockTime = PRAYER_UNLOCK_TIMES[prayer];
             
             if (currentHour < unlockTime.h) return true;
@@ -869,8 +951,9 @@
         window.toggleExcuse = async function(date, studentName, isExcused) {
             if(!authReady || !currentClass) return;
             
-            const localTodayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
-            if (date > localTodayStr) {
+            const now = new Date();
+            const todayFormatted = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            if (date > todayFormatted) {
                 showToast("Cannot mark future dates!", "error");
                 return;
             }
@@ -922,7 +1005,7 @@
             const month = parseInt(m) - 1; 
             
             let startDay = 1; 
-            if (year === 2026 && month === 8) startDay = 9; // specific requirement retained
+            if (year === 2026 && month === 8) startDay = 9;
             
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const dates = [];
@@ -942,7 +1025,7 @@
             const students = currentClass.students || [];
             
             if (students.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-500">No students in this class yet.<br><button onclick="openManageClassModal()" class="mt-2 text-indigo-600 font-semibold hover:underline">Add Students</button></div>`;
+                container.innerHTML = `<div class="p-8 text-center text-gray-500">No students in this class yet.<br><button onclick="openManageClassModal()" class="mt-2 text-indigo-600 font-semibold hover:underline cursor-pointer">Add Students</button></div>`;
                 return;
             }
 
@@ -951,6 +1034,7 @@
             students.forEach((student) => {
                 const data = dateData[student.name] || {};
                 let isFullDayExcused = data.excused === true;
+                const safeStudentName = student.name.replace(/'/g, "\\'");
                 
                 let dotsHtml = PRAYERS.map((p) => {
                     let val = data[p];
@@ -962,7 +1046,7 @@
                     
                     let c = 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200';
                     let icon = 'fa-xmark opacity-50';
-                    let clickAction = `togglePrayer('${selectedDailyDate}', '${student.name}', '${p}', '${student.gender}')`;
+                    let clickAction = `togglePrayer('${selectedDailyDate}', '${safeStudentName}', '${p}', '${student.gender}')`;
                     
                     if (done) {
                         c = 'bg-emerald-500 text-white border-emerald-600 shadow-inner';
@@ -977,7 +1061,7 @@
                     }
                     
                     return `<button onclick="${clickAction}" 
-                            class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 active:scale-95 ${c}" title="${p}">
+                            class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm border shadow-sm transition transform hover:scale-105 active:scale-95 cursor-pointer ${c}" title="${p}">
                             <i class="fa-solid ${icon}"></i>
                             </button>`;
                 }).join('');
@@ -987,9 +1071,9 @@
                     let allExcused = PRAYERS.every(p => (data[p] === 'excused' || isFullDayExcused));
                     
                     if (allExcused && PRAYERS.length > 0) {
-                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', false)" class="px-3 py-2 bg-pink-100 text-pink-700 rounded-lg text-xs font-bold w-full hover:bg-pink-200 transition active:scale-95">Remove Leave</button>`;
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${safeStudentName}', false)" class="px-3 py-2 bg-pink-100 text-pink-700 rounded-lg text-xs font-bold w-full hover:bg-pink-200 transition active:scale-95 cursor-pointer">Remove Leave</button>`;
                     } else {
-                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${student.name}', true)" class="px-3 py-2 bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600 rounded-lg text-xs font-bold transition border border-gray-200 shadow-sm whitespace-nowrap active:scale-95">Mark Whole Day</button>`;
+                        actionsHtml = `<button onclick="toggleExcuse('${selectedDailyDate}', '${safeStudentName}', true)" class="px-3 py-2 bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600 rounded-lg text-xs font-bold transition border border-gray-200 shadow-sm whitespace-nowrap active:scale-95 cursor-pointer">Mark Whole Day</button>`;
                     }
                 } else {
                     actionsHtml = `<div class="w-full text-center text-xs text-gray-400 italic px-2 py-2">N/A</div>`;
@@ -1028,7 +1112,6 @@
                     let headerBg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
                     let leaveHeader = (student.gender === 'girl' && currentClass.allowExcuses !== false) ? `<th class="p-2 border-b border-l border-gray-100 text-xs text-pink-500 bg-pink-50/50 w-12">Leave</th>` : '';
                     
-                    // Sanitize name for DOM ID
                     const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
                     
                     let tableHtml = `
@@ -1063,19 +1146,21 @@
 
             students.forEach(student => {
                 const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
+                const safeStudentName = student.name.replace(/'/g, "\\'");
                 const tbody = document.getElementById(`tbody-${safeId}`);
-                if(!tbody) return; // safety
+                if(!tbody) return;
 
                 let rowsHtml = '';
-                const localTodayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
+                const now = new Date();
+                const todayFormatted = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
                 
                 dates.forEach((date) => {
                     const [year, month, day] = date.split('-');
                     const dateObj = new Date(year, parseInt(month) - 1, day);
                     const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
                     const displayDate = `${day}-${month}-${year}`;
-                    const isToday = date === localTodayStr;
-                    const isFuture = date > localTodayStr;
+                    const isToday = date === todayFormatted;
+                    const isFuture = date > todayFormatted;
                     
                     const record = (allRecords[date] && allRecords[date][student.name]) || {};
                     let isFullDayExcused = record.excused === true;
@@ -1093,7 +1178,7 @@
                         else if (excused) icon = '<i class="fa-solid fa-moon text-pink-500 font-bold text-lg drop-shadow-sm"></i>';
                         else if (isFutureWaqth) icon = '<i class="fa-solid fa-clock text-gray-300 font-bold text-lg"></i>'; 
                         
-                        let clickAction = isFutureWaqth ? `showToast('Cannot mark ${p} before its time!', 'error')` : `togglePrayer('${date}', '${student.name.replace(/'/g, "\\'")}', '${p}', '${student.gender}')`;
+                        let clickAction = isFutureWaqth ? `showToast('Cannot mark ${p} before its time!', 'error')` : `togglePrayer('${date}', '${safeStudentName}', '${p}', '${student.gender}')`;
                         let cursorClass = isFutureWaqth ? 'cursor-not-allowed opacity-50 bg-gray-50' : 'cursor-pointer hover:bg-blue-50/50 transition-colors active:bg-blue-100';
 
                         return `<td class="p-1 text-center border-l border-b border-gray-100 ${cursorClass}" onclick="${clickAction}">
@@ -1105,13 +1190,13 @@
                     if (student.gender === 'girl' && currentClass.allowExcuses !== false) {
                         let allExcused = PRAYERS.every(p => (record[p] === 'excused' || isFullDayExcused));
                         
-                        let actionRemove = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name.replace(/'/g, "\\'")}', false)`;
-                        let actionAdd = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${student.name.replace(/'/g, "\\'")}', true)`;
+                        let actionRemove = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${safeStudentName}', false)`;
+                        let actionAdd = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${safeStudentName}', true)`;
                         
                         if (allExcused && PRAYERS.length > 0) {
-                            leaveCell = `<td class="p-1 border-l border-b border-gray-100 text-center"><button onclick="${actionRemove}" class="w-full h-10 rounded bg-pink-100/50 text-pink-600 hover:bg-pink-200 transition flex items-center justify-center" title="Remove Leave"><i class="fa-solid fa-xmark"></i></button></td>`;
+                            leaveCell = `<td class="p-1 border-l border-b border-gray-100 text-center"><button onclick="${actionRemove}" class="w-full h-10 rounded bg-pink-100/50 text-pink-600 hover:bg-pink-200 transition flex items-center justify-center cursor-pointer" title="Remove Leave"><i class="fa-solid fa-xmark"></i></button></td>`;
                         } else {
-                            let btnClass = isFuture ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition';
+                            let btnClass = isFuture ? 'text-gray-300 cursor-not-allowed' : 'text-gray-400 hover:bg-pink-50 hover:text-pink-500 transition cursor-pointer';
                             leaveCell = `<td class="p-1 border-l border-b border-gray-100 text-center"><button onclick="${actionAdd}" class="w-full h-10 rounded flex items-center justify-center ${btnClass}" title="Mark Whole Day Excused"><i class="fa-solid fa-moon text-sm"></i></button></td>`;
                         }
                     }
@@ -1134,11 +1219,10 @@
 
                 tbody.innerHTML = rowsHtml;
                 
-                // Auto-scroll to today if rendering current month
                 if (needsSkeleton && selectedViewMonth === `${currentYearStr}-${currentMonthStr}`) {
                     setTimeout(() => {
                         const scrollDiv = document.getElementById(`scroll-div-${safeId}`);
-                        const todayRow = tbody.querySelector('.bg-emerald-50\\/30'); // Escape slash
+                        const todayRow = tbody.querySelector('.bg-emerald-50\\/30');
                         if (scrollDiv && todayRow) {
                             scrollDiv.scrollTop = todayRow.offsetTop - (scrollDiv.clientHeight / 2) + (todayRow.clientHeight / 2);
                         }
@@ -1151,14 +1235,12 @@
             document.getElementById('admin-daily-view').classList.add('hidden');
             document.getElementById('sheet-view').classList.add('hidden');
             
-            // Reset tab styles
             const tabs = ['daily', 'sheet'];
             tabs.forEach(t => {
-                document.getElementById(`tab-${t}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700 hover:bg-gray-200/50";
+                document.getElementById(`tab-${t}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition text-gray-500 hover:text-gray-700 hover:bg-gray-200/50 cursor-pointer";
             });
             
-            // Active tab style
-            document.getElementById(`tab-${tabName}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800 border border-gray-200/50";
+            document.getElementById(`tab-${tabName}`).className = "px-4 py-1.5 text-sm font-medium rounded-md transition bg-white shadow-sm text-gray-800 border border-gray-200/50 cursor-pointer";
             
             if (tabName === 'daily') {
                 document.getElementById('admin-daily-view').classList.remove('hidden');
@@ -1167,7 +1249,6 @@
             if (tabName === 'sheet') {
                 document.getElementById('sheet-view').classList.remove('hidden');
                 document.getElementById('sheet-view').classList.add('fade-in');
-                // Force a render to ensure layout is correct when unhidden
                 renderPaperSheets(getDatesForViewMonth());
             }
         };
@@ -1190,15 +1271,14 @@
                 icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
             }
             
-            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
             
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
             }, 3000);
         };
         
-        // Ensure enter key works for login
         document.getElementById('admin-pin').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') verifyAdminPin();
         });
@@ -1213,7 +1293,6 @@
             let hasData = Object.keys(allRecords).length > 0;
 
             if (!hasData) {
-                // Generate a blank template for the current month
                 const dates = getDatesForViewMonth();
                 const students = currentClass.students || [];
                 if (students.length === 0) {
@@ -1262,7 +1341,6 @@
             if (hasData) showToast("Export downloaded successfully!", "success");
         };
 
-        // Restore CSV Upload functionality
         document.getElementById('csv-upload').addEventListener('change', async (e) => {
             if (!authReady || !currentClass) {
                 showToast("Please select a class first", "error");
@@ -1282,7 +1360,6 @@
                     let skippedStudents = new Set();
                     let importedRowsCount = 0;
 
-                    // Start from 1 to skip header row
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i].trim();
                         if (!row) continue;
@@ -1302,7 +1379,6 @@
 
                         const student = cols[1].trim();
                         
-                        // Only import data for students currently in this class
                         const studentExists = currentClass.students.some(s => s.name.toLowerCase() === student.toLowerCase());
                         if (!studentExists) {
                             skippedStudents.add(student);
@@ -1370,7 +1446,6 @@
             
             reader.readAsText(file);
         });
-
     </script>
 </body>
 </html>
