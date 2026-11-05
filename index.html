@@ -9,25 +9,184 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap');
         
-        /* Crucial Fallback Rules: Prevents unstyled vertical stacking if CDN lags */
+        /* ==========================================================================
+           NATIVE STANDALONE MODERN CSS ENGINE (Works even if Tailwind CDN is blocked!)
+           ========================================================================== */
+        *, *::before, *::after { box-sizing: border-box; }
         .hidden { display: none !important; }
         
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f4f7f6; 
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: #f1f5f9; 
             margin: 0; 
             padding: 0; 
-            color: #1e293b;
+            color: #0f172a;
+            -webkit-font-smoothing: antialiased;
         }
         .arabic-text { font-family: 'Amiri', serif; }
-        
-        /* Subtle Islamic Geometric Pattern Overlay */
+
+        /* Modern Emerald & Gold Hero Header */
         .islamic-bg {
-            background-color: #064e3b;
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 55%, #0f766e 100%);
             background-image: 
                 radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.25) 0%, transparent 45%),
-                radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.18) 0%, transparent 45%),
-                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.2) 0%, transparent 45%),
+                linear-gradient(135deg, #022c22 0%, #064e3b 55%, #0f766e 100%);
+            color: #ffffff;
+        }
+
+        /* Fallback Layout & Flex/Grid Rules if CDN fails */
+        .app-container { max-width: 1280px; margin: 0 auto; padding: 0 16px; width: 100%; }
+        .modern-header-row { display: flex; align-items: center; justify-content: space-between; min-height: 74px; gap: 12px; flex-wrap: wrap; }
+        .modern-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 9px 16px; border-radius: 12px; font-weight: 700; font-size: 13px;
+            border: 1px solid transparent; cursor: pointer; transition: all 0.2s ease;
+            text-decoration: none; line-height: 1.2;
+        }
+        .modern-btn:hover { transform: translateY(-1px); }
+        .modern-btn:active { transform: translateY(0); }
+        .modern-btn-gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #022c22; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3); }
+        .modern-btn-glass { background: rgba(255, 255, 255, 0.14); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.24); backdrop-filter: blur(10px); }
+        .modern-btn-emerald { background: linear-gradient(135deg, #059669, #047857); color: #ffffff; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25); }
+
+        .modern-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 4px 10px -6px rgba(15, 23, 42, 0.03);
+            padding: 20px;
+            transition: all 0.25s ease;
+        }
+        .modern-card:hover {
+            box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.08);
+        }
+
+        .id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #fbbf24;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr));
+            gap: 20px;
+        }
+        .sheets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+            gap: 22px;
+        }
+        /* Single Student Locked Mode takes centered prominent layout */
+        .sheets-grid.single-student-sheet {
+            grid-template-columns: minmax(min(100%, 340px), 680px);
+            justify-content: center;
+        }
+
+        /* ==========================================================================
+           ANTIGRAVITY FLOATING UI & MULTI-DEVICE RESPONSIVE ENGINE
+           ========================================================================== */
+        @keyframes antigravityFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+        .antigravity-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            border-radius: 22px;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 14px 34px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -4px rgba(5, 150, 105, 0.05);
+            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+        }
+        .antigravity-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 42px -10px rgba(5, 150, 105, 0.14), 0 8px 18px -6px rgba(15, 23, 42, 0.06);
+        }
+        .float-badge {
+            animation: antigravityFloat 4s ease-in-out infinite;
+        }
+
+        /* Mobile Bottom Dock for Effortless One-Handed Navigation */
+        .mobile-bottom-dock {
+            display: none;
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            z-index: 120;
+            background: rgba(2, 44, 34, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            border-radius: 20px;
+            padding: 8px;
+            box-shadow: 0 18px 38px rgba(2, 44, 34, 0.45);
+            justify-content: space-around;
+            align-items: center;
+            gap: 4px;
+        }
+        .dock-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 7px 4px;
+            border-radius: 14px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #a7f3d0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .dock-btn.active {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #022c22;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+        }
+
+        /* Student Link Sender Row Styling */
+        .student-link-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+        .student-link-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Responsive Breakpoints for All Devices */
+        @media (max-width: 768px) {
+            body { padding-bottom: 84px; }
+            .mobile-bottom-dock { display: flex; }
+            .app-container { padding: 0 12px; }
+            .modern-card { padding: 14px; border-radius: 18px; }
+            .paper-grid { height: 72vh; border-radius: 16px; }
+            .modern-header-row { min-height: 62px; padding: 8px 0; }
+        }
+        @media (max-width: 420px) {
+            .modern-btn { padding: 7px 11px; font-size: 11px; border-radius: 10px; }
+            .id-badge { font-size: 10px; padding: 2px 7px; }
         }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -41,90 +200,91 @@
         .fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Glassmorphism & Cards */
         .glass-pill {
             background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .student-card {
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .student-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-        }
+        .student-card { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+        .student-card:hover { transform: translateY(-4px); }
 
-        .prayer-btn {
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .prayer-btn:active:not(:disabled) {
-            transform: scale(0.9);
-        }
+        .prayer-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .prayer-btn:active:not(:disabled) { transform: scale(0.92); }
 
         /* Paper-like grid layout for monthly sheet */
         .paper-grid {
-            border: 1px solid #e2e8f0;
-            background: white;
-            border-radius: 16px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
+            display: flex;
+            flex-direction: column;
+            height: 75vh;
         }
+        .paper-grid table { width: 100%; border-collapse: collapse; }
         .paper-grid th, .paper-grid td {
             border: 1px solid #f1f5f9;
-            padding: 8px;
+            padding: 8px 6px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
         }
-        .paper-grid th { background-color: #f8fafc; font-weight: 700; color: #475569; }
-        .paper-grid td:first-child { font-weight: 600; color: #334155; background-color: #f8fafc; width: 70px;}
-        .paper-grid tr:hover td { background-color: #f0fdf4; }
+        .paper-grid th { background-color: #f8fafc; font-weight: 700; color: #334155; }
+        .paper-grid td:first-child { font-weight: 700; color: #334155; background-color: #f8fafc; width: 72px; }
+        .paper-grid tr:hover td { background-color: #ecfdf5; }
         
-        .modal-overlay { backdrop-filter: blur(6px); }
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(6px); 
+            display: flex; align-items: center; justify-content: center;
+            padding: 16px;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white/90 modal-overlay z-[250] flex flex-col items-center justify-center">
+    <div id="loading-overlay" class="modal-overlay z-[250] flex-col" style="background: rgba(255,255,255,0.94);">
         <div class="loader mb-4"></div>
         <p class="text-emerald-800 font-bold text-base tracking-wide animate-pulse" id="loading-text">Loading Student Portal...</p>
     </div>
 
     <!-- Top Navigation Bar -->
     <header class="islamic-bg text-white sticky top-0 z-40 shadow-lg border-b border-emerald-800/60">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 sm:h-20">
+        <div class="app-container">
+            <div class="modern-header-row">
                 <!-- Brand Logo -->
-                <div class="flex items-center gap-3.5">
-                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 shadow-md shadow-amber-500/20 font-extrabold text-xl shrink-0">
+                <div class="flex items-center gap-3.5" style="display:flex; align-items:center; gap:14px;">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 shadow-md font-extrabold text-xl shrink-0" style="width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#fbbf24,#d97706); display:flex; align-items:center; justify-content:center; color:#022c22;">
                         <i class="fa-solid fa-mosque"></i>
                     </div>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-amber-300">HIM Pullanithazham</span>
+                        <div class="flex items-center gap-2" style="display:flex; align-items:center; gap:8px;">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-amber-300" style="color:#fcd34d; font-size:11px; font-weight:800; letter-spacing:0.08em;">HIM Pullanithazham</span>
                             <span id="admin-badge" class="hidden text-[10px] font-extrabold uppercase tracking-wider bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-full">Usthad Mode</span>
+                            <span id="single-student-mode-badge" class="hidden text-[10px] font-extrabold uppercase tracking-wider bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full">Personal Student Sheet</span>
                         </div>
-                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-tight">Swalath & Prayer Portal</h1>
+                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-tight" style="margin:0; font-size:19px; font-weight:800;">Swalath & Prayer Portal</h1>
                     </div>
                 </div>
 
                 <!-- Right Actions -->
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="openClassLinksModal()" class="bg-amber-400/20 hover:bg-amber-400/30 border border-amber-300/40 text-amber-200 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer" title="Get Monthly Sheet links for all classes">
-                        <i class="fa-solid fa-link text-amber-300"></i>
-                        <span>Class Sheet Links</span>
+                <div class="flex items-center gap-2 sm:gap-3" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <button id="btn-header-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-gold float-badge" title="Send individual sheet-only links to each student's 2 numbers">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Send Student Links</span>
                     </button>
 
                     <!-- Admin Controls (Only visible when Usthad is unlocked) -->
-                    <button id="btn-manage-class" onclick="openManageClassModal()" class="hidden bg-amber-400 hover:bg-amber-300 text-emerald-950 px-3.5 py-2 rounded-xl text-xs font-extrabold transition items-center gap-1.5 shadow-sm cursor-pointer">
+                    <button id="btn-manage-class" onclick="openManageClassModal()" class="hidden modern-btn modern-btn-emerald">
                         <i class="fa-solid fa-users-gear"></i>
                         <span class="hidden md:inline">Manage Class</span>
                     </button>
 
                     <!-- Usthad Login / Logout Toggle -->
-                    <button id="btn-usthad-auth" onclick="handleUsthadButtonClick()" class="glass-pill hover:bg-white/20 text-emerald-100 px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer">
+                    <button id="btn-usthad-auth" onclick="handleUsthadButtonClick()" class="modern-btn modern-btn-glass">
                         <i class="fa-solid fa-lock text-amber-300" id="usthad-lock-icon"></i>
                         <span id="usthad-btn-text">Usthad Login</span>
                     </button>
@@ -135,7 +295,7 @@
 
     <!-- Hero Banner & Class Tabs -->
     <section class="islamic-bg text-white pb-10 pt-4 border-b border-emerald-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="app-container">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 
                 <!-- Welcome & Live Prayer Status -->
@@ -143,12 +303,13 @@
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-800/70 border border-emerald-600/40 text-emerald-200 text-xs font-medium">
                         <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
                         <span id="live-date-display">Loading Date...</span>
+                        <span class="text-amber-300 font-bold">• swalath.madrasaa.online</span>
                     </div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                    <h2 id="hero-greeting-title" class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
                         Assalamu Alaikum! <span class="arabic-text font-normal text-amber-300 text-3xl sm:text-4xl ml-1">ٱلسَّلَامُ عَلَيْكُمْ</span>
                     </h2>
-                    <p class="text-emerald-100/85 text-sm sm:text-base max-w-xl leading-relaxed">
-                        Select your class below to mark your daily 5 obligatory prayers, track your monthly consistency, and climb the class leaderboard!
+                    <p id="hero-greeting-subtitle" class="text-emerald-100/85 text-sm sm:text-base max-w-xl leading-relaxed">
+                        Every student has a dedicated <strong>Sheet-Only Personal Link</strong> on <strong>swalath.madrasaa.online</strong> with their Name, Student ID, and 2 Mobile Numbers.
                     </p>
                 </div>
 
@@ -177,19 +338,19 @@
 
             </div>
 
-            <!-- Class Selection Pills -->
-            <div class="mt-7 pt-5 border-t border-emerald-800/80 flex flex-wrap items-center justify-between gap-4">
+            <!-- Class Selection Pills (Automatically hidden when a student opens their personal Sheet-Only link) -->
+            <div id="portal-navigation-bar" class="mt-7 pt-5 border-t border-emerald-800/80 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full" id="class-pills-container">
                     <!-- Dynamic Class Pills Injected Here -->
                 </div>
 
                 <!-- View Mode Switcher -->
-                <div class="flex items-center bg-emerald-950/70 p-1 rounded-xl border border-emerald-700/50 self-start sm:self-auto">
+                <div id="view-mode-switcher" class="flex items-center bg-emerald-950/70 p-1 rounded-xl border border-emerald-700/50 self-start sm:self-auto">
                     <button onclick="switchMainView('sheets')" id="view-btn-sheets" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-400 text-emerald-950 shadow-sm cursor-pointer">
                         <i class="fa-solid fa-table"></i> Monthly Sheet
                     </button>
                     <button onclick="switchMainView('cards')" id="view-btn-cards" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white cursor-pointer">
-                        <i class="fa-solid fa-grip"></i> Student Cards
+                        <i class="fa-solid fa-id-card"></i> Student ID Cards
                     </button>
                     <button onclick="switchMainView('leaderboard')" id="view-btn-leaderboard" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white cursor-pointer">
                         <i class="fa-solid fa-trophy"></i> Leaderboard
@@ -200,10 +361,40 @@
     </section>
 
     <!-- Main Content Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 -mt-6 pb-16 z-10">
+    <main class="flex-grow app-container -mt-6 pb-16 z-10">
         
-        <!-- Control Bar (Date Picker, Student Search, Prayer Time Status) -->
-        <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 p-4 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <!-- PERSONAL STUDENT SHEET-ONLY BANNER (Visible when student opens their personal link) -->
+        <div id="personal-student-banner" class="hidden modern-card antigravity-card mb-6 border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-50 via-white to-amber-50/40">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div id="personal-banner-avatar" class="w-14 h-14 rounded-2xl bg-emerald-700 text-amber-300 font-extrabold text-2xl flex items-center justify-center shadow-md shrink-0">
+                        S
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="personal-banner-id" class="id-badge">HIM-901</span>
+                            <span id="personal-banner-class" class="text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-md">Class 9</span>
+                            <span class="text-[11px] font-bold text-emerald-700 bg-amber-100 px-2 py-0.5 rounded-md"><i class="fa-solid fa-lock text-[10px] mr-1"></i>Personal Sheet Only</span>
+                        </div>
+                        <h3 id="personal-banner-name" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1" style="margin-bottom:0;">Student Name</h3>
+                        <p id="personal-banner-phones" class="text-xs text-slate-500 font-semibold mt-0.5" style="margin-bottom:0;"></p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                    <div class="bg-white border border-emerald-200 px-3.5 py-2 rounded-xl text-center">
+                        <span class="block text-[10px] font-bold uppercase text-slate-400">Monthly Score</span>
+                        <span id="personal-banner-score" class="text-base font-extrabold text-emerald-700">0%</span>
+                    </div>
+                    <button onclick="copyMyPersonalSheetLink()" class="modern-btn modern-btn-emerald">
+                        <i class="fa-solid fa-link"></i>
+                        <span>Copy My Sheet Link</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Bar (Date Picker, Student ID / Name Search, Prayer Time Status) -->
+        <div id="main-control-bar" class="modern-card antigravity-card mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
             
             <!-- Date Selector -->
             <div class="flex items-center justify-between sm:justify-start gap-3">
@@ -232,27 +423,35 @@
                 </button>
             </div>
 
-            <!-- Search & Class Summary -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <div class="relative flex-grow sm:w-64">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="student-search-input" oninput="renderAllActiveViews()" placeholder="Search your name..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition">
+            <!-- Student ID / Name Filter & Class Summary -->
+            <div id="search-and-summary-controls" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div id="student-search-wrapper" class="relative flex-grow sm:w-72">
+                    <i class="fa-solid fa-id-badge absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-600 text-xs"></i>
+                    <input type="text" id="student-search-input" oninput="renderAllActiveViews(true)" placeholder="Enter Student ID (e.g. HIM-901) or Name..." class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition">
+                    <button id="clear-id-filter-btn" onclick="clearStudentFilter()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer" title="Show all students">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
                 </div>
+
+                <button id="btn-control-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-emerald" style="white-space:nowrap;" title="Send individual prayer sheet links to each student">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Send Links to Students</span>
+                </button>
                 
                 <div class="flex items-center justify-between sm:justify-end gap-2 bg-emerald-50/70 border border-emerald-100 px-3.5 py-2 rounded-xl">
-                    <span class="text-xs font-semibold text-emerald-800">Today's Class Prayers:</span>
+                    <span class="text-xs font-semibold text-emerald-800">Today's Prayers:</span>
                     <span id="class-daily-score" class="text-sm font-extrabold text-emerald-700 bg-white px-2.5 py-0.5 rounded-lg shadow-sm border border-emerald-100">0 / 0</span>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW 1: STUDENT CARDS -->
+        <!-- VIEW 1: STUDENT ID CARDS -->
         <div id="view-cards" class="hidden space-y-6 fade-in">
             <!-- Prayer Legend Bar -->
             <div class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-500">
                 <div class="flex flex-wrap items-center gap-4">
                     <span class="font-bold text-slate-700 flex items-center gap-1.5">
-                        <i class="fa-solid fa-hand-pointer text-emerald-600"></i> Tap any prayer box to mark:
+                        <i class="fa-solid fa-hand-pointer text-emerald-600"></i> Tap any prayer box on your Student ID card:
                     </span>
                     <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Prayed</span>
                     <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-pink-200 border border-pink-400 inline-block"></span> Excused (Girls)</span>
@@ -264,7 +463,7 @@
             </div>
 
             <!-- Cards Grid -->
-            <div id="student-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div id="student-cards-grid" class="cards-grid">
                 <!-- Populated by JS -->
             </div>
         </div>
@@ -272,22 +471,22 @@
         <!-- VIEW 2: CLASS LEADERBOARD -->
         <div id="view-leaderboard" class="hidden space-y-6 fade-in">
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden">
-                <div class="p-6 bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="p-6 islamic-bg text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <span class="text-xs font-extrabold uppercase tracking-widest text-amber-300">Monthly Champions</span>
-                        <h3 class="text-2xl font-extrabold mt-0.5 flex items-center gap-2">
-                            <i class="fa-solid fa-trophy text-amber-400"></i> <span id="leaderboard-class-title">Class Leaderboard</span>
+                        <span class="text-xs uppercase tracking-widest text-amber-300 font-bold">Monthly Consistency Champions</span>
+                        <h3 class="text-2xl font-extrabold mt-0.5 flex items-center gap-2" id="leaderboard-class-title">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> Class Leaderboard
                         </h3>
-                        <p class="text-xs text-emerald-100/80 mt-1">Ranked by prayer consistency in the selected month</p>
                     </div>
-                    <div class="flex items-center gap-2 bg-white/10 p-1.5 rounded-xl border border-white/15">
-                        <label class="text-xs font-bold text-emerald-100 pl-2">Month:</label>
-                        <input type="month" id="leaderboard-month-picker" class="bg-white text-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold outline-none cursor-pointer">
+                    <div class="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/15">
+                        <i class="fa-regular fa-calendar text-amber-300 text-xs"></i>
+                        <span class="text-xs font-semibold">Month:</span>
+                        <input type="month" id="leaderboard-month-picker" class="bg-transparent text-white text-xs font-bold outline-none cursor-pointer">
                     </div>
                 </div>
 
                 <!-- Top 3 Podium -->
-                <div id="leaderboard-podium" class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 bg-slate-50/70 border-b border-slate-100">
+                <div id="leaderboard-podium" class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-slate-50/70 border-b border-slate-100">
                     <!-- Populated by JS -->
                 </div>
 
@@ -298,68 +497,128 @@
             </div>
         </div>
 
-        <!-- VIEW 3: MONTHLY TRACKER SHEETS (DEFAULT) -->
-        <div id="view-sheets" class="space-y-5 fade-in">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-5 rounded-2xl shadow-sm border border-slate-200 gap-4">
+        <!-- VIEW 3: MONTHLY PAPER SHEETS (DEFAULT & STUDENT SHEET-ONLY VIEW) -->
+        <div id="view-sheets" class="space-y-6 fade-in">
+            <div class="modern-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-table-list text-emerald-600"></i> <span id="sheet-class-heading">Monthly Paper Sheets</span>
-                        </h2>
-                        <button onclick="copyCurrentClassLink('sheets')" class="text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 cursor-pointer" title="Copy direct link to this class's monthly sheet">
-                            <i class="fa-solid fa-copy"></i> Copy Sheet Link
-                        </button>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-0.5">Full monthly grid for every student. Click any box to toggle prayer status.</p>
+                    <h3 class="font-extrabold text-slate-800 text-lg flex items-center gap-2" style="margin:0;">
+                        <i class="fa-solid fa-table-cells text-emerald-600"></i>
+                        <span id="sheet-class-heading">Monthly Prayer Tracker Sheet</span>
+                    </h3>
+                    <p id="sheet-subtitle-text" class="text-xs text-slate-500 mt-0.5" style="margin-bottom:0;">Tap any prayer box to mark or update your daily prayers. Changes save automatically.</p>
                 </div>
-                <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    <label id="csv-import-label" class="hidden bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3.5 py-2 rounded-xl text-xs font-bold border border-indigo-200 transition shadow-sm items-center cursor-pointer m-0">
-                        <i class="fa-solid fa-file-import mr-1.5"></i> Import CSV
+                <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                    <div class="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
+                        <label class="text-xs font-bold text-slate-600">Month:</label>
+                        <input type="month" id="admin-month-selector" class="bg-transparent text-xs font-extrabold text-slate-800 outline-none cursor-pointer">
+                    </div>
+                    <button id="btn-sheet-copy-link" onclick="copyCurrentClassLink('sheets')" class="modern-btn modern-btn-gold">
+                        <i class="fa-solid fa-share-nodes"></i> Copy Class Link
+                    </button>
+                    <button id="btn-export-csv" onclick="exportDataToCSV()" class="modern-btn modern-btn-emerald">
+                        <i class="fa-solid fa-download"></i> Export CSV
+                    </button>
+                    <label id="csv-import-label" class="hidden cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3.5 rounded-xl transition shadow-sm text-xs items-center gap-1.5">
+                        <i class="fa-solid fa-upload"></i> Import CSV
                         <input type="file" id="csv-upload" accept=".csv" class="hidden">
                     </label>
-                    <button onclick="exportDataToCSV()" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3.5 py-2 rounded-xl text-xs font-bold border border-emerald-200 transition shadow-sm flex items-center cursor-pointer">
-                        <i class="fa-solid fa-download mr-1.5"></i> Download CSV
-                    </button>
-                    
-                    <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
-
-                    <label class="text-xs font-bold text-slate-600 shrink-0">Month:</label>
-                    <input type="month" id="admin-month-selector" class="w-full sm:w-auto px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer bg-slate-50">
                 </div>
             </div>
-            
-            <div id="paper-sheets-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10 min-h-[400px]">
+
+            <div id="paper-sheets-container" class="sheets-grid">
                 <!-- Populated by JS -->
             </div>
         </div>
 
     </main>
 
-    <!-- SHAREABLE CLASS MONTHLY SHEET LINKS MODAL -->
-    <div id="class-links-modal" class="hidden fixed inset-0 bg-slate-900/75 modal-overlay z-[195] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden fade-in flex flex-col max-h-[88vh]">
+    <!-- SHAREABLE CLASS & INDIVIDUAL STUDENT LINK SENDER HUB MODAL (WITH 2 NUMBERS PER STUDENT & SWALATH.MADRASAA.ONLINE) -->
+    <div id="class-links-modal" class="hidden modal-overlay z-[195]">
+        <div class="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden fade-in flex flex-col max-h-[92vh]">
             <div class="islamic-bg p-5 sm:p-6 text-white flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 rounded-2xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-amber-300 text-lg">
-                        <i class="fa-solid fa-share-nodes"></i>
+                        <i class="fa-solid fa-paper-plane"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg sm:text-xl font-extrabold">Student Monthly Sheet Links</h3>
-                        <p class="text-xs text-emerald-100/80">Send each class their direct Monthly Tracker Sheet link</p>
+                        <h3 class="text-lg sm:text-xl font-extrabold" style="margin:0;">Student Sheet-Only Links (swalath.madrasaa.online)</h3>
+                        <p class="text-xs text-emerald-100/85" style="margin:2px 0 0 0;">Each link includes the Student's Name + ID, locks to their sheet only, and supports 2 phone numbers</p>
                     </div>
                 </div>
                 <button onclick="closeClassLinksModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-5 overflow-y-auto space-y-3" id="all-class-links-list">
+
+            <!-- Domain & Search Bar -->
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+                <div class="relative flex-grow">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="modal-student-link-search" oninput="renderAllClassLinksModal()" placeholder="Search student name, ID (HIM-901), or phone number..." class="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold outline-none focus:border-emerald-500">
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">
+                        <i class="fa-solid fa-globe text-emerald-600 text-xs"></i>
+                        <span class="text-[11px] font-bold text-emerald-900">Domain:</span>
+                        <input type="text" id="custom-domain-input" value="https://swalath.madrasaa.online" oninput="renderAllClassLinksModal()" class="bg-white border border-emerald-200 rounded-lg px-2 py-1 text-xs font-mono font-bold text-emerald-800 w-56 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-5" id="all-class-links-list">
                 <!-- Populated by JS -->
             </div>
         </div>
     </div>
 
+    <!-- STUDENT QR CODE & DIRECT SHARE MODAL -->
+    <div id="qr-share-modal" class="hidden modal-overlay z-[220]">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl fade-in">
+            <div class="flex justify-between items-center mb-3">
+                <span id="qr-student-id" class="id-badge">HIM-901</span>
+                <button onclick="closeQrModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <h4 id="qr-student-name" class="text-lg font-extrabold text-slate-800" style="margin:0;">Student Name</h4>
+            <p class="text-xs text-slate-500 mt-1 mb-4">Scan QR with any phone camera to open this student's personal sheet only</p>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 inline-block mx-auto mb-4">
+                <img id="qr-image" src="" alt="Student QR Code" class="w-44 h-44 mx-auto rounded-lg" onerror="this.src='https://placehold.co/200x200/064e3b/ffffff?text=QR+Link'">
+            </div>
+            <div id="qr-url-box" class="bg-slate-100 rounded-xl p-2.5 text-[11px] font-mono text-emerald-800 font-bold break-all mb-4 select-all"></div>
+            <div class="grid grid-cols-2 gap-2">
+                <button id="qr-copy-btn" class="modern-btn modern-btn-emerald w-full justify-center">
+                    <i class="fa-solid fa-copy"></i> Copy Link
+                </button>
+                <button id="qr-wa-btn" class="modern-btn w-full justify-center" style="background:#22c55e; color:#fff;">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE FLOATING BOTTOM NAVIGATION DOCK (All Mobile Devices) -->
+    <nav id="mobile-bottom-nav" class="mobile-bottom-dock" aria-label="Mobile Navigation">
+        <button onclick="switchMainView('sheets')" id="dock-btn-sheets" class="dock-btn active">
+            <i class="fa-solid fa-table text-sm"></i>
+            <span>Sheets</span>
+        </button>
+        <button onclick="switchMainView('cards')" id="dock-btn-cards" class="dock-btn">
+            <i class="fa-solid fa-id-card text-sm"></i>
+            <span>ID Cards</span>
+        </button>
+        <button onclick="switchMainView('leaderboard')" id="dock-btn-leaderboard" class="dock-btn">
+            <i class="fa-solid fa-trophy text-sm"></i>
+            <span>Ranks</span>
+        </button>
+        <button onclick="openClassLinksModal()" class="dock-btn" style="color:#fde68a;">
+            <i class="fa-solid fa-paper-plane text-sm"></i>
+            <span>Send Links</span>
+        </button>
+    </nav>
+
     <!-- INDIVIDUAL STUDENT PROFILE MODAL -->
-    <div id="student-profile-modal" class="hidden fixed inset-0 bg-slate-900/75 modal-overlay z-[160] flex items-center justify-center p-4">
+    <div id="student-profile-modal" class="hidden modal-overlay z-[160]">
         <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden fade-in flex flex-col max-h-[90vh]">
             <!-- Modal Header -->
             <div class="islamic-bg p-6 text-white flex justify-between items-center">
@@ -368,35 +627,43 @@
                         S
                     </div>
                     <div>
-                        <span id="profile-class-badge" class="text-[11px] font-bold uppercase tracking-widest text-amber-300 bg-white/10 px-2.5 py-0.5 rounded-full">Class 9</span>
-                        <h3 id="profile-student-name" class="text-2xl font-extrabold mt-1">Student Name</h3>
+                        <div class="flex items-center gap-2">
+                            <span id="profile-id-badge" class="id-badge">HIM-901</span>
+                            <span id="profile-class-badge" class="text-[11px] font-bold uppercase tracking-widest text-amber-300 bg-white/10 px-2.5 py-0.5 rounded-full">Class 9</span>
+                        </div>
+                        <h3 id="profile-student-name" class="text-2xl font-extrabold mt-1" style="margin-bottom:0;">Student Name</h3>
                     </div>
                 </div>
-                <button onclick="closeStudentProfileModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button id="profile-share-btn" class="modern-btn modern-btn-gold" style="padding:7px 12px; font-size:11px;">
+                        <i class="fa-solid fa-link"></i> Copy Sheet-Only Link
+                    </button>
+                    <button onclick="closeStudentProfileModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Stats Row -->
             <div class="grid grid-cols-3 gap-3 p-4 bg-slate-50 border-b border-slate-200/80 text-center">
                 <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
                     <span class="text-[11px] font-bold text-slate-400 uppercase">This Month</span>
-                    <p id="profile-stat-score" class="text-xl font-extrabold text-emerald-600 mt-0.5">0%</p>
+                    <p id="profile-stat-score" class="text-xl font-extrabold text-emerald-600 mt-0.5" style="margin-bottom:0;">0%</p>
                 </div>
                 <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
                     <span class="text-[11px] font-bold text-slate-400 uppercase">Prayers Done</span>
-                    <p id="profile-stat-count" class="text-xl font-extrabold text-slate-800 mt-0.5">0</p>
+                    <p id="profile-stat-count" class="text-xl font-extrabold text-slate-800 mt-0.5" style="margin-bottom:0;">0</p>
                 </div>
                 <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
                     <span class="text-[11px] font-bold text-slate-400 uppercase">Perfect Days</span>
-                    <p id="profile-stat-perfect" class="text-xl font-extrabold text-amber-500 mt-0.5">0 <i class="fa-solid fa-star text-xs"></i></p>
+                    <p id="profile-stat-perfect" class="text-xl font-extrabold text-amber-500 mt-0.5" style="margin-bottom:0;">0 <i class="fa-solid fa-star text-xs"></i></p>
                 </div>
             </div>
 
             <!-- Student's Monthly History Table -->
             <div class="p-4 overflow-y-auto flex-grow">
                 <div class="flex justify-between items-center mb-3 px-1">
-                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Monthly Prayer Log (Click to update)</h4>
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500" style="margin:0;">Monthly Prayer Log (Click to update)</h4>
                     <span class="arabic-text text-sm text-emerald-700 font-bold">صبح • ظهر • عصر • مغرب • عشاء</span>
                 </div>
                 <div class="border border-slate-200 rounded-2xl overflow-hidden">
@@ -421,7 +688,7 @@
     </div>
 
     <!-- USTHAD PIN MODAL (Only shown when clicking Usthad Login) -->
-    <div id="admin-login-modal" class="hidden fixed inset-0 bg-emerald-950/80 modal-overlay z-[200] flex items-center justify-center p-4">
+    <div id="admin-login-modal" class="hidden modal-overlay z-[200]">
         <div class="bg-white rounded-3xl p-7 max-w-sm w-full text-center shadow-2xl relative fade-in">
             <button onclick="closeAdminPinModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer">
                 <i class="fa-solid fa-xmark"></i>
@@ -430,7 +697,7 @@
                 <i class="fa-solid fa-user-shield"></i>
             </div>
             <h3 class="text-xl font-extrabold text-slate-800">Usthad Admin Access</h3>
-            <p class="text-xs text-slate-500 mt-1 mb-5">Enter Usthad PIN to add/remove classes, manage students, or update broadcast messages.</p>
+            <p class="text-xs text-slate-500 mt-1 mb-5">Enter Usthad PIN to add/remove classes, manage Student IDs & 2 phone numbers, or unlock all sheets.</p>
             <input type="password" id="admin-pin" placeholder="Enter PIN (786)" class="w-full text-center px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-xl tracking-widest mb-3 transition-all font-bold">
             <p id="pin-error" class="text-red-500 text-xs mb-3 hidden font-bold">Incorrect PIN. Try 786.</p>
             <button onclick="verifyAdminPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
@@ -440,7 +707,7 @@
     </div>
 
     <!-- BROADCAST ADVISEMENT EDIT MODAL (Usthad Only) -->
-    <div id="advisement-modal" class="hidden fixed inset-0 bg-slate-900/80 modal-overlay z-[190] flex items-center justify-center p-4">
+    <div id="advisement-modal" class="hidden modal-overlay z-[190]">
         <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl fade-in">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
@@ -457,13 +724,13 @@
         </div>
     </div>
 
-    <!-- MANAGE CLASS & STUDENTS MODAL (Usthad Only) -->
-    <div id="manage-class-modal" class="hidden fixed inset-0 bg-slate-900/80 modal-overlay z-[180] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl relative fade-in flex flex-col max-h-[90vh] overflow-hidden">
+    <!-- MANAGE CLASS & STUDENTS MODAL (Usthad Only - Supports 2 Phone Numbers per Student) -->
+    <div id="manage-class-modal" class="hidden modal-overlay z-[180]">
+        <div class="bg-white rounded-3xl max-w-4xl w-full shadow-2xl relative fade-in flex flex-col max-h-[92vh] overflow-hidden">
             <div class="p-5 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <div>
                     <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-users-gear text-emerald-600"></i> Manage Classes & Students
+                        <i class="fa-solid fa-users-gear text-emerald-600"></i> Manage Classes, Student IDs & Two Phone Numbers
                     </h3>
                     <p class="text-xs text-slate-500 mt-0.5">Currently Editing: <span id="manage-class-title" class="font-bold text-emerald-700">Class</span></p>
                 </div>
@@ -486,7 +753,7 @@
                         </div>
                     </div>
 
-                    <!-- Add Student to Current Class -->
+                    <!-- Add Student to Current Class (With 2 Phone Numbers) -->
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
                         <div class="flex justify-between items-center">
                             <h4 class="font-extrabold text-slate-700 text-xs uppercase tracking-wider">Add Student</h4>
@@ -498,6 +765,20 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Full Name</label>
                             <input type="text" id="new-student-name" placeholder="Enter student name" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-emerald-500 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Custom Student ID (Optional)</label>
+                            <input type="text" id="new-student-id" placeholder="Auto-generated if blank (e.g. HIM-906)" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-emerald-500 outline-none text-xs font-mono uppercase">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-500 mb-1"><i class="fa-solid fa-phone text-emerald-600 mr-1"></i>Phone Number 1</label>
+                                <input type="tel" id="new-student-phone1" placeholder="e.g. 9876543210" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white focus:border-emerald-500 outline-none text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-500 mb-1"><i class="fa-solid fa-mobile-screen text-indigo-600 mr-1"></i>Phone Number 2</label>
+                                <input type="tel" id="new-student-phone2" placeholder="e.g. 9876500000" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 bg-white focus:border-emerald-500 outline-none text-xs">
+                            </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 mb-1">Gender</label>
@@ -517,7 +798,7 @@
                             </div>
                         </div>
                         <button onclick="addStudentToClass(event)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl transition text-xs shadow-sm cursor-pointer">
-                            <i class="fa-solid fa-user-plus mr-1"></i> Add Student to Class
+                            <i class="fa-solid fa-user-plus mr-1"></i> Add Student with ID & 2 Numbers
                         </button>
                     </div>
                 </div>
@@ -526,9 +807,9 @@
                 <div class="md:w-7/12 flex flex-col">
                     <div class="flex justify-between items-center mb-2">
                         <h4 class="font-extrabold text-slate-700 text-xs uppercase tracking-wider">Enrolled Students (<span id="student-count">0</span>)</h4>
-                        <span class="text-[11px] text-slate-400">Click trash icon to remove</span>
+                        <span class="text-[11px] text-slate-400">Edit 2 Numbers or Copy Sheet-Only Link</span>
                     </div>
-                    <div class="flex-grow overflow-y-auto border border-slate-200 rounded-2xl bg-white p-2 max-h-[340px]">
+                    <div class="flex-grow overflow-y-auto border border-slate-200 rounded-2xl bg-white p-2 max-h-[420px]">
                         <ul id="manage-students-list" class="divide-y divide-slate-100">
                             <!-- Populated by JS -->
                         </ul>
@@ -548,6 +829,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Official Production Domain for Vercel Deployment
+        const PRODUCTION_DOMAIN = "https://swalath.madrasaa.online";
 
         // Environment & Firebase Config
         const isImmersive = typeof __firebase_config !== 'undefined';
@@ -569,15 +853,19 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // URL Parameter for direct class link (?class=... or #class=...)
+        // URL Parameters for Student Sheet-Only Mode
+        // Example Student Link: https://swalath.madrasaa.online/?class=Class+9&id=HIM-901&name=Niswa&sheet=only
         const urlParams = new URLSearchParams(window.location.search || window.location.hash.replace(/^#/, ''));
         let initialClassParam = urlParams.get('class');
         let initialViewParam = urlParams.get('view');
+        let lockedStudentIdParam = urlParams.get('id') || urlParams.get('student');
+        let lockedStudentNameParam = urlParams.get('name');
+        let isSingleStudentSheetOnlyMode = Boolean(lockedStudentIdParam || lockedStudentNameParam || urlParams.get('sheet') === 'only');
 
         // App State
         let authReady = false;
         let isUsthadAdmin = false;
-        let activeMainView = (initialViewParam === 'cards' || initialViewParam === 'leaderboard' || initialViewParam === 'sheets') ? initialViewParam : 'sheets';
+        let activeMainView = isSingleStudentSheetOnlyMode ? 'sheets' : ((initialViewParam === 'cards' || initialViewParam === 'leaderboard' || initialViewParam === 'sheets') ? initialViewParam : 'sheets');
         let activeProfileStudentName = null;
 
         let activeRecordsUnsubscribe = null;
@@ -597,6 +885,71 @@
             'Asr': { h: 15, m: 30, label: '3:30 PM' },
             'Magrib': { h: 18, m: 15, label: '6:15 PM' },
             'Isha': { h: 19, m: 30, label: '7:30 PM' }
+        };
+
+        // Helper: Generate a clean, deterministic Student ID for every student (e.g., HIM-901)
+        function getStudentId(student, index, className = '') {
+            if (student && student.studentId) return student.studentId.toUpperCase();
+            const numMatch = (className || '').match(/\d+/);
+            const classPrefix = numMatch ? numMatch[0] : (className ? className.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() : 'S');
+            const rollNo = String(index + 1).padStart(2, '0');
+            return `HIM-${classPrefix}${rollNo}`;
+        }
+
+        // Apply Single-Student Sheet-Only UI Lock if opened via personal student link
+        function updateSingleStudentModeUI() {
+            const isLocked = isSingleStudentSheetOnlyMode && !isUsthadAdmin;
+            const navBar = document.getElementById('portal-navigation-bar');
+            const searchWrapper = document.getElementById('student-search-wrapper');
+            const btnHeaderLinks = document.getElementById('btn-header-send-links');
+            const btnControlLinks = document.getElementById('btn-control-send-links');
+            const btnCopyClassLink = document.getElementById('btn-sheet-copy-link');
+            const btnExportCsv = document.getElementById('btn-export-csv');
+            const mobileNav = document.getElementById('mobile-bottom-nav');
+            const singleBadge = document.getElementById('single-student-mode-badge');
+            const personalBanner = document.getElementById('personal-student-banner');
+            const sheetsContainer = document.getElementById('paper-sheets-container');
+
+            if (isLocked) {
+                navBar?.classList.add('hidden');
+                searchWrapper?.classList.add('hidden');
+                btnHeaderLinks?.classList.add('hidden');
+                btnControlLinks?.classList.add('hidden');
+                btnCopyClassLink?.classList.add('hidden');
+                btnExportCsv?.classList.add('hidden');
+                mobileNav?.classList.add('hidden');
+                singleBadge?.classList.remove('hidden');
+                personalBanner?.classList.remove('hidden');
+                sheetsContainer?.classList.add('single-student-sheet');
+            } else {
+                navBar?.classList.remove('hidden');
+                searchWrapper?.classList.remove('hidden');
+                btnHeaderLinks?.classList.remove('hidden');
+                btnControlLinks?.classList.remove('hidden');
+                btnCopyClassLink?.classList.remove('hidden');
+                btnExportCsv?.classList.remove('hidden');
+                mobileNav?.classList.remove('hidden');
+                singleBadge?.classList.add('hidden');
+                personalBanner?.classList.add('hidden');
+                sheetsContainer?.classList.remove('single-student-sheet');
+            }
+        }
+
+        // Pre-fill search input if ?id=... or ?name=... is in the URL
+        if (lockedStudentIdParam || lockedStudentNameParam) {
+            const searchInput = document.getElementById('student-search-input');
+            if (searchInput) {
+                searchInput.value = lockedStudentIdParam || lockedStudentNameParam;
+                document.getElementById('clear-id-filter-btn')?.classList.remove('hidden');
+            }
+            updateSingleStudentModeUI();
+        }
+
+        window.clearStudentFilter = function() {
+            const searchInput = document.getElementById('student-search-input');
+            searchInput.value = '';
+            document.getElementById('clear-id-filter-btn').classList.add('hidden');
+            renderAllActiveViews(true);
         };
 
         // Date Setup
@@ -634,13 +987,13 @@
         monthSelector.addEventListener('change', (e) => {
             selectedViewMonth = e.target.value;
             leaderboardMonthPicker.value = selectedViewMonth;
-            renderAllActiveViews();
+            renderAllActiveViews(true);
         });
 
         leaderboardMonthPicker.addEventListener('change', (e) => {
             selectedViewMonth = e.target.value;
             monthSelector.value = selectedViewMonth;
-            renderAllActiveViews();
+            renderAllActiveViews(true);
         });
 
         window.changeDate = function(offset) {
@@ -699,7 +1052,7 @@
 
         // Auto-Connect to Firebase Immediately for Students
         async function bootStudentPortal() {
-            showLoading("Connecting to Madrasa Portal...");
+            showLoading("Connecting to swalath.madrasaa.online...");
             try {
                 if (isImmersive && customToken) {
                     try {
@@ -771,7 +1124,6 @@
             if (isUsthadAdmin) {
                 badge.classList.remove('hidden');
                 btnManage.classList.remove('hidden');
-                btnManage.classList.add('flex');
                 btnEditAdv.classList.remove('hidden');
                 csvImportLabel.classList.remove('hidden');
                 csvImportLabel.classList.add('flex');
@@ -780,14 +1132,15 @@
             } else {
                 badge.classList.add('hidden');
                 btnManage.classList.add('hidden');
-                btnManage.classList.remove('flex');
                 btnEditAdv.classList.add('hidden');
                 csvImportLabel.classList.add('hidden');
                 csvImportLabel.classList.remove('flex');
                 lockIcon.className = "fa-solid fa-lock text-amber-300";
                 btnText.innerText = "Usthad Login";
             }
+            updateSingleStudentModeUI();
             renderClassPills();
+            renderAllActiveViews(true);
         }
 
         // Advisement Modal
@@ -833,21 +1186,41 @@
             }
         });
 
-        // Shareable Class Links
-        function getClassShareUrl(cls, viewMode = 'sheets') {
-            try {
-                if (window.location.protocol === 'blob:') {
-                    const baseUrl = "https://busa2023.github.io/Prayer/";
-                    return `${baseUrl}?class=${encodeURIComponent(cls.name)}&view=${viewMode}`;
-                }
-                const url = new URL(window.location.href);
-                url.searchParams.set('class', cls.name);
-                url.searchParams.set('view', viewMode);
-                return url.toString();
-            } catch (e) {
-                return `?class=${encodeURIComponent(cls.name)}&view=${viewMode}`;
+        // Get Base Domain (Defaults to https://swalath.madrasaa.online)
+        function getPortalBaseDomain() {
+            const customInput = document.getElementById('custom-domain-input');
+            if (customInput && customInput.value.trim()) {
+                return customInput.value.trim().replace(/\/+$/, '');
             }
+            return PRODUCTION_DOMAIN;
         }
+
+        // Build Shareable URL with Student Name, Student ID, and Sheet-Only Lock on swalath.madrasaa.online
+        function getClassShareUrl(cls, viewMode = 'sheets', studentId = '', studentName = '') {
+            const baseDomain = getPortalBaseDomain();
+            const params = new URLSearchParams();
+            params.set('class', cls.name);
+            if (studentId) {
+                params.set('id', studentId);
+                if (studentName) params.set('name', studentName);
+                params.set('sheet', 'only');
+            } else {
+                params.set('view', viewMode);
+            }
+            return `${baseDomain}/?${params.toString()}`;
+        }
+
+        window.copyMyPersonalSheetLink = function() {
+            if (!currentClass) return;
+            const students = getFilteredStudents();
+            if (students.length === 1) {
+                const st = students[0];
+                const url = getClassShareUrl(currentClass, 'sheets', st.studentId, st.name);
+                copyTextToClipboard(url, `Copied ${st.name}'s personal sheet link!`);
+            } else {
+                copyCurrentClassLink('sheets');
+            }
+        };
 
         window.copyCurrentClassLink = function(viewMode = 'sheets') {
             if (!currentClass) return;
@@ -855,19 +1228,131 @@
             copyTextToClipboard(shareUrl, `Monthly Sheet link for ${currentClass.name} copied!`);
         };
 
-        window.copySpecificClassLink = function(classId, viewMode = 'sheets') {
+        window.copySpecificClassLink = function(classId, viewMode = 'sheets', studentId = '', studentName = '') {
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls) return;
-            const shareUrl = getClassShareUrl(cls, viewMode);
-            copyTextToClipboard(shareUrl, `${cls.name} Monthly Sheet link copied!`);
+            const shareUrl = getClassShareUrl(cls, viewMode, studentId, studentName);
+            const label = studentId ? `${studentName || studentId}'s Sheet-Only link copied!` : `${cls.name} Monthly Sheet link copied!`;
+            copyTextToClipboard(shareUrl, label);
         };
 
-        window.shareClassOnWhatsApp = function(classId) {
+        // Save Student's Two Phone Numbers to Firestore
+        window.saveStudentPhones = async function(classId, studentIndex, phone1Id, phone2Id, silent = false) {
+            const cls = availableClasses.find(c => c.id === classId);
+            if (!cls || !cls.students || !cls.students[studentIndex]) return;
+            const p1 = (document.getElementById(phone1Id)?.value || '').trim();
+            const p2 = (document.getElementById(phone2Id)?.value || '').trim();
+
+            const updatedStudents = [...cls.students];
+            updatedStudents[studentIndex] = {
+                ...updatedStudents[studentIndex],
+                phone1: p1,
+                phone2: p2
+            };
+
+            try {
+                const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', classId);
+                await setDoc(classRef, { students: updatedStudents }, { merge: true });
+                if (!silent) showToast(`Saved both numbers for ${updatedStudents[studentIndex].name}!`, "success");
+            } catch (e) {
+                if (!silent) showToast("Could not save phone numbers", "error");
+            }
+        };
+
+        // Direct WhatsApp Sender (Supports Number 1 or Number 2 Input!)
+        window.shareClassOnWhatsApp = function(classId, studentId = '', studentName = '', phoneInputId = '', viewMode = 'sheets', studentIndex = -1, phone1Id = '', phone2Id = '') {
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls) return;
-            const shareUrl = getClassShareUrl(cls, 'sheets');
-            const message = `*HIM PULLANITHAZHAM - ${cls.name}*\nAssalamu Alaikum! Click the link below to open your *Monthly Prayer Tracker Sheet*:\n${shareUrl}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+
+            // Auto-save phone numbers if edited
+            if (studentIndex >= 0 && phone1Id && phone2Id) {
+                saveStudentPhones(classId, studentIndex, phone1Id, phone2Id, true);
+            }
+
+            const shareUrl = getClassShareUrl(cls, viewMode, studentId, studentName);
+            let phoneClean = '';
+            if (phoneInputId) {
+                const phoneEl = document.getElementById(phoneInputId);
+                if (phoneEl && phoneEl.value) {
+                    phoneClean = phoneEl.value.replace(/[^0-9]/g, '');
+                    if (phoneClean.length === 10) phoneClean = '91' + phoneClean; // Default India (+91) if 10 digits
+                }
+            }
+            const message = studentId
+                ? `*HIM PULLANITHAZHAM - ${cls.name}*\nAssalamu Alaikum *${studentName}* (Student ID: *${studentId}*)!\n\nTap your personal Sheet-Only link below to view and mark your daily prayers:\n${shareUrl}`
+                : `*HIM PULLANITHAZHAM - ${cls.name}*\nAssalamu Alaikum! Click below to open the *${cls.name} Monthly Prayer Tracker Sheet*:\n${shareUrl}`;
+            const waBase = phoneClean ? `https://wa.me/${phoneClean}` : `https://wa.me/`;
+            window.open(`${waBase}?text=${encodeURIComponent(message)}`, '_blank');
+        };
+
+        // Direct SMS Sender for Number 1 or Number 2
+        window.shareStudentViaSMS = function(classId, studentId, studentName, phoneInputId = '', viewMode = 'sheets') {
+            const cls = availableClasses.find(c => c.id === classId);
+            if (!cls) return;
+            const shareUrl = getClassShareUrl(cls, viewMode, studentId, studentName);
+            let phoneClean = '';
+            if (phoneInputId) {
+                const phoneEl = document.getElementById(phoneInputId);
+                if (phoneEl && phoneEl.value) phoneClean = phoneEl.value.replace(/[^0-9+]/g, '');
+            }
+            const body = `HIM Pullanithazham (${cls.name}): Assalamu Alaikum ${studentName} (${studentId}), open your personal Prayer Sheet: ${shareUrl}`;
+            window.location.href = `sms:${phoneClean}?body=${encodeURIComponent(body)}`;
+        };
+
+        // Native Web Share API
+        window.nativeShareStudentLink = async function(classId, studentId, studentName, viewMode = 'sheets') {
+            const cls = availableClasses.find(c => c.id === classId);
+            if (!cls) return;
+            const shareUrl = getClassShareUrl(cls, viewMode, studentId, studentName);
+            const shareText = `Assalamu Alaikum ${studentName} (ID: ${studentId})! Open your personal ${cls.name} Prayer Tracker Sheet:`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `${studentName} (${studentId}) - Prayer Sheet`,
+                        text: shareText,
+                        url: shareUrl
+                    });
+                    return;
+                } catch (e) {}
+            }
+            copyTextToClipboard(`${shareText}\n${shareUrl}`, `Copied ${studentName}'s link & message!`);
+        };
+
+        // Copy ALL Student Sheet-Only Links (With Names, IDs & 2 Numbers) for a Class in One Click
+        window.copyAllStudentsRosterLinks = function(classId, viewMode = 'sheets') {
+            const cls = availableClasses.find(c => c.id === classId);
+            if (!cls) return;
+            const students = cls.students || [];
+            if (students.length === 0) {
+                showToast("No students in this class yet", "error");
+                return;
+            }
+            let bulkText = `*HIM PULLANITHAZHAM — ${cls.name.toUpperCase()}*\n*Personal Student Sheet-Only Links (swalath.madrasaa.online):*\n\n`;
+            students.forEach((st, idx) => {
+                const stId = getStudentId(st, idx, cls.name);
+                const link = getClassShareUrl(cls, viewMode, stId, st.name);
+                const phonesInfo = [st.phone1 ? `No.1: ${st.phone1}` : '', st.phone2 ? `No.2: ${st.phone2}` : ''].filter(Boolean).join(' | ');
+                bulkText += `${idx + 1}. *${st.name}* (${stId})${phonesInfo ? ` — [${phonesInfo}]` : ''}\n${link}\n\n`;
+            });
+            copyTextToClipboard(bulkText.trim(), `All ${students.length} student sheet-only links copied!`);
+        };
+
+        // QR Code Generator Modal for Any Student
+        window.openStudentQrModal = function(classId, studentId, studentName, viewMode = 'sheets') {
+            const cls = availableClasses.find(c => c.id === classId);
+            if (!cls) return;
+            const shareUrl = getClassShareUrl(cls, viewMode, studentId, studentName);
+            document.getElementById('qr-student-id').innerText = studentId;
+            document.getElementById('qr-student-name').innerText = `${studentName} (${cls.name})`;
+            document.getElementById('qr-url-box').innerText = shareUrl;
+            document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(shareUrl)}`;
+            document.getElementById('qr-copy-btn').onclick = () => copyTextToClipboard(shareUrl, `${studentName}'s sheet-only link copied!`);
+            document.getElementById('qr-wa-btn').onclick = () => shareClassOnWhatsApp(classId, studentId, studentName, '', viewMode);
+            document.getElementById('qr-share-modal').classList.remove('hidden');
+        };
+
+        window.closeQrModal = function() {
+            document.getElementById('qr-share-modal').classList.add('hidden');
         };
 
         function copyTextToClipboard(text, successMsg) {
@@ -905,33 +1390,128 @@
                 container.innerHTML = `<div class="p-6 text-center text-slate-400 text-sm">No classes available yet.</div>`;
                 return;
             }
+            const searchFilter = (document.getElementById('modal-student-link-search')?.value || '').trim().toLowerCase();
+
             container.innerHTML = availableClasses.map(cls => {
-                const sheetUrl = getClassShareUrl(cls, 'sheets');
-                const studentCount = cls.students ? cls.students.length : 0;
+                const classSheetUrl = getClassShareUrl(cls, 'sheets');
+                const allStudents = (cls.students || []).map((st, idx) => ({
+                    ...st,
+                    originalIndex: idx,
+                    studentId: getStudentId(st, idx, cls.name),
+                    phone1: st.phone1 || '',
+                    phone2: st.phone2 || ''
+                }));
+                const filteredStudents = allStudents.filter(st =>
+                    !searchFilter ||
+                    st.name.toLowerCase().includes(searchFilter) ||
+                    st.studentId.toLowerCase().includes(searchFilter) ||
+                    st.phone1.toLowerCase().includes(searchFilter) ||
+                    st.phone2.toLowerCase().includes(searchFilter) ||
+                    cls.name.toLowerCase().includes(searchFilter)
+                );
+
+                if (searchFilter && filteredStudents.length === 0) return '';
+
+                const studentLinksHtml = filteredStudents.length > 0 ? `
+                    <div class="mt-3 pt-3 border-t border-slate-200/80 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-800">
+                                <i class="fa-solid fa-user-lock mr-1"></i>Individual Student Sheet-Only Links (${filteredStudents.length}):
+                            </span>
+                            <button onclick="copyAllStudentsRosterLinks('${cls.id}', 'sheets')" class="modern-btn" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:6px 12px; font-size:11px;">
+                                <i class="fa-solid fa-list-check"></i> Copy All ${allStudents.length} Links with Names & Numbers
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 gap-3">
+                            ${filteredStudents.map((st) => {
+                                const stId = st.studentId;
+                                const safeStName = st.name.replace(/'/g, "\\'");
+                                const personalUrl = getClassShareUrl(cls, 'sheets', stId, st.name);
+                                const phone1InputId = `phone1_${cls.id}_${st.originalIndex}`;
+                                const phone2InputId = `phone2_${cls.id}_${st.originalIndex}`;
+                                return `
+                                    <div class="student-link-card">
+                                        <!-- Top Row: Student ID, Student Name, Quick Copy/QR -->
+                                        <div class="flex flex-wrap items-center justify-between gap-2">
+                                            <div class="flex items-center gap-2.5">
+                                                <span class="id-badge">${stId}</span>
+                                                <span class="font-extrabold text-slate-900 text-base">${st.name}</span>
+                                                <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">Sheet-Only Link</span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <button onclick="copySpecificClassLink('${cls.id}', 'sheets', '${stId}', '${safeStName}')" class="text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl transition cursor-pointer shadow-sm" title="Copy ${st.name}'s Sheet-Only Link">
+                                                    <i class="fa-solid fa-copy mr-1"></i>Copy ${st.name}'s Link
+                                                </button>
+                                                <button onclick="nativeShareStudentLink('${cls.id}', '${stId}', '${safeStName}', 'sheets')" class="text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2.5 py-1.5 rounded-xl transition cursor-pointer" title="Share via Phone Apps">
+                                                    <i class="fa-solid fa-share-nodes mr-1"></i>Share
+                                                </button>
+                                                <button onclick="openStudentQrModal('${cls.id}', '${stId}', '${safeStName}', 'sheets')" class="text-[11px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 px-2.5 py-1.5 rounded-xl transition cursor-pointer" title="Show Student QR Code">
+                                                    <i class="fa-solid fa-qrcode"></i> QR
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Personal Student URL Preview (Includes Name + ID + sheet=only on swalath.madrasaa.online) -->
+                                        <div class="bg-slate-50 border border-emerald-200/80 rounded-xl px-3 py-2 text-xs font-mono font-bold text-emerald-900 break-all select-all flex items-center justify-between gap-2">
+                                            <span>${personalUrl}</span>
+                                        </div>
+
+                                        <!-- TWO PHONE NUMBERS PER STUDENT (Number 1 & Number 2) -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
+                                            <!-- Phone Number 1 -->
+                                            <div class="flex items-center gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                                                <div class="relative flex-grow">
+                                                    <span class="block text-[9px] font-extrabold uppercase text-emerald-700 mb-0.5">Number 1 (Father / Primary)</span>
+                                                    <input type="tel" id="${phone1InputId}" value="${st.phone1}" onchange="saveStudentPhones('${cls.id}', ${st.originalIndex}, '${phone1InputId}', '${phone2InputId}', true)" placeholder="Enter 1st Mobile Number..." class="w-full px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 outline-none focus:border-emerald-500">
+                                                </div>
+                                                <button onclick="shareClassOnWhatsApp('${cls.id}', '${stId}', '${safeStName}', '${phone1InputId}', 'sheets', ${st.originalIndex}, '${phone1InputId}', '${phone2InputId}')" class="modern-btn shrink-0" style="background:#16a34a; color:#ffffff; padding:8px 11px; font-size:11px;" title="Send WhatsApp to Number 1">
+                                                    <i class="fa-brands fa-whatsapp text-sm"></i> WA 1
+                                                </button>
+                                                <button onclick="shareStudentViaSMS('${cls.id}', '${stId}', '${safeStName}', '${phone1InputId}', 'sheets')" class="modern-btn shrink-0" style="background:#0284c7; color:#ffffff; padding:8px 10px; font-size:11px;" title="Send SMS to Number 1">
+                                                    <i class="fa-solid fa-comment-sms"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Phone Number 2 -->
+                                            <div class="flex items-center gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                                                <div class="relative flex-grow">
+                                                    <span class="block text-[9px] font-extrabold uppercase text-indigo-700 mb-0.5">Number 2 (Mother / Student)</span>
+                                                    <input type="tel" id="${phone2InputId}" value="${st.phone2}" onchange="saveStudentPhones('${cls.id}', ${st.originalIndex}, '${phone1InputId}', '${phone2InputId}', true)" placeholder="Enter 2nd Mobile Number..." class="w-full px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 outline-none focus:border-indigo-500">
+                                                </div>
+                                                <button onclick="shareClassOnWhatsApp('${cls.id}', '${stId}', '${safeStName}', '${phone2InputId}', 'sheets', ${st.originalIndex}, '${phone1InputId}', '${phone2InputId}')" class="modern-btn shrink-0" style="background:#15803d; color:#ffffff; padding:8px 11px; font-size:11px;" title="Send WhatsApp to Number 2">
+                                                    <i class="fa-brands fa-whatsapp text-sm"></i> WA 2
+                                                </button>
+                                                <button onclick="shareStudentViaSMS('${cls.id}', '${stId}', '${safeStName}', '${phone2InputId}', 'sheets')" class="modern-btn shrink-0" style="background:#0369a1; color:#ffffff; padding:8px 10px; font-size:11px;" title="Send SMS to Number 2">
+                                                    <i class="fa-solid fa-comment-sms"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                ` : `<div class="text-xs text-slate-400 italic pt-2">No students enrolled in ${cls.name} yet.</div>`;
+
                 return `
                     <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-2.5">
-                        <div class="flex items-center justify-between gap-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
                             <div class="flex items-center gap-2.5">
-                                <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center">
+                                <span class="w-9 h-9 rounded-xl bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center shadow-sm">
                                     ${cls.name.charAt(0).toUpperCase()}
                                 </span>
                                 <div>
-                                    <h4 class="font-extrabold text-slate-800 text-sm">${cls.name} — Monthly Sheet</h4>
-                                    <p class="text-[11px] text-slate-400 font-semibold">${studentCount} Students Enrolled</p>
+                                    <h4 class="font-extrabold text-slate-800 text-sm" style="margin:0;">${cls.name} — All Students & Personal Sheet Links</h4>
+                                    <p class="text-[11px] text-slate-400 font-semibold" style="margin:0;">${allStudents.length} Students Enrolled</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <button onclick="copySpecificClassLink('${cls.id}', 'sheets')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-sm">
-                                    <i class="fa-solid fa-copy"></i> Copy Link
-                                </button>
-                                <button onclick="shareClassOnWhatsApp('${cls.id}')" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer shadow-sm" title="Send via WhatsApp">
-                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                <button onclick="copySpecificClassLink('${cls.id}', 'sheets')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+                                    <i class="fa-solid fa-copy"></i> Full Class Link
                                 </button>
                             </div>
                         </div>
-                        <div class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-mono text-slate-600 break-all select-all">
-                            ${sheetUrl}
-                        </div>
+                        ${studentLinksHtml}
                     </div>
                 `;
             }).join('');
@@ -949,6 +1529,15 @@
                     if (data.allowExcuses === undefined) {
                         data.allowExcuses = !(data.name.toLowerCase().includes("class 4") || data.name.toLowerCase().includes("class 3"));
                     }
+                    // Ensure every student in memory has a studentId and 2 phone number slots
+                    if (Array.isArray(data.students)) {
+                        data.students = data.students.map((st, idx) => ({
+                            ...st,
+                            studentId: getStudentId(st, idx, data.name),
+                            phone1: st.phone1 || '',
+                            phone2: st.phone2 || ''
+                        }));
+                    }
                     availableClasses.push({ id: docSnap.id, ...data });
                 });
 
@@ -958,11 +1547,11 @@
                     const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', class9.id);
                     await setDoc(classRef, { 
                         students: [
-                            { name: 'Niswa', gender: 'girl', addedAt: new Date().toISOString() },
-                            { name: 'Shahma', gender: 'girl', addedAt: new Date().toISOString() },
-                            { name: 'Rashid', gender: 'boy', addedAt: new Date().toISOString() },
-                            { name: 'Shamil', gender: 'boy', addedAt: new Date().toISOString() },
-                            { name: 'Nafith', gender: 'boy', addedAt: new Date().toISOString() }
+                            { name: 'Niswa', gender: 'girl', studentId: 'HIM-901', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                            { name: 'Shahma', gender: 'girl', studentId: 'HIM-902', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                            { name: 'Rashid', gender: 'boy', studentId: 'HIM-903', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                            { name: 'Shamil', gender: 'boy', studentId: 'HIM-904', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                            { name: 'Nafith', gender: 'boy', studentId: 'HIM-905', phone1: '', phone2: '', addedAt: new Date().toISOString() }
                         ] 
                     }, { merge: true });
                     return;
@@ -978,7 +1567,7 @@
 
                 hideLoading();
 
-                // Pick initial class from URL (?class=...) or default to first class
+                // Pick initial class from URL (?class=...) or auto-locate student's class by ?id=...
                 if (!currentClass && availableClasses.length > 0) {
                     let targetClass = availableClasses[0];
                     if (initialClassParam) {
@@ -990,6 +1579,15 @@
                         );
                         if (match) targetClass = match;
                         initialClassParam = null;
+                    } else if (lockedStudentIdParam || lockedStudentNameParam) {
+                        const q = (lockedStudentIdParam || lockedStudentNameParam).toLowerCase().trim();
+                        const foundClass = availableClasses.find(c =>
+                            (c.students || []).some((st, idx) =>
+                                getStudentId(st, idx, c.name).toLowerCase() === q ||
+                                st.name.toLowerCase() === q
+                            )
+                        );
+                        if (foundClass) targetClass = foundClass;
                     }
                     switchMainView(activeMainView);
                     selectClass(targetClass.id);
@@ -1013,11 +1611,11 @@
         async function initDefaultClasses() {
             const defaultClasses = [
                 { name: "Class 9", students: [
-                    { name: 'Niswa', gender: 'girl', addedAt: new Date().toISOString() },
-                    { name: 'Shahma', gender: 'girl', addedAt: new Date().toISOString() },
-                    { name: 'Rashid', gender: 'boy', addedAt: new Date().toISOString() },
-                    { name: 'Shamil', gender: 'boy', addedAt: new Date().toISOString() },
-                    { name: 'Nafith', gender: 'boy', addedAt: new Date().toISOString() }
+                    { name: 'Niswa', gender: 'girl', studentId: 'HIM-901', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                    { name: 'Shahma', gender: 'girl', studentId: 'HIM-902', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                    { name: 'Rashid', gender: 'boy', studentId: 'HIM-903', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                    { name: 'Shamil', gender: 'boy', studentId: 'HIM-904', phone1: '', phone2: '', addedAt: new Date().toISOString() },
+                    { name: 'Nafith', gender: 'boy', studentId: 'HIM-905', phone1: '', phone2: '', addedAt: new Date().toISOString() }
                 ]},
                 { name: "Class 4", students: [] },
                 { name: "Class 3", students: [] }
@@ -1052,7 +1650,7 @@
 
                 container.innerHTML += `
                     <button onclick="selectClass('${cls.id}')" class="px-4 py-2 rounded-xl text-xs sm:text-sm border transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${activeClasses}">
-                        <i class="fa-solid fa-Graduation-cap ${isSelected ? 'text-emerald-600' : 'text-amber-300/80'}"></i>
+                        <i class="fa-solid fa-graduation-cap ${isSelected ? 'text-emerald-600' : 'text-amber-300/80'}"></i>
                         <span>${cls.name}</span>
                         <span class="text-[10px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-950/60 text-emerald-300'}">${count}</span>
                     </button>
@@ -1074,21 +1672,9 @@
 
             currentClass = cls;
 
-            // Safely update URL parameter when hosted on http/https (avoids SecurityError in blob: preview iframes)
-            try {
-                if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('class', currentClass.name);
-                    url.searchParams.set('view', activeMainView);
-                    window.history.replaceState({}, '', url);
-                }
-            } catch (err) {
-                // Ignore history SecurityError in sandboxed/blob environments
-            }
-
             document.getElementById('manage-class-title').innerText = currentClass.name;
             document.getElementById('leaderboard-class-title').innerText = `${currentClass.name} Leaderboard`;
-            document.getElementById('sheet-class-heading').innerText = `${currentClass.name} — Monthly Tracker Sheets`;
+            document.getElementById('sheet-class-heading').innerText = `${currentClass.name} — Monthly Tracker Sheet`;
 
             renderClassPills();
             listenToClassRecords(classId);
@@ -1118,43 +1704,76 @@
 
         // Switch between Student Cards, Leaderboard, and Monthly Sheets
         window.switchMainView = function(viewName) {
+            if (isSingleStudentSheetOnlyMode && !isUsthadAdmin) {
+                viewName = 'sheets';
+            }
             activeMainView = viewName;
             const views = ['cards', 'leaderboard', 'sheets'];
             views.forEach(v => {
                 document.getElementById(`view-${v}`).classList.add('hidden');
                 document.getElementById(`view-btn-${v}`).className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white cursor-pointer";
+                const dockBtn = document.getElementById(`dock-btn-${v}`);
+                if (dockBtn) dockBtn.classList.remove('active');
             });
 
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
             document.getElementById(`view-btn-${viewName}`).className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-400 text-emerald-950 shadow-sm cursor-pointer";
-
-            try {
-                if ((window.location.protocol === 'http:' || window.location.protocol === 'https:') && currentClass) {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('class', currentClass.name);
-                    url.searchParams.set('view', activeMainView);
-                    window.history.replaceState({}, '', url);
-                }
-            } catch (err) {}
+            const activeDockBtn = document.getElementById(`dock-btn-${viewName}`);
+            if (activeDockBtn) activeDockBtn.classList.add('active');
 
             renderAllActiveViews(true);
         };
 
+        // Filter helper by Student ID or Student Name (Strictly filters to 1 student if opened via personal link)
+        function getFilteredStudents() {
+            if (!currentClass) return [];
+            const allMapped = (currentClass.students || []).map((st, idx) => ({
+                ...st,
+                studentId: getStudentId(st, idx, currentClass.name),
+                phone1: st.phone1 || '',
+                phone2: st.phone2 || ''
+            }));
+
+            // If in Personal Student Sheet-Only Mode (and not Usthad), strictly show ONLY that student's sheet
+            if (isSingleStudentSheetOnlyMode && !isUsthadAdmin) {
+                const targetId = (lockedStudentIdParam || '').toLowerCase().trim();
+                const targetName = (lockedStudentNameParam || '').toLowerCase().trim();
+                const exactMatches = allMapped.filter(s =>
+                    (targetId && s.studentId.toLowerCase() === targetId) ||
+                    (targetName && s.name.toLowerCase() === targetName)
+                );
+                if (exactMatches.length > 0) return [exactMatches[0]];
+            }
+
+            const rawSearch = (document.getElementById('student-search-input').value || '').trim();
+            const clearBtn = document.getElementById('clear-id-filter-btn');
+            if (clearBtn) {
+                if (rawSearch.length > 0) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+            const searchQuery = rawSearch.toLowerCase();
+            return allMapped.filter(s => 
+                !searchQuery || 
+                s.name.toLowerCase().includes(searchQuery) || 
+                s.studentId.toLowerCase().includes(searchQuery)
+            );
+        }
+
         window.renderAllActiveViews = function(forceSheetRedraw = false) {
             if (!currentClass) return;
-            const searchQuery = (document.getElementById('student-search-input').value || '').toLowerCase().trim();
+            updateSingleStudentModeUI();
             updateClassDailySummary();
             if (activeMainView === 'cards') {
                 renderStudentCards();
             } else if (activeMainView === 'leaderboard') {
                 renderLeaderboard();
             } else if (activeMainView === 'sheets') {
-                renderPaperSheets(getDatesForViewMonth(), forceSheetRedraw || searchQuery.length >= 0);
+                renderPaperSheets(getDatesForViewMonth(), forceSheetRedraw);
             }
         };
 
         function updateClassDailySummary() {
-            const students = currentClass.students || [];
+            const students = getFilteredStudents();
             const dateData = allRecords[selectedDailyDate] || {};
             let completed = 0;
             let totalPossible = students.length * 5;
@@ -1169,6 +1788,21 @@
             });
 
             document.getElementById('class-daily-score').innerText = `${completed} / ${totalPossible}`;
+
+            // Update Personal Student Banner if in single-student mode
+            if (isSingleStudentSheetOnlyMode && students.length === 1) {
+                const st = students[0];
+                const stats = calculateStudentMonthlyStats(st.name);
+                document.getElementById('personal-banner-avatar').innerText = st.name.charAt(0).toUpperCase();
+                document.getElementById('personal-banner-id').innerText = st.studentId;
+                document.getElementById('personal-banner-class').innerText = currentClass.name;
+                document.getElementById('personal-banner-name').innerText = st.name;
+                document.getElementById('personal-banner-score').innerText = `${stats.percentage}% (${stats.prayedCount} Prayers)`;
+                const phonesText = [st.phone1 ? `Phone 1: ${st.phone1}` : '', st.phone2 ? `Phone 2: ${st.phone2}` : ''].filter(Boolean).join(' • ');
+                document.getElementById('personal-banner-phones').innerText = phonesText || 'Personal Monthly Prayer Sheet';
+                document.getElementById('sheet-class-heading').innerText = `${st.name} (${st.studentId}) — Personal Prayer Sheet`;
+                document.getElementById('hero-greeting-title').innerHTML = `Assalamu Alaikum, <span class="text-amber-300">${st.name}!</span>`;
+            }
         }
 
         function isFuturePrayer(dateStr, prayer) {
@@ -1227,23 +1861,22 @@
             return { prayedCount, excusedCount, perfectDays, percentage };
         }
 
-        // Render View 1: Beautiful Student Cards
+        // Render View 1: Beautiful Student ID Cards
         function renderStudentCards() {
             const container = document.getElementById('student-cards-grid');
-            const searchQuery = (document.getElementById('student-search-input').value || '').toLowerCase().trim();
-            const students = (currentClass.students || []).filter(s => s.name.toLowerCase().includes(searchQuery));
+            const students = getFilteredStudents();
 
             if (students.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-full bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm">
+                    <div class="col-span-full modern-card p-12 text-center">
                         <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-2xl">
-                            <i class="fa-solid fa-user-graduate"></i>
+                            <i class="fa-solid fa-id-card"></i>
                         </div>
-                        <h3 class="text-lg font-extrabold text-slate-800">No Students Found</h3>
+                        <h3 class="text-lg font-extrabold text-slate-800">No Student ID Found</h3>
                         <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                             ${(currentClass.students || []).length === 0 
                                 ? 'There are no students enrolled in this class yet. Usthad can add students using Usthad Login.' 
-                                : 'No student matches your search filter.'}
+                                : 'No student matches your Student ID or Name filter.'}
                         </p>
                     </div>
                 `;
@@ -1260,7 +1893,6 @@
                 const isGirl = student.gender === 'girl';
                 const stats = calculateStudentMonthlyStats(student.name);
 
-                // Count today's completed prayers
                 let todayDoneCount = 0;
                 PRAYERS.forEach(p => {
                     const val = isFullDayExcused ? 'excused' : rec[p];
@@ -1271,7 +1903,6 @@
                     ? 'bg-gradient-to-br from-pink-500 to-rose-600 text-white shadow-pink-500/20' 
                     : 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-emerald-600/20';
 
-                // 5 Prayer Interactive Buttons
                 const prayerButtonsHtml = PRAYERS.map((p, idx) => {
                     const arabic = PRAYER_ARABIC[idx];
                     let val = isFullDayExcused ? 'excused' : rec[p];
@@ -1306,7 +1937,6 @@
                     `;
                 }).join('');
 
-                // Leave Quick Button for Girls
                 let girlLeaveBar = '';
                 if (isGirl && currentClass.allowExcuses !== false) {
                     const allExcused = PRAYERS.every(p => (rec[p] === 'excused' || isFullDayExcused));
@@ -1326,8 +1956,24 @@
                 }
 
                 container.innerHTML += `
-                    <div class="student-card bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+                    <div class="student-card modern-card flex flex-col justify-between">
                         <div>
+                            <!-- Student ID Banner Top -->
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3 gap-1 flex-wrap">
+                                <span class="id-badge"><i class="fa-solid fa-id-badge text-[10px]"></i> ${student.studentId}</span>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${student.studentId}', '${safeName}')" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-1 rounded-lg transition cursor-pointer" title="Copy Sheet-Only link for ${student.name}">
+                                        <i class="fa-solid fa-link mr-1"></i>Sheet Link
+                                    </button>
+                                    <button onclick="shareClassOnWhatsApp('${currentClass.id}', '${student.studentId}', '${safeName}')" class="text-[11px] font-bold text-green-700 bg-green-50 hover:bg-green-100 px-2 py-1 rounded-lg transition cursor-pointer" title="Send link to ${student.name} on WhatsApp">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </button>
+                                    <button onclick="openStudentQrModal('${currentClass.id}', '${student.studentId}', '${safeName}')" class="text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg transition cursor-pointer" title="Show QR Code for ${student.name}">
+                                        <i class="fa-solid fa-qrcode"></i>
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Card Header -->
                             <div class="flex items-start justify-between gap-3 mb-4">
                                 <div class="flex items-center gap-3 min-w-0">
@@ -1335,10 +1981,10 @@
                                         ${student.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div class="min-w-0">
-                                        <h4 onclick="openStudentProfileModal('${safeName}')" class="font-extrabold text-slate-800 text-base truncate hover:text-emerald-700 cursor-pointer transition" title="${student.name}">
+                                        <h4 onclick="openStudentProfileModal('${safeName}')" class="font-extrabold text-slate-800 text-base truncate hover:text-emerald-700 cursor-pointer transition" style="margin:0;" title="${student.name}">
                                             ${student.name}
                                         </h4>
-                                        <div class="flex items-center gap-2 mt-0.5">
+                                        <div class="flex items-center gap-2 mt-1">
                                             <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                                                 ${stats.percentage}% Monthly
                                             </span>
@@ -1353,7 +1999,7 @@
                                         ${todayDoneCount}/5 Today
                                     </span>
                                     <button onclick="openStudentProfileModal('${safeName}')" class="text-[11px] font-bold text-slate-400 hover:text-emerald-600 mt-1 flex items-center gap-1 cursor-pointer">
-                                        <span>History</span> <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                                        <span>Full Log</span> <i class="fa-solid fa-chevron-right text-[9px]"></i>
                                     </button>
                                 </div>
                             </div>
@@ -1374,7 +2020,10 @@
         function renderLeaderboard() {
             const podiumContainer = document.getElementById('leaderboard-podium');
             const listContainer = document.getElementById('leaderboard-list');
-            const students = currentClass.students || [];
+            const students = (currentClass.students || []).map((st, idx) => ({
+                ...st,
+                studentId: getStudentId(st, idx, currentClass.name)
+            }));
 
             if (students.length === 0) {
                 podiumContainer.innerHTML = `<div class="col-span-3 text-center py-8 text-slate-400 text-sm">No students enrolled yet.</div>`;
@@ -1390,7 +2039,6 @@
                 return b.prayedCount - a.prayedCount;
             });
 
-            // Top 3 Podium Cards
             const medals = [
                 { label: '1st Place', bg: 'bg-gradient-to-b from-amber-50 to-white border-amber-300', badge: 'bg-amber-400 text-emerald-950', icon: 'fa-crown text-amber-500' },
                 { label: '2nd Place', bg: 'bg-gradient-to-b from-slate-50 to-white border-slate-200', badge: 'bg-slate-200 text-slate-700', icon: 'fa-medal text-slate-400' },
@@ -1402,20 +2050,20 @@
                 const safeName = st.name.replace(/'/g, "\\'");
                 return `
                     <div onclick="openStudentProfileModal('${safeName}')" class="rounded-2xl p-5 border-2 ${m.bg} shadow-sm flex flex-col items-center text-center cursor-pointer hover:shadow-md transition">
-                        <div class="flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full ${m.badge} mb-3">
+                        <div class="flex items-center gap-1.5 text-xs font-extrabold px-3 py-1 rounded-full ${m.badge} mb-2">
                             <i class="fa-solid ${m.icon}"></i> ${m.label}
                         </div>
+                        <span class="id-badge mb-2">${st.studentId}</span>
                         <div class="w-14 h-14 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-extrabold text-xl shadow mb-2">
                             ${st.name.charAt(0).toUpperCase()}
                         </div>
-                        <h4 class="font-extrabold text-slate-800 text-base">${st.name}</h4>
-                        <p class="text-2xl font-extrabold text-emerald-600 mt-1">${st.percentage}%</p>
+                        <h4 class="font-extrabold text-slate-800 text-base" style="margin:0;">${st.name}</h4>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1" style="margin-bottom:0;">${st.percentage}%</p>
                         <p class="text-[11px] font-semibold text-slate-400 mt-0.5">${st.prayedCount} Prayers • ${st.perfectDays} Perfect Days</p>
                     </div>
                 `;
             }).join('');
 
-            // Full List
             listContainer.innerHTML = ranked.map((st, idx) => {
                 const safeName = st.name.replace(/'/g, "\\'");
                 return `
@@ -1426,7 +2074,10 @@
                                 ${st.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                                <h5 class="font-extrabold text-slate-800 text-sm">${st.name}</h5>
+                                <div class="flex items-center gap-2">
+                                    <h5 class="font-extrabold text-slate-800 text-sm" style="margin:0;">${st.name}</h5>
+                                    <span class="id-badge">${st.studentId}</span>
+                                </div>
                                 <span class="text-xs text-slate-400 font-medium">${st.perfectDays} Full Days Completed</span>
                             </div>
                         </div>
@@ -1455,16 +2106,22 @@
 
         function renderStudentProfileModalContent(studentName) {
             if (!currentClass) return;
-            const student = (currentClass.students || []).find(s => s.name === studentName);
-            if (!student) return;
+            const studentIndex = (currentClass.students || []).findIndex(s => s.name === studentName);
+            if (studentIndex === -1) return;
+            const student = currentClass.students[studentIndex];
+            const stId = getStudentId(student, studentIndex, currentClass.name);
 
             const stats = calculateStudentMonthlyStats(studentName);
             document.getElementById('profile-avatar').innerText = student.name.charAt(0).toUpperCase();
+            document.getElementById('profile-id-badge').innerText = stId;
             document.getElementById('profile-class-badge').innerText = currentClass.name;
             document.getElementById('profile-student-name').innerText = student.name;
             document.getElementById('profile-stat-score').innerText = `${stats.percentage}%`;
             document.getElementById('profile-stat-count').innerText = stats.prayedCount;
             document.getElementById('profile-stat-perfect').innerHTML = `${stats.perfectDays} <i class="fa-solid fa-star text-xs"></i>`;
+
+            const shareBtn = document.getElementById('profile-share-btn');
+            shareBtn.onclick = () => copySpecificClassLink(currentClass.id, 'sheets', stId, student.name);
 
             const dates = getDatesForViewMonth();
             const tbody = document.getElementById('profile-history-tbody');
@@ -1498,7 +2155,7 @@
                         </td>
                         ${cells}
                     </tr>
-                ` + rows; // Newest dates on top
+                ` + rows;
             });
 
             tbody.innerHTML = rows || `<tr><td colspan="6" class="p-6 text-center text-slate-400">No dates recorded for this month yet.</td></tr>`;
@@ -1580,15 +2237,14 @@
             return dates;
         }
 
-        // Render View 3: Monthly Paper Sheets
+        // Render View 3: Monthly Paper Sheets (With Student ID Badge & Personal Sheet-Only Link Copy)
         function renderPaperSheets(dates, forceStructureRedraw = false) {
             if (!currentClass) return;
             const container = document.getElementById('paper-sheets-container');
-            const searchQuery = (document.getElementById('student-search-input').value || '').toLowerCase().trim();
-            const students = (currentClass.students || []).filter(s => s.name.toLowerCase().includes(searchQuery));
+            const students = getFilteredStudents();
             
             if (students.length === 0) {
-                container.innerHTML = `<div class="col-span-full p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500">No matching students found in ${currentClass.name}.</div>`;
+                container.innerHTML = `<div class="col-span-full modern-card p-8 text-center text-slate-500">No matching Student ID or Name found in ${currentClass.name}.</div>`;
                 return;
             }
 
@@ -1598,20 +2254,31 @@
                 container.innerHTML = '';
                 
                 students.forEach(student => {
-                    let colorTheme = student.gender === 'girl' ? 'text-pink-600' : 'text-emerald-700';
-                    let headerBg = student.gender === 'girl' ? 'bg-pink-50/80' : 'bg-emerald-50/80';
+                    let colorTheme = student.gender === 'girl' ? 'text-pink-600' : 'text-emerald-800';
+                    let headerBg = student.gender === 'girl' ? 'bg-pink-50/90' : 'bg-emerald-50/90';
                     let leaveHeader = (student.gender === 'girl' && currentClass.allowExcuses !== false) ? `<th class="p-2 border-b border-l border-slate-100 text-xs text-pink-500 bg-pink-50/50 w-12">Leave</th>` : '';
                     
                     const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
+                    const safeStName = student.name.replace(/'/g, "\\'");
                     
                     let tableHtml = `
-                    <div class="paper-grid flex flex-col h-[72vh] fade-in">
-                        <div class="p-3.5 px-4 border-b border-slate-200 flex justify-between items-center ${headerBg}">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-solid ${student.gender==='girl' ? 'fa-venus' : 'fa-mars'} ${colorTheme}"></i>
-                                <span class="font-extrabold uppercase tracking-wider text-sm ${colorTheme} truncate max-w-[160px]" title="${student.name}">${student.name}</span>
+                    <div class="paper-grid antigravity-card fade-in">
+                        <div class="p-3.5 px-4 border-b border-slate-200 flex justify-between items-center gap-2 ${headerBg}">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="id-badge shrink-0">${student.studentId}</span>
+                                <span class="font-extrabold uppercase tracking-wider text-sm ${colorTheme} truncate" title="${student.name}">${student.name}</span>
                             </div>
-                            <span class="text-[10px] font-bold text-slate-500 bg-white px-2 py-1 rounded-lg border border-slate-200/60">Tap to toggle</span>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${student.studentId}', '${safeStName}')" class="text-[11px] font-bold text-emerald-700 bg-white hover:bg-emerald-50 px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-sm transition cursor-pointer" title="Copy Sheet-Only link for ${student.name} (${student.studentId})">
+                                    <i class="fa-solid fa-copy mr-1"></i>Sheet Link
+                                </button>
+                                <button onclick="shareClassOnWhatsApp('${currentClass.id}', '${student.studentId}', '${safeStName}')" class="text-[11px] font-bold text-white bg-green-600 hover:bg-green-700 px-2 py-1 rounded-lg shadow-sm transition cursor-pointer" title="Send ${student.name}'s personal sheet link on WhatsApp">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </button>
+                                <button onclick="openStudentQrModal('${currentClass.id}', '${student.studentId}', '${safeStName}')" class="text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg shadow-sm transition cursor-pointer" title="Show QR Code for ${student.name}">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                </button>
+                            </div>
                         </div>
                         <div id="scroll-div-${safeId}" class="overflow-y-auto flex-grow bg-white">
                             <table class="w-full text-left border-collapse">
@@ -1773,19 +2440,36 @@
             }
 
             students.forEach((student, index) => {
+                const stId = getStudentId(student, index, currentClass.name);
+                const safeStName = student.name.replace(/'/g, "\\'");
                 const icon = student.gender === 'girl' ? 'fa-venus text-pink-500' : 'fa-mars text-blue-500';
                 const bg = student.gender === 'girl' ? 'bg-pink-50' : 'bg-blue-50';
+                const mPhone1Id = `manage_p1_${index}`;
+                const mPhone2Id = `manage_p2_${index}`;
+
                 container.innerHTML += `
-                    <li class="p-2.5 px-3 flex justify-between items-center hover:bg-slate-50 rounded-xl transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-xl ${bg} flex items-center justify-center">
-                                <i class="fa-solid ${icon} text-xs"></i>
+                    <li class="p-3 flex flex-col gap-2 hover:bg-slate-50 rounded-xl transition">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl ${bg} flex items-center justify-center">
+                                    <i class="fa-solid ${icon} text-xs"></i>
+                                </div>
+                                <span class="id-badge">${stId}</span>
+                                <span class="font-bold text-slate-800 text-sm">${student.name}</span>
                             </div>
-                            <span class="font-bold text-slate-800 text-sm">${student.name}</span>
+                            <div class="flex items-center gap-1">
+                                <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${stId}', '${safeStName}')" class="text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer" title="Copy Sheet-Only Link">
+                                    <i class="fa-solid fa-link mr-1"></i>Link
+                                </button>
+                                <button onclick="removeStudent(${index})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition cursor-pointer" title="Remove Student">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button onclick="removeStudent(${index})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition cursor-pointer" title="Remove Student">
-                            <i class="fa-solid fa-trash-can text-xs"></i>
-                        </button>
+                        <div class="grid grid-cols-2 gap-2 pl-10">
+                            <input type="tel" id="${mPhone1Id}" value="${student.phone1 || ''}" onchange="saveStudentPhones('${currentClass.id}', ${index}, '${mPhone1Id}', '${mPhone2Id}')" placeholder="Phone Number 1..." class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-emerald-500">
+                            <input type="tel" id="${mPhone2Id}" value="${student.phone2 || ''}" onchange="saveStudentPhones('${currentClass.id}', ${index}, '${mPhone1Id}', '${mPhone2Id}')" placeholder="Phone Number 2..." class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-indigo-500">
+                        </div>
                     </li>
                 `;
             });
@@ -1794,7 +2478,14 @@
         window.addStudentToClass = async function(ev) {
             if (!currentClass || !isUsthadAdmin) return;
             const nameInput = document.getElementById('new-student-name');
+            const idInput = document.getElementById('new-student-id');
+            const p1Input = document.getElementById('new-student-phone1');
+            const p2Input = document.getElementById('new-student-phone2');
+
             const name = nameInput.value.trim();
+            const customId = (idInput.value || '').trim().toUpperCase();
+            const phone1 = (p1Input.value || '').trim();
+            const phone2 = (p2Input.value || '').trim();
             const gender = document.querySelector('input[name="student-gender"]:checked').value;
 
             if (!name) {
@@ -1802,20 +2493,25 @@
                 return;
             }
 
-            const exists = (currentClass.students || []).some(s => s.name.toLowerCase() === name.toLowerCase());
+            const currentStudents = currentClass.students || [];
+            const exists = currentStudents.some(s => s.name.toLowerCase() === name.toLowerCase());
             if (exists) {
                 showToast("Student already exists in this class", "error");
                 return;
             }
 
-            const newStudent = { name, gender, addedAt: new Date().toISOString() };
-            const updatedStudents = [...(currentClass.students || []), newStudent];
+            const assignedId = customId || getStudentId({}, currentStudents.length, currentClass.name);
+            const newStudent = { name, gender, studentId: assignedId, phone1, phone2, addedAt: new Date().toISOString() };
+            const updatedStudents = [...currentStudents, newStudent];
 
             try {
                 const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', currentClass.id);
                 await setDoc(classRef, { students: updatedStudents }, { merge: true });
                 nameInput.value = '';
-                showToast(`${name} added to ${currentClass.name}!`, "success");
+                idInput.value = '';
+                p1Input.value = '';
+                p2Input.value = '';
+                showToast(`${name} (${assignedId}) added with 2 phone slots!`, "success");
             } catch (error) {
                 showToast("Failed to add student", "error");
             }
@@ -1838,19 +2534,32 @@
         window.exportDataToCSV = function() {
             if (!authReady || !currentClass) return;
 
-            let csvContent = "Date,Student,Subh,Luhr,Asr,Magrib,Isha,Excused\n";
+            let csvContent = "Date,StudentID,Student,Phone1,Phone2,Subh,Luhr,Asr,Magrib,Isha,Excused\n";
             let hasData = Object.keys(allRecords).length > 0;
+            const students = currentClass.students || [];
+
+            const getStudentObjByName = (sName) => {
+                const idx = students.findIndex(s => s.name === sName);
+                if (idx >= 0) {
+                    return {
+                        id: getStudentId(students[idx], idx, currentClass.name),
+                        p1: students[idx].phone1 || '',
+                        p2: students[idx].phone2 || ''
+                    };
+                }
+                return { id: 'HIM-000', p1: '', p2: '' };
+            };
 
             if (!hasData) {
                 const dates = getDatesForViewMonth();
-                const students = currentClass.students || [];
                 if (students.length === 0) {
                     showToast("No students to export", "error");
                     return;
                 }
                 dates.forEach(date => {
-                    students.forEach(student => {
-                        csvContent += `${date},${student.name},0,0,0,0,0,0\n`;
+                    students.forEach((student, idx) => {
+                        const stId = getStudentId(student, idx, currentClass.name);
+                        csvContent += `${date},${stId},${student.name},${student.phone1 || ''},${student.phone2 || ''},0,0,0,0,0,0\n`;
                     });
                 });
             } else {
@@ -1859,8 +2568,9 @@
                     const studentsData = allRecords[date];
                     for (const studentName in studentsData) {
                         const data = studentsData[studentName];
+                        const stMeta = getStudentObjByName(studentName);
                         const formatVal = (val) => val === 'excused' ? 'excused' : (val ? '1' : '0');
-                        csvContent += `${date},${studentName},${formatVal(data.Subh)},${formatVal(data.Luhr)},${formatVal(data.Asr)},${formatVal(data.Magrib)},${formatVal(data.Isha)},${data.excused ? '1' : '0'}\n`;
+                        csvContent += `${date},${stMeta.id},${studentName},${stMeta.p1},${stMeta.p2},${formatVal(data.Subh)},${formatVal(data.Luhr)},${formatVal(data.Asr)},${formatVal(data.Magrib)},${formatVal(data.Isha)},${data.excused ? '1' : '0'}\n`;
                     }
                 });
             }
@@ -1874,7 +2584,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            showToast("CSV downloaded!", "success");
+            showToast("CSV with Student IDs & 2 Numbers downloaded!", "success");
         };
 
         document.getElementById('csv-upload').addEventListener('change', async (e) => {
@@ -1897,20 +2607,25 @@
                         if (cols.length < 8) continue;
 
                         let dbDate = cols[0].trim();
-                        const student = cols[1].trim();
+                        const hasPhonesCols = cols.length >= 11;
+                        const hasIdCol = cols.length >= 9;
+                        const student = (hasIdCol ? cols[2] : cols[1]).trim();
+                        const startIdx = hasPhonesCols ? 5 : (hasIdCol ? 3 : 2);
+
                         const studentExists = (currentClass.students || []).some(s => s.name.toLowerCase() === student.toLowerCase());
                         if (!studentExists) continue;
 
                         const parseWaqth = (val) => val === 'excused' ? 'excused' : (val === '1' || val.toLowerCase() === 'true');
-                        const excused = cols[7] && (cols[7].trim() === '1' || cols[7].trim().toLowerCase() === 'true');
+                        const excusedCol = cols[startIdx + 5];
+                        const excused = excusedCol && (excusedCol.trim() === '1' || excusedCol.trim().toLowerCase() === 'true');
 
                         if (!updatesByDate[dbDate]) updatesByDate[dbDate] = {};
                         updatesByDate[dbDate][student] = {
-                            Subh: excused ? 'excused' : parseWaqth(cols[2].trim()),
-                            Luhr: excused ? 'excused' : parseWaqth(cols[3].trim()),
-                            Asr: excused ? 'excused' : parseWaqth(cols[4].trim()),
-                            Magrib: excused ? 'excused' : parseWaqth(cols[5].trim()),
-                            Isha: excused ? 'excused' : parseWaqth(cols[6].trim()),
+                            Subh: excused ? 'excused' : parseWaqth(cols[startIdx].trim()),
+                            Luhr: excused ? 'excused' : parseWaqth(cols[startIdx + 1].trim()),
+                            Asr: excused ? 'excused' : parseWaqth(cols[startIdx + 2].trim()),
+                            Magrib: excused ? 'excused' : parseWaqth(cols[startIdx + 3].trim()),
+                            Isha: excused ? 'excused' : parseWaqth(cols[startIdx + 4].trim()),
                             excused: false
                         };
                     }
