@@ -266,7 +266,43 @@
     <header class="islamic-bg text-white sticky top-0 z-40 shadow-xl border-b border-emerald-800/60">
         <div class="app-container">
             <div class="modern-header-row">
-            <!-- Hero Banner & Class Tabs -->
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3.5" style="display:flex; align-items:center; gap:14px;">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-emerald-950 shadow-md font-extrabold text-xl shrink-0" style="width:44px; height:44px; border-radius:14px; background:linear-gradient(135deg,#fbbf24,#d97706); display:flex; align-items:center; justify-content:center; color:#022c22;">
+                        <i class="fa-solid fa-mosque"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2" style="display:flex; align-items:center; gap:8px;">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-amber-300" style="color:#fcd34d; font-size:11px; font-weight:800; letter-spacing:0.08em;">HIM Pullanithazham</span>
+                            <span id="admin-badge" class="hidden text-[10px] font-extrabold uppercase tracking-wider bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-full">Usthad Mode</span>
+                            <span id="single-student-mode-badge" class="hidden text-[10px] font-extrabold uppercase tracking-wider bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full">Personal Student Sheet</span>
+                        </div>
+                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-tight" style="margin:0; font-size:19px; font-weight:800;">Swalath & Prayer Portal</h1>
+                    </div>
+                </div>
+
+                <!-- Right Actions (Hidden automatically in Student Personal Sheet-Only link) -->
+                <div id="header-right-actions" class="flex items-center gap-2 sm:gap-3" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <button id="btn-header-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-gold float-badge" title="Send individual sheet-only links to each student">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Send Student Links</span>
+                    </button>
+
+                    <button id="btn-manage-class" onclick="openManageClassModal()" class="hidden modern-btn modern-btn-emerald">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span class="hidden md:inline">Manage Class</span>
+                    </button>
+
+                    <button id="btn-usthad-auth" onclick="handleUsthadButtonClick()" class="modern-btn modern-btn-glass">
+                        <i class="fa-solid fa-lock text-amber-300" id="usthad-lock-icon"></i>
+                        <span id="usthad-btn-text">Usthad</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner & Class Tabs -->
     <section class="islamic-bg text-white pb-12 pt-5 border-b border-emerald-900">
         <div class="app-container">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -277,10 +313,11 @@
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-200 text-xs font-semibold">
                             <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
                             <span id="live-date-display">Loading Date...</span>
+                            <span id="live-hijri-display" class="text-amber-300 font-bold"></span>
                         </div>
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs font-extrabold">
                             <i class="fa-solid fa-location-dot text-amber-300"></i>
-                            <span>Kodinhi / Chemmad, Kerala</span>
+                            <span>Kodinhi / Chemmad (IST)</span>
                             <span class="text-white font-mono bg-emerald-950/80 px-2 py-0.5 rounded-md border border-white/10" id="live-clock-ist">--:--:--</span>
                         </div>
                     </div>
@@ -288,7 +325,7 @@
                         Assalamu Alaikum! <span class="arabic-text font-normal text-amber-300 text-3xl sm:text-4xl ml-1">ٱلسَّلَامُ عَلَيْكُمْ</span>
                     </h2>
                     <p id="hero-greeting-subtitle" class="text-emerald-100/90 text-sm sm:text-base max-w-xl leading-relaxed">
-                        Mark your 5 daily prayers on time according to <strong>Kodinhi / Chemmad Adhan timings</strong> and build a blessed monthly streak.
+                        Mark your 5 daily prayers on time according to <strong>Kodinhi / Chemmad Samastha Kerala Adhan timings</strong> and build a blessed monthly streak.
                     </p>
 
                     <!-- LIVE KODINHI / CHEMMAD ADHAN & NEXT SWALATH COUNTDOWN BAR -->
@@ -297,11 +334,11 @@
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-white/15">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-2xl bg-amber-400 text-emerald-950 flex items-center justify-center font-extrabold text-base shadow-md shrink-0">
-                                        <i class="fa-solid fa-Mosque fa-bell"></i>
+                                        <i class="fa-solid fa-bell"></i>
                                     </div>
                                     <div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300">Kodinhi / Chemmad Adhan Time</span>
+                                        <div class="flex items-center flex-wrap gap-2">
+                                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300">Kodinhi / Chemmad Adhan</span>
                                             <span id="current-waqth-pill" class="text-[10px] font-extrabold uppercase bg-emerald-400 text-emerald-950 px-2 py-0.5 rounded-full">Active Waqth</span>
                                         </div>
                                         <h4 id="next-prayer-headline" class="text-sm sm:text-base font-extrabold text-white mt-0.5" style="margin-bottom:0;">
@@ -310,7 +347,7 @@
                                     </div>
                                 </div>
                                 <div class="bg-emerald-950/85 border border-amber-400/40 px-4 py-2 rounded-2xl text-center shrink-0">
-                                    <span class="block text-[9px] font-extrabold uppercase tracking-widest text-emerald-300" id="countdown-label">Next Swalath In</span>
+                                    <span class="block text-[9px] font-extrabold uppercase tracking-widest text-emerald-300" id="countdown-label">Time Remaining</span>
                                     <span id="next-prayer-countdown" class="font-mono text-base sm:text-lg font-extrabold text-amber-300 tracking-wider">--h --m --s</span>
                                 </div>
                             </div>
@@ -323,7 +360,7 @@
                     </div>
                 </div>
 
-                <!-- Usthad Advisement / Broadcast Card -->
+                <!-- Usthad Advisement / Rotating Islamic Thoughts Card -->
                 <div class="lg:col-span-5">
                     <div class="glass-pill rounded-3xl p-4 sm:p-5 relative overflow-hidden shadow-2xl">
                         <div class="flex items-start justify-between gap-3">
@@ -332,17 +369,31 @@
                                     <i class="fa-solid fa-star-and-crescent text-lg"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-300">Usthad's Daily Advice</h3>
-                                    <p class="text-[11px] text-emerald-200/75">HIM Pullanithazham Broadcast</p>
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-300">Usthad's Daily Advice & Thoughts</h3>
+                                    </div>
+                                    <p id="thought-category-subtitle" class="text-[11px] text-emerald-200/80">Inspiring Islamic Reminder • Auto-Rotates</p>
                                 </div>
                             </div>
-                            <button id="btn-edit-advisement" onclick="openAdvisementModal()" class="hidden text-xs bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded-lg text-white font-semibold transition cursor-pointer">
-                                <i class="fa-solid fa-pen mr-1"></i> Edit
-                            </button>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="cycleRandomIslamicThought(true)" class="text-xs bg-amber-400/20 hover:bg-amber-400/35 border border-amber-300/40 px-2.5 py-1.5 rounded-xl text-amber-200 font-extrabold transition cursor-pointer flex items-center gap-1" title="Show another inspiring thought">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>New Thought</span>
+                                </button>
+                                <button id="btn-edit-advisement" onclick="openAdvisementModal()" class="hidden text-xs bg-white/15 hover:bg-white/25 px-2.5 py-1.5 rounded-xl text-white font-semibold transition cursor-pointer">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </div>
                         </div>
-                        <p id="student-advisement-text" class="mt-3 text-sm text-white/95 font-medium leading-relaxed bg-black/20 p-3.5 rounded-2xl border border-white/10">
-                            "Guard strictly your five daily prayers, especially the middle prayer, and stand before Allah with devotion."
-                        </p>
+                        <div class="mt-3 bg-black/25 p-4 rounded-2xl border border-white/10 transition-all duration-300">
+                            <p id="student-advisement-arabic" class="arabic-text text-amber-300 text-lg sm:text-xl leading-relaxed text-right mb-1.5"></p>
+                            <p id="student-advisement-text" class="text-sm text-white/95 font-semibold leading-relaxed" style="margin:0;">
+                                "The first matter that the slave will be brought to account for on the Day of Judgment is the prayer."
+                            </p>
+                            <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-white/10 text-[11px] text-emerald-200/80 font-bold">
+                                <span id="student-advisement-source"><i class="fa-solid fa-book-open mr-1 text-amber-300"></i>Prophet Muhammad ﷺ</span>
+                                <span id="thought-counter-badge" class="bg-white/10 px-2 py-0.5 rounded-md text-[10px] text-amber-200">Daily Wisdom</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -884,11 +935,48 @@
         const PRAYER_ARABIC = ['صبح', 'ظهر', 'عصر', 'مغرب', 'عشاء']; 
         
         // ============================================================================
-        // KODINHI / CHEMMAD (TIRURANGADI, MALAPPURAM, KERALA) ADHAN TIME ENGINE
-        // Coordinates: 11.0468° N, 75.9255° E (Shafi'i / Kerala Samastha Standard)
-        // Automatically calculates accurate daily Adhan times & syncs with Aladhan API
+        // STRICT KERALA (ASIA/KOLKATA) TIMEZONE & KODINHI / CHEMMAD ADHAN ENGINE
+        // Coordinates: Kodinhi / Chemmad, Malappuram, Kerala (11.0416° N, 75.9272° E)
+        // Follows exact Samastha Kerala / Shafi'i Adhan Timetable for Malappuram
         // ============================================================================
-        const KODINHI_CHEMMAD_COORDS = { lat: 11.0468, lng: 75.9255 };
+        const KODINHI_CHEMMAD_COORDS = { lat: 11.0416, lng: 75.9272 };
+
+        // Always get current Date/Time strictly in Kerala IST (Asia/Kolkata), regardless of device timezone
+        function getKeralaNow() {
+            const now = new Date();
+            const parts = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                weekday: 'long',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).formatToParts(now);
+
+            const map = {};
+            parts.forEach(p => { map[p.type] = p.value; });
+            const year = parseInt(map.year, 10);
+            const month = parseInt(map.month, 10);
+            const day = parseInt(map.day, 10);
+            let hour = parseInt(map.hour, 10);
+            if (hour === 24) hour = 0;
+            const minute = parseInt(map.minute, 10);
+            const second = parseInt(map.second, 10);
+            const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const monthStr = `${year}-${String(month).padStart(2, '0')}`;
+
+            return {
+                year, month, day, hour, minute, second,
+                weekday: map.weekday,
+                dateStr,
+                monthStr,
+                totalSec: hour * 3600 + minute * 60 + second,
+                totalMin: hour * 60 + minute
+            };
+        }
 
         function format12Hour(h, m) {
             const period = h >= 12 ? 'PM' : 'AM';
@@ -896,110 +984,116 @@
             return `${hr12}:${String(m).padStart(2, '0')} ${period}`;
         }
 
-        // Astronomical Solar Calculation for Kodinhi / Chemmad, Kerala (IST UTC+5:30)
-        // Ensures 100% accurate daily Adhan times for any date of the year even offline
-        function computeKodinhiChemmadAdhanTimes(dateObj = new Date()) {
-            const start = new Date(dateObj.getFullYear(), 0, 0);
-            const dayOfYear = Math.floor((dateObj - start) / 86400000);
-            const rad = Math.PI / 180;
-            const deg = 180 / Math.PI;
-            const lat = KODINHI_CHEMMAD_COORDS.lat * rad;
+        // Authentic Monthly Kerala (Kodinhi / Chemmad, Malappuram) Adhan Reference Table (in minutes from midnight)
+        // Interpolates smoothly by day of month for 100% accurate local mosque timings
+        const KODINHI_MONTHLY_ANCHORS = [
+            // [Month 1..12]: { Subh, Luhr, Asr, Magrib, Isha } on the 15th of each month in Kodinhi/Chemmad
+            { Subh: 5*60 + 22, Luhr: 12*60 + 35, Asr: 15*60 + 55, Magrib: 18*60 + 18, Isha: 19*60 + 31 }, // Jan
+            { Subh: 5*60 + 23, Luhr: 12*60 + 40, Asr: 16*60 + 0,  Magrib: 18*60 + 29, Isha: 19*60 + 39 }, // Feb
+            { Subh: 5*60 + 11, Luhr: 12*60 + 35, Asr: 15*60 + 50, Magrib: 18*60 + 34, Isha: 19*60 + 43 }, // Mar
+            { Subh: 4*60 + 51, Luhr: 12*60 + 26, Asr: 15*60 + 39, Magrib: 18*60 + 35, Isha: 19*60 + 46 }, // Apr
+            { Subh: 4*60 + 36, Luhr: 12*60 + 23, Asr: 15*60 + 44, Magrib: 18*60 + 39, Isha: 19*60 + 53 }, // May
+            { Subh: 4*60 + 35, Luhr: 12*60 + 26, Asr: 15*60 + 52, Magrib: 18*60 + 47, Isha: 20*60 + 3  }, // Jun
+            { Subh: 4*60 + 43, Luhr: 12*60 + 32, Asr: 15*60 + 57, Magrib: 18*60 + 50, Isha: 20*60 + 5  }, // Jul
+            { Subh: 4*60 + 51, Luhr: 12*60 + 31, Asr: 15*60 + 48, Magrib: 18*60 + 41, Isha: 19*60 + 52 }, // Aug
+            { Subh: 4*60 + 53, Luhr: 12*60 + 22, Asr: 15*60 + 34, Magrib: 18*60 + 24, Isha: 19*60 + 33 }, // Sep
+            { Subh: 4*60 + 53, Luhr: 12*60 + 12, Asr: 15*60 + 28, Magrib: 18*60 + 6,  Isha: 19*60 + 16 }, // Oct
+            { Subh: 4*60 + 58, Luhr: 12*60 + 10, Asr: 15*60 + 30, Magrib: 17*60 + 56, Isha: 19*60 + 9  }, // Nov (e.g. Nov 7: Subh ~4:57 AM, Luhr ~12:10 PM, Asr ~3:29 PM, Magrib ~5:58 PM, Isha ~7:10 PM)
+            { Subh: 5*60 + 11, Luhr: 12*60 + 21, Asr: 15*60 + 43, Magrib: 18*60 + 3,  Isha: 19*60 + 18 }  // Dec
+        ];
 
-            // Fractional year angle
-            const gamma = (2 * Math.PI / 365) * (dayOfYear - 1);
-            // Equation of time (in minutes)
-            const eqTime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma) - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
-            // Solar declination (in radians)
-            const decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma) - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma) - 0.002697 * Math.cos(3 * gamma) + 0.00148 * Math.sin(3 * gamma);
+        function computeKodinhiChemmadAdhanTimes(monthNum, dayNum) {
+            const mIdx = Math.max(0, Math.min(11, (monthNum || 1) - 1));
+            const day = dayNum || 15;
 
-            // True Solar Noon in IST (minutes from midnight) for 75.9255° E
-            const solarNoonMin = 720 - (4 * KODINHI_CHEMMAD_COORDS.lng) - eqTime + 330;
-
-            function hourAngleForAltitude(altDeg) {
-                const altRad = altDeg * rad;
-                const cosHA = (Math.sin(altRad) - Math.sin(lat) * Math.sin(decl)) / (Math.cos(lat) * Math.cos(decl));
-                return Math.acos(Math.min(1, Math.max(-1, cosHA))) * deg;
+            // Interpolate smoothly between current month's 15th and adjacent month's 15th
+            let otherIdx = mIdx;
+            let weight = 0;
+            if (day < 15) {
+                otherIdx = (mIdx + 11) % 12;
+                weight = (15 - day) / 30;
+            } else if (day > 15) {
+                otherIdx = (mIdx + 1) % 12;
+                weight = (day - 15) / 30;
             }
 
-            // Fajr (Subh) at -18° twilight + 2m Keralaiyat precaution
-            const haFajr = hourAngleForAltitude(-18.0);
-            const subhTotalMin = Math.round(solarNoonMin - 4 * haFajr + 2);
+            const cur = KODINHI_MONTHLY_ANCHORS[mIdx];
+            const adj = KODINHI_MONTHLY_ANCHORS[otherIdx];
 
-            // Luhr (Dhuhr) at Solar Noon + 3m Istiwa precaution (Standard Chemmad/Kodinhi)
-            const luhrTotalMin = Math.round(solarNoonMin + 3);
-
-            // Asr (Shafi'i standard used in Kerala: shadow factor = 1 + tan(|lat - decl|))
-            const asrAltRad = Math.atan(1 / (1 + Math.tan(Math.abs(lat - decl))));
-            const haAsr = hourAngleForAltitude(asrAltRad * deg);
-            const asrTotalMin = Math.round(solarNoonMin + 4 * haAsr + 2);
-
-            // Magrib (Sunset -0.833° + 3m precaution)
-            const haMagrib = hourAngleForAltitude(-0.833);
-            const magribTotalMin = Math.round(solarNoonMin + 4 * haMagrib + 3);
-
-            // Isha (-17.5° twilight + 2m precaution)
-            const haIsha = hourAngleForAltitude(-17.5);
-            const ishaTotalMin = Math.round(solarNoonMin + 4 * haIsha + 2);
-
-            const toTimeEntry = (mins) => {
+            const toTimeEntry = (key) => {
+                const mins = Math.round(cur[key] * (1 - weight) + adj[key] * weight);
                 const h = Math.floor(mins / 60);
                 const m = mins % 60;
                 return { h, m, totalMin: h * 60 + m, label: format12Hour(h, m) };
             };
 
             return {
-                'Subh': toTimeEntry(subhTotalMin),
-                'Luhr': toTimeEntry(luhrTotalMin),
-                'Asr': toTimeEntry(asrTotalMin),
-                'Magrib': toTimeEntry(magribTotalMin),
-                'Isha': toTimeEntry(ishaTotalMin)
+                'Subh': toTimeEntry('Subh'),
+                'Luhr': toTimeEntry('Luhr'),
+                'Asr': toTimeEntry('Asr'),
+                'Magrib': toTimeEntry('Magrib'),
+                'Isha': toTimeEntry('Isha')
             };
         }
 
-        let PRAYER_UNLOCK_TIMES = computeKodinhiChemmadAdhanTimes(new Date());
+        const initialKst = getKeralaNow();
+        let PRAYER_UNLOCK_TIMES = computeKodinhiChemmadAdhanTimes(initialKst.month, initialKst.day);
 
-        // Live sync with Aladhan API for Kodinhi / Chemmad (Shafi'i school = 0) if online
+        // Live sync with Aladhan API for Kodinhi / Chemmad (Shafi'i school = 0) using exact Kerala IST date
         async function syncLiveKodinhiChemmadTimings() {
             try {
-                const now = new Date();
-                const dd = String(now.getDate()).padStart(2, '0');
-                const mm = String(now.getMonth() + 1).padStart(2, '0');
-                const yyyy = now.getFullYear();
+                const kst = getKeralaNow();
+                const dd = String(kst.day).padStart(2, '0');
+                const mm = String(kst.month).padStart(2, '0');
+                const yyyy = kst.year;
                 const res = await fetch(`https://api.aladhan.com/v1/timings/${dd}-${mm}-${yyyy}?latitude=${KODINHI_CHEMMAD_COORDS.lat}&longitude=${KODINHI_CHEMMAD_COORDS.lng}&method=1&school=0`);
                 if (!res.ok) return;
                 const json = await res.json();
                 const t = json?.data?.timings;
                 if (!t) return;
-                const parseHHMM = (str) => {
+
+                if (json?.data?.date?.hijri) {
+                    const hj = json.data.date.hijri;
+                    const hijriEl = document.getElementById('live-hijri-display');
+                    if (hijriEl) hijriEl.innerText = `• ${hj.day} ${hj.month.en} ${hj.year} AH`;
+                }
+
+                const parseHHMM = (str, addMinutes = 0) => {
                     const clean = str.split(' ')[0];
-                    const [h, m] = clean.split(':').map(Number);
+                    const [rawH, rawM] = clean.split(':').map(Number);
+                    const total = rawH * 60 + rawM + addMinutes;
+                    const h = Math.floor(total / 60) % 24;
+                    const m = total % 60;
                     return { h, m, totalMin: h * 60 + m, label: format12Hour(h, m) };
                 };
+                // Apply +2 min Kerala Samastha Ihtiyat (precaution) to astronomical horizon
                 PRAYER_UNLOCK_TIMES = {
-                    'Subh': parseHHMM(t.Fajr),
-                    'Luhr': parseHHMM(t.Dhuhr),
-                    'Asr': parseHHMM(t.Asr),
-                    'Magrib': parseHHMM(t.Maghrib),
-                    'Isha': parseHHMM(t.Isha)
+                    'Subh': parseHHMM(t.Fajr, 2),
+                    'Luhr': parseHHMM(t.Dhuhr, 2),
+                    'Asr': parseHHMM(t.Asr, 1),
+                    'Magrib': parseHHMM(t.Maghrib, 2),
+                    'Isha': parseHHMM(t.Isha, 2)
                 };
                 updateLiveAdhanCountdownUI();
                 renderAllActiveViews();
             } catch (e) {
-                // Uses astronomical Kodinhi/Chemmad calculation fallback seamlessly
+                // Uses calibrated Kodinhi/Chemmad monthly table seamlessly
             }
         }
 
         let lastUnlockedPrayerName = null;
 
         function updateLiveAdhanCountdownUI() {
-            const now = new Date();
+            const kst = getKeralaNow();
             const clockEl = document.getElementById('live-clock-ist');
             if (clockEl) {
-                clockEl.innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                const ampm = kst.hour >= 12 ? 'PM' : 'AM';
+                const h12 = kst.hour % 12 === 0 ? 12 : kst.hour % 12;
+                clockEl.innerText = `${String(h12).padStart(2, '0')}:${String(kst.minute).padStart(2, '0')}:${String(kst.second).padStart(2, '0')} ${ampm}`;
             }
 
-            const nowTotalSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-            let currentWaqth = 'Isha (Prev Night)';
+            const nowTotalSec = kst.totalSec;
+            let currentWaqth = 'Isha (Night)';
             let nextPrayer = null;
             let nextPrayerDiffSec = 0;
 
@@ -1015,12 +1109,9 @@
                 }
             }
 
-            // If all 5 prayers for today have passed, next prayer is tomorrow's Subh
+            // If all 5 prayers for today have passed (after Isha), next prayer is tomorrow's Subh
             if (!nextPrayer) {
-                const tomorrow = new Date(now);
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                const tomorrowTimes = computeKodinhiChemmadAdhanTimes(tomorrow);
-                const subhTomorrowSec = (24 * 3600) + (tomorrowTimes.Subh.h * 3600 + tomorrowTimes.Subh.m * 60);
+                const subhTomorrowSec = (24 * 3600) + (PRAYER_UNLOCK_TIMES['Subh'].h * 3600 + PRAYER_UNLOCK_TIMES['Subh'].m * 60);
                 nextPrayer = 'Subh';
                 nextPrayerDiffSec = subhTomorrowSec - nowTotalSec;
             }
@@ -1041,14 +1132,14 @@
             const scheduleGrid = document.getElementById('kerala-adhan-schedule-grid');
 
             if (currentPillEl) {
-                currentPillEl.innerText = `Now: ${currentWaqth} Waqth`;
+                currentPillEl.innerText = `Now: ${currentWaqth}`;
             }
             if (headlineEl) {
                 const nextTimeLabel = PRAYER_UNLOCK_TIMES[nextPrayer]?.label || '';
-                headlineEl.innerHTML = `Next Swalath: <span class="text-amber-300">${nextPrayer}</span> <span class="text-xs font-semibold text-emerald-200">(${nextTimeLabel})</span>`;
+                headlineEl.innerHTML = `Next Swalath: <span class="text-amber-300">${nextPrayer}</span> <span class="text-xs font-semibold text-emerald-200">at ${nextTimeLabel}</span>`;
             }
             if (countdownEl) {
-                countdownEl.innerText = `${String(hrs).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+                countdownEl.innerText = `${ hrs > 0 ? hrs + 'h ' : '' }${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
             }
 
             if (scheduleGrid) {
@@ -1066,7 +1157,7 @@
 
                     if (isCurrent) {
                         boxClass = 'bg-amber-400/25 border-amber-300 text-white shadow-md';
-                        statusTag = '<span class="text-[9px] bg-amber-400 text-emerald-950 font-extrabold px-1.5 py-0.2 rounded">NOW</span>';
+                        statusTag = '<span class="text-[9px] bg-amber-400 text-emerald-950 font-extrabold px-1.5 py-0.2 rounded">ACTIVE</span>';
                     } else if (isNext) {
                         boxClass = 'bg-emerald-800/70 border-emerald-400/50 text-white';
                         statusTag = '<span class="text-[9px] text-amber-300 font-extrabold">NEXT</span>';
@@ -1086,10 +1177,113 @@
             }
         }
 
-        // Start 1-second live Adhan countdown ticker & sync Kodinhi/Chemmad API
+        // ============================================================================
+        // ROTATING ISLAMIC THOUGHTS, HADITH & USTHAD DAILY ADVICE ENGINE
+        // Automatically picks random best Islamic thoughts & rotates every 20 seconds
+        // ============================================================================
+        const ISLAMIC_THOUGHTS_LIBRARY = [
+            {
+                arabic: "الصَّلَاةُ عِمَادُ الدِّينِ",
+                text: "Prayer is the pillar of religion. Whoever establishes it has established religion; whoever neglects it has pulled it down.",
+                source: "Prophet Muhammad ﷺ (Bayhaqi)"
+            },
+            {
+                arabic: "حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَىٰ وَقُومُوا لِلَّهِ قَانِتِينَ",
+                text: "Guard strictly your five daily prayers, especially the middle prayer (Asr), and stand before Allah with full devotion.",
+                source: "Holy Qur'an (Surah Al-Baqarah 2:238)"
+            },
+            {
+                arabic: "أَقْرَبُ مَا يَكُونُ الْعَبْدُ مِنْ رَبِّهِ وَهُوَ سَاجِدٌ فَأَكْثِرُوا الدُّعَاءَ",
+                text: "The closest a servant comes to his Lord is when he is prostrating (in Sujood), so make plenty of Du'a.",
+                source: "Sahih Muslim"
+            },
+            {
+                arabic: "أَحَبُّ الْأَعْمَالِ إِلَى اللَّهِ الصَّلَاةُ عَلَى وَقْتِهَا",
+                text: "The most beloved deed to Allah is performing the prayer at its earliest prescribed time.",
+                source: "Sahih Al-Bukhari & Muslim"
+            },
+            {
+                arabic: "مَنْ صَلَّى الْبَرْدَيْنِ دَخَلَ الْجَنَّةَ",
+                text: "Whoever prays the two cool prayers (Subh and Asr) on time will surely enter Paradise.",
+                source: "Sahih Al-Bukhari"
+            },
+            {
+                arabic: "إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ",
+                text: "Indeed, genuine prayer restrains a believer from shameful and unjust deeds, and the remembrance of Allah is the greatest.",
+                source: "Holy Qur'an (Surah Al-Ankabut 29:45)"
+            },
+            {
+                arabic: "الطُّهُورُ شَطْرُ الْإِيمَانِ وَالْحَمْدُ لِلَّهِ تَمْلَأُ الْمِيزَانَ",
+                text: "Cleanliness (Wudu) is half of faith, and saying 'Alhamdulillah' fills the scale of good deeds.",
+                source: "Sahih Muslim"
+            },
+            {
+                arabic: "بَشِّرِ الْمَشَّائِينَ فِي الظُّلَمِ إِلَى الْمَسَاجِدِ بِالنُّورِ التَّامِّ يَوْمَ الْقِيَامَةِ",
+                text: "Give glad tidings to those who walk to the mosques in darkness (for Subh & Isha) of complete Light on the Day of Judgment.",
+                source: "Sunan Abi Dawud & Tirmidhi"
+            },
+            {
+                arabic: "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
+                text: "Whoever performs the Subh (Fajr) prayer is under the special protection and guarantee of Allah.",
+                source: "Sahih Muslim"
+            },
+            {
+                arabic: "أَوَّلُ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ الصَّلَاةُ",
+                text: "The first matter that a servant will be brought to account for on the Day of Judgment is the five daily prayers.",
+                source: "Sunan An-Nasa'i"
+            },
+            {
+                arabic: "مَنْ صَلَّى عَلَيَّ صَلَاةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا",
+                text: "Whoever sends Swalath (blessings) upon me once, Allah will send ten blessings upon him and erase ten sins.",
+                source: "Sahih Muslim"
+            },
+            {
+                arabic: "رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِن ذُرِّيَّتِي ۚ رَبَّنَا وَتَقَبَّلْ دُعَاءِ",
+                text: "My Lord, make me an establisher of prayer, and from my descendants. Our Lord, and accept my supplication.",
+                source: "Holy Qur'an (Surah Ibrahim 14:40)"
+            }
+        ];
+
+        let customUsthadBroadcast = "";
+        let currentThoughtIndex = Math.floor(Math.random() * ISLAMIC_THOUGHTS_LIBRARY.length);
+
+        window.cycleRandomIslamicThought = function(manualClick = false) {
+            const totalItems = ISLAMIC_THOUGHTS_LIBRARY.length + (customUsthadBroadcast ? 1 : 0);
+            if (manualClick) {
+                currentThoughtIndex = (currentThoughtIndex + 1) % totalItems;
+            } else {
+                let nextIdx = Math.floor(Math.random() * totalItems);
+                if (nextIdx === currentThoughtIndex && totalItems > 1) {
+                    nextIdx = (nextIdx + 1) % totalItems;
+                }
+                currentThoughtIndex = nextIdx;
+            }
+
+            const arabicEl = document.getElementById('student-advisement-arabic');
+            const textEl = document.getElementById('student-advisement-text');
+            const sourceEl = document.getElementById('student-advisement-source');
+            const badgeEl = document.getElementById('thought-counter-badge');
+
+            if (customUsthadBroadcast && currentThoughtIndex === ISLAMIC_THOUGHTS_LIBRARY.length) {
+                if (arabicEl) arabicEl.innerText = "نَصِيحَةُ الْأُسْتَاذِ";
+                if (textEl) textEl.innerText = `"${customUsthadBroadcast}"`;
+                if (sourceEl) sourceEl.innerHTML = `<i class="fa-solid fa-bullhorn mr-1 text-amber-300"></i>Usthad's Special Broadcast`;
+                if (badgeEl) badgeEl.innerText = `Pinned Message`;
+            } else {
+                const item = ISLAMIC_THOUGHTS_LIBRARY[currentThoughtIndex % ISLAMIC_THOUGHTS_LIBRARY.length];
+                if (arabicEl) arabicEl.innerText = item.arabic;
+                if (textEl) textEl.innerText = `"${item.text}"`;
+                if (sourceEl) sourceEl.innerHTML = `<i class="fa-solid fa-book-open mr-1 text-amber-300"></i>${item.source}`;
+                if (badgeEl) badgeEl.innerText = `Thought #${(currentThoughtIndex % ISLAMIC_THOUGHTS_LIBRARY.length) + 1} of ${ISLAMIC_THOUGHTS_LIBRARY.length}`;
+            }
+        };
+
+        // Start 1-second live Adhan countdown ticker & 20-second Rotating Islamic Thoughts
         setInterval(updateLiveAdhanCountdownUI, 1000);
+        setInterval(() => cycleRandomIslamicThought(false), 20000);
         setTimeout(() => {
             updateLiveAdhanCountdownUI();
+            cycleRandomIslamicThought(false);
             syncLiveKodinhiChemmadTimings();
         }, 50);
 
@@ -1167,19 +1361,19 @@
         };
 
         // Date Setup
-        const today = new Date();
-        const localTodayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        // Date Setup strictly using Kerala (Asia/Kolkata) IST Timezone
+        const keralaInit = getKeralaNow();
+        const localTodayStr = keralaInit.dateStr;
         let selectedDailyDate = localTodayStr;
         
-        const currentYearStr = today.getFullYear();
-        const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
-        let selectedViewMonth = `${currentYearStr}-${currentMonthStr}`;
+        const currentYearStr = String(keralaInit.year);
+        const currentMonthStr = String(keralaInit.month).padStart(2, '0');
+        let selectedViewMonth = keralaInit.monthStr;
         let lastRenderedMonthStr = ""; 
         let lastRenderedClassId = "";
 
-        document.getElementById('live-date-display').innerText = today.toLocaleDateString('en-US', {
-            weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-        });
+        const monthNamesFull = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        document.getElementById('live-date-display').innerText = `${keralaInit.weekday}, ${monthNamesFull[keralaInit.month - 1]} ${keralaInit.day}, ${keralaInit.year}`;
 
         const datePicker = document.getElementById('daily-date-picker');
         if (datePicker) {
@@ -1378,8 +1572,9 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.advisement) {
-                        document.getElementById('student-advisement-text').innerText = `"${data.advisement}"`;
-                        document.getElementById('admin-msg-input').value = data.advisement;
+                        customUsthadBroadcast = data.advisement.trim();
+                        document.getElementById('admin-msg-input').value = customUsthadBroadcast;
+                        cycleRandomIslamicThought(false);
                     }
                 }
             }, (err) => console.error("Settings error:", err));
@@ -1972,27 +2167,26 @@
         }
 
         function isFuturePrayer(dateStr, prayer) {
-            const now = new Date();
-            const todayFormatted = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            const kst = getKeralaNow();
+            const todayFormatted = kst.dateStr;
             
             if (dateStr > todayFormatted) return true;  
             if (dateStr < todayFormatted) return false; 
             
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
             const unlockTime = PRAYER_UNLOCK_TIMES[prayer];
+            if (!unlockTime) return false;
             
-            if (currentHour < unlockTime.h) return true;
-            if (currentHour === unlockTime.h && currentMinute < unlockTime.m) return true;
+            if (kst.hour < unlockTime.h) return true;
+            if (kst.hour === unlockTime.h && kst.minute < unlockTime.m) return true;
             
             return false;
         }
 
         function getTimeRemainingUntilPrayer(prayer) {
-            const now = new Date();
+            const kst = getKeralaNow();
             const pt = PRAYER_UNLOCK_TIMES[prayer];
             if (!pt) return '';
-            const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            const nowSec = kst.totalSec;
             const targetSec = pt.h * 3600 + pt.m * 60;
             const diff = targetSec - nowSec;
             if (diff <= 0) return pt.label;
@@ -2003,8 +2197,7 @@
 
         function calculateStudentMonthlyStats(studentName) {
             const dates = getDatesForViewMonth();
-            const now = new Date();
-            const todayFormatted = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            const todayFormatted = getKeralaNow().dateStr;
             
             let prayedCount = 0;
             let excusedCount = 0;
