@@ -324,8 +324,201 @@
         </div>
     </header>
 
-    <!-- Hero Banner & Class Tabs -->
-    <section class="islamic-bg text-white pb-12 pt-5 border-b border-emerald-900">
+    <!-- Compact Top Class & View Switcher Bar (Keeps Sheet in the Upper 1st Position) -->
+    <div id="portal-navigation-bar" class="islamic-bg text-white py-3 border-b border-emerald-900/90 shadow-md">
+        <div class="app-container flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full" id="class-pills-container">
+                <!-- Dynamic Class Pills Injected Here -->
+            </div>
+
+            <!-- View Mode Switcher (Monthly Sheets 1st) -->
+            <div id="view-mode-switcher" class="flex items-center bg-emerald-950/80 p-1 rounded-2xl border border-emerald-700/50 self-start sm:self-auto">
+                <button onclick="switchMainView('sheets')" id="view-btn-sheets" class="px-4 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 bg-amber-400 text-emerald-950 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-table"></i> 1. Monthly Sheets
+                </button>
+                <button onclick="switchMainView('cards')" id="view-btn-cards" class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white cursor-pointer">
+                    <i class="fa-solid fa-id-card"></i> 2. ID Cards
+                </button>
+                <button onclick="switchMainView('leaderboard')" id="view-btn-leaderboard" class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white cursor-pointer">
+                    <i class="fa-solid fa-trophy"></i> 3. Leaderboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1ST & UPPERMOST MAIN SECTION: MONTHLY PRAYER SHEETS AT THE VERY TOP -->
+    <main class="flex-grow app-container pt-4 pb-8 z-10">
+        
+        <!-- PERSONAL STUDENT SHEET HERO CARD (Visible 1st when a student opens their personal sheet link) -->
+        <div id="personal-student-banner" class="hidden modern-card antigravity-card mb-5 border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-50/90 via-white to-amber-50/60">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div id="personal-banner-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-900 text-amber-300 font-extrabold text-2xl flex items-center justify-center shadow-lg shrink-0">
+                        S
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="personal-banner-id" class="id-badge">HIM-901</span>
+                            <span id="personal-banner-class" class="text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-lg">Class 9</span>
+                            <span class="text-[11px] font-extrabold text-amber-900 bg-amber-200/80 px-2.5 py-0.5 rounded-lg"><i class="fa-solid fa-shield-halved text-[10px] mr-1"></i>Official Student Sheet</span>
+                        </div>
+                        <h3 id="personal-banner-name" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" style="margin-bottom:0;">Student Name</h3>
+                        <p id="personal-banner-phones" class="text-xs text-slate-500 font-semibold mt-0.5" style="margin-bottom:0;"></p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="bg-white border border-emerald-200 px-4 py-2.5 rounded-2xl text-center shadow-sm">
+                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Monthly Consistency</span>
+                        <span id="personal-banner-score" class="text-lg font-extrabold text-emerald-700">0%</span>
+                    </div>
+                    <div class="bg-emerald-900 text-amber-300 px-4 py-2.5 rounded-2xl text-center shadow-sm">
+                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-emerald-200">Today's Status</span>
+                        <span id="personal-banner-today" class="text-lg font-extrabold text-amber-300">0 / 5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 1 (1ST & UPPERMOST): MONTHLY PAPER SHEETS -->
+        <div id="view-sheets" class="space-y-5 fade-in">
+            <div class="modern-card antigravity-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="font-extrabold text-slate-800 text-lg sm:text-xl flex items-center gap-2.5" style="margin:0;">
+                        <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-table-cells"></i>
+                        </span>
+                        <span id="sheet-class-heading">Monthly Prayer Tracker Sheet</span>
+                    </h3>
+                    <p id="sheet-subtitle-text" class="text-xs text-slate-500 mt-1 font-medium" style="margin-bottom:0;">Tap any prayer box below to mark or update your daily prayers. Every tick is saved automatically.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                    <div class="flex items-center gap-2 bg-slate-100 px-3.5 py-2 rounded-2xl border border-slate-200">
+                        <label class="text-xs font-extrabold text-slate-600">Month:</label>
+                        <input type="month" id="admin-month-selector" class="bg-transparent text-xs font-extrabold text-slate-800 outline-none cursor-pointer">
+                    </div>
+                    <button id="btn-export-csv" onclick="exportDataToCSV()" class="modern-btn modern-btn-emerald">
+                        <i class="fa-solid fa-download"></i> Export CSV
+                    </button>
+                    <label id="csv-import-label" class="hidden cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-3.5 rounded-2xl transition shadow-sm text-xs items-center gap-1.5">
+                        <i class="fa-solid fa-upload"></i> Import CSV
+                        <input type="file" id="csv-upload" accept=".csv" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Monthly Paper Sheets Grid (Rendered 1st at Top of Page) -->
+            <div id="paper-sheets-container" class="sheets-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Control Bar (Search Student ID / Date Filter) -->
+        <div id="main-control-bar" class="modern-card antigravity-card mt-5 mb-5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            
+            <!-- Date Selector -->
+            <div class="flex items-center justify-between sm:justify-start gap-3">
+                <div class="flex items-center gap-2.5 text-slate-700 font-bold text-sm">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                        <i class="fa-regular fa-calendar-check text-base"></i>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Active Date</span>
+                        <span id="friendly-selected-date" class="text-slate-800 font-extrabold">Today</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center bg-slate-100 border border-slate-200 rounded-2xl p-1">
+                    <button onclick="changeDate(-1)" class="w-8 h-8 rounded-xl hover:bg-white text-slate-600 flex items-center justify-center transition cursor-pointer" title="Previous Day">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <input type="date" id="daily-date-picker" class="bg-transparent px-2 py-1 text-xs sm:text-sm font-extrabold text-slate-700 outline-none cursor-pointer">
+                    <button onclick="changeDate(1)" id="btn-next-day" class="w-8 h-8 rounded-xl hover:bg-white text-slate-600 flex items-center justify-center transition cursor-pointer" title="Next Day">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+
+                <button onclick="jumpToToday()" id="btn-today-jump" class="hidden text-xs font-extrabold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl transition cursor-pointer">
+                    Today
+                </button>
+            </div>
+
+            <!-- Student ID / Name Filter & Send Student Links -->
+            <div id="search-and-summary-controls" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <div id="student-search-wrapper" class="relative flex-grow sm:w-72">
+                    <i class="fa-solid fa-id-badge absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-600 text-xs"></i>
+                    <input type="text" id="student-search-input" oninput="renderAllActiveViews(true)" placeholder="Search Student ID (HIM-901) or Name..." class="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm font-bold focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition">
+                    <button id="clear-id-filter-btn" onclick="clearStudentFilter()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer" title="Clear search">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                </div>
+
+                <button id="btn-control-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-emerald" style="white-space:nowrap;" title="Send individual personal prayer sheet links to each student">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Send Student Links</span>
+                </button>
+                
+                <div class="flex items-center justify-between sm:justify-end gap-2 bg-emerald-50/80 border border-emerald-200/80 px-3.5 py-2 rounded-2xl">
+                    <span class="text-xs font-bold text-emerald-900">Today's Prayers:</span>
+                    <span id="class-daily-score" class="text-sm font-extrabold text-emerald-700 bg-white px-2.5 py-0.5 rounded-lg shadow-sm border border-emerald-100">0 / 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: STUDENT ID CARDS -->
+        <div id="view-cards" class="hidden space-y-6 fade-in">
+            <div class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-500">
+                <div class="flex flex-wrap items-center gap-4">
+                    <span class="font-extrabold text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-hand-pointer text-emerald-600"></i> Tap any prayer button to update:
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 font-semibold"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Prayed</span>
+                    <span class="inline-flex items-center gap-1.5 font-semibold"><span class="w-3 h-3 rounded bg-pink-200 border border-pink-400 inline-block"></span> Excused (Girls)</span>
+                    <span class="inline-flex items-center gap-1.5 font-semibold"><span class="w-3 h-3 rounded bg-slate-200 inline-block"></span> Pending</span>
+                </div>
+                <div class="arabic-text text-base text-emerald-800 font-bold">
+                    صبح (Subh) • ظهر (Luhr) • عصر (Asr) • مغرب (Magrib) • عشاء (Isha)
+                </div>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="student-cards-grid" class="cards-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- VIEW 3: CLASS LEADERBOARD -->
+        <div id="view-leaderboard" class="hidden space-y-6 fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden">
+                <div class="p-6 islamic-bg text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest text-amber-300 font-extrabold">Monthly Consistency Champions</span>
+                        <h3 class="text-2xl font-extrabold mt-0.5 flex items-center gap-2" id="leaderboard-class-title">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> Class Leaderboard
+                        </h3>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-2xl border border-white/20">
+                        <i class="fa-regular fa-calendar text-amber-300 text-xs"></i>
+                        <span class="text-xs font-bold">Month:</span>
+                        <input type="month" id="leaderboard-month-picker" class="bg-transparent text-white text-xs font-extrabold outline-none cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Top 3 Podium -->
+                <div id="leaderboard-podium" class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-slate-50/70 border-b border-slate-100">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Full Ranking List -->
+                <div id="leaderboard-list" class="divide-y divide-slate-100">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Live Kodinhi / Chemmad Adhan Countdown & Usthad Daily Advice Banner (Below the Sheet so Sheet is 1st) -->
+    <section class="islamic-bg text-white py-8 border-t border-emerald-900">
         <div class="app-container">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 
@@ -343,15 +536,15 @@
                             <span class="text-white font-mono bg-emerald-950/80 px-2 py-0.5 rounded-md border border-white/10" id="live-clock-ist">--:--:--</span>
                         </div>
                     </div>
-                    <h2 id="hero-greeting-title" class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
-                        Assalamu Alaikum! <span class="arabic-text font-normal text-amber-300 text-3xl sm:text-4xl ml-1">ٱلسَّلَامُ عَلَيْكُمْ</span>
+                    <h2 id="hero-greeting-title" class="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+                        Assalamu Alaikum! <span class="arabic-text font-normal text-amber-300 text-2xl sm:text-3xl ml-1">ٱلسَّلَامُ عَلَيْكُمْ</span>
                     </h2>
-                    <p id="hero-greeting-subtitle" class="text-emerald-100/90 text-sm sm:text-base max-w-xl leading-relaxed">
+                    <p id="hero-greeting-subtitle" class="text-emerald-100/90 text-xs sm:text-sm max-w-xl leading-relaxed">
                         Mark your 5 daily prayers on time according to <strong>Kodinhi / Chemmad Samastha Kerala Adhan timings</strong> and build a blessed monthly streak.
                     </p>
 
                     <!-- LIVE KODINHI / CHEMMAD ADHAN & NEXT SWALATH COUNTDOWN BAR -->
-                    <div class="pt-2">
+                    <div class="pt-1">
                         <div class="glass-pill rounded-3xl p-4 border border-amber-300/30 shadow-xl">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-white/15">
                                 <div class="flex items-center gap-3">
@@ -420,198 +613,8 @@
                 </div>
 
             </div>
-
-            <!-- Class Selection Pills (Automatically hidden when a student opens their Personal Sheet Link) -->
-            <div id="portal-navigation-bar" class="mt-7 pt-5 border-t border-emerald-800/80 flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full" id="class-pills-container">
-                    <!-- Dynamic Class Pills Injected Here -->
-                </div>
-
-                <!-- View Mode Switcher -->
-                <div id="view-mode-switcher" class="flex items-center bg-emerald-950/75 p-1 rounded-2xl border border-emerald-700/50 self-start sm:self-auto">
-                    <button onclick="switchMainView('sheets')" id="view-btn-sheets" class="px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 bg-amber-400 text-emerald-950 shadow-sm cursor-pointer">
-                        <i class="fa-solid fa-table"></i> Monthly Sheets
-                    </button>
-                    <button onclick="switchMainView('cards')" id="view-btn-cards" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white cursor-pointer">
-                        <i class="fa-solid fa-id-card"></i> ID Cards
-                    </button>
-                    <button onclick="switchMainView('leaderboard')" id="view-btn-leaderboard" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-emerald-200 hover:text-white cursor-pointer">
-                        <i class="fa-solid fa-trophy"></i> Leaderboard
-                    </button>
-                </div>
-            </div>
         </div>
     </section>
-
-    <!-- Main Content Container -->
-    <main class="flex-grow app-container -mt-7 pb-16 z-10">
-        
-        <!-- PERSONAL STUDENT SHEET HERO CARD (Visible when a student opens their personal sheet link) -->
-        <div id="personal-student-banner" class="hidden modern-card antigravity-card mb-6 border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-50/90 via-white to-amber-50/60">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div id="personal-banner-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-900 text-amber-300 font-extrabold text-2xl flex items-center justify-center shadow-lg shrink-0">
-                        S
-                    </div>
-                    <div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span id="personal-banner-id" class="id-badge">HIM-901</span>
-                            <span id="personal-banner-class" class="text-xs font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-lg">Class 9</span>
-                            <span class="text-[11px] font-extrabold text-amber-900 bg-amber-200/80 px-2.5 py-0.5 rounded-lg"><i class="fa-solid fa-shield-halved text-[10px] mr-1"></i>Official Student Sheet</span>
-                        </div>
-                        <h3 id="personal-banner-name" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" style="margin-bottom:0;">Student Name</h3>
-                        <p id="personal-banner-phones" class="text-xs text-slate-500 font-semibold mt-0.5" style="margin-bottom:0;"></p>
-                    </div>
-                </div>
-                <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                    <div class="bg-white border border-emerald-200 px-4 py-2.5 rounded-2xl text-center shadow-sm">
-                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Monthly Consistency</span>
-                        <span id="personal-banner-score" class="text-lg font-extrabold text-emerald-700">0%</span>
-                    </div>
-                    <div class="bg-emerald-900 text-amber-300 px-4 py-2.5 rounded-2xl text-center shadow-sm">
-                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-emerald-200">Today's Status</span>
-                        <span id="personal-banner-today" class="text-lg font-extrabold text-amber-300">0 / 5</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Control Bar (Date Picker, Student ID / Name Search, Prayer Time Status) -->
-        <div id="main-control-bar" class="modern-card antigravity-card mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            
-            <!-- Date Selector -->
-            <div class="flex items-center justify-between sm:justify-start gap-3">
-                <div class="flex items-center gap-2.5 text-slate-700 font-bold text-sm">
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
-                        <i class="fa-regular fa-calendar-check text-base"></i>
-                    </div>
-                    <div>
-                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Active Date</span>
-                        <span id="friendly-selected-date" class="text-slate-800 font-extrabold">Today</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center bg-slate-100 border border-slate-200 rounded-2xl p-1">
-                    <button onclick="changeDate(-1)" class="w-8 h-8 rounded-xl hover:bg-white text-slate-600 flex items-center justify-center transition cursor-pointer" title="Previous Day">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </button>
-                    <input type="date" id="daily-date-picker" class="bg-transparent px-2 py-1 text-xs sm:text-sm font-extrabold text-slate-700 outline-none cursor-pointer">
-                    <button onclick="changeDate(1)" id="btn-next-day" class="w-8 h-8 rounded-xl hover:bg-white text-slate-600 flex items-center justify-center transition cursor-pointer" title="Next Day">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
-                </div>
-
-                <button onclick="jumpToToday()" id="btn-today-jump" class="hidden text-xs font-extrabold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl transition cursor-pointer">
-                    Today
-                </button>
-            </div>
-
-            <!-- Student ID / Name Filter & Send Student Links -->
-            <div id="search-and-summary-controls" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <div id="student-search-wrapper" class="relative flex-grow sm:w-72">
-                    <i class="fa-solid fa-id-badge absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-600 text-xs"></i>
-                    <input type="text" id="student-search-input" oninput="renderAllActiveViews(true)" placeholder="Search Student ID (HIM-901) or Name..." class="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm font-bold focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition">
-                    <button id="clear-id-filter-btn" onclick="clearStudentFilter()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer" title="Clear search">
-                        <i class="fa-solid fa-circle-xmark"></i>
-                    </button>
-                </div>
-
-                <button id="btn-control-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-emerald" style="white-space:nowrap;" title="Send individual personal prayer sheet links to each student">
-                    <i class="fa-brands fa-whatsapp text-base"></i>
-                    <span>Send Student Links</span>
-                </button>
-                
-                <div class="flex items-center justify-between sm:justify-end gap-2 bg-emerald-50/80 border border-emerald-200/80 px-3.5 py-2 rounded-2xl">
-                    <span class="text-xs font-bold text-emerald-900">Today's Prayers:</span>
-                    <span id="class-daily-score" class="text-sm font-extrabold text-emerald-700 bg-white px-2.5 py-0.5 rounded-lg shadow-sm border border-emerald-100">0 / 0</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 1: STUDENT ID CARDS -->
-        <div id="view-cards" class="hidden space-y-6 fade-in">
-            <div class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-500">
-                <div class="flex flex-wrap items-center gap-4">
-                    <span class="font-extrabold text-slate-700 flex items-center gap-1.5">
-                        <i class="fa-solid fa-hand-pointer text-emerald-600"></i> Tap any prayer button to update:
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 font-semibold"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Prayed</span>
-                    <span class="inline-flex items-center gap-1.5 font-semibold"><span class="w-3 h-3 rounded bg-pink-200 border border-pink-400 inline-block"></span> Excused (Girls)</span>
-                    <span class="inline-flex items-center gap-1.5 font-semibold"><span class="w-3 h-3 rounded bg-slate-200 inline-block"></span> Pending</span>
-                </div>
-                <div class="arabic-text text-base text-emerald-800 font-bold">
-                    صبح (Subh) • ظهر (Luhr) • عصر (Asr) • مغرب (Magrib) • عشاء (Isha)
-                </div>
-            </div>
-
-            <!-- Cards Grid -->
-            <div id="student-cards-grid" class="cards-grid">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-        <!-- VIEW 2: CLASS LEADERBOARD -->
-        <div id="view-leaderboard" class="hidden space-y-6 fade-in">
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/90 overflow-hidden">
-                <div class="p-6 islamic-bg text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                        <span class="text-xs uppercase tracking-widest text-amber-300 font-extrabold">Monthly Consistency Champions</span>
-                        <h3 class="text-2xl font-extrabold mt-0.5 flex items-center gap-2" id="leaderboard-class-title">
-                            <i class="fa-solid fa-trophy text-amber-400"></i> Class Leaderboard
-                        </h3>
-                    </div>
-                    <div class="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-2xl border border-white/20">
-                        <i class="fa-regular fa-calendar text-amber-300 text-xs"></i>
-                        <span class="text-xs font-bold">Month:</span>
-                        <input type="month" id="leaderboard-month-picker" class="bg-transparent text-white text-xs font-extrabold outline-none cursor-pointer">
-                    </div>
-                </div>
-
-                <!-- Top 3 Podium -->
-                <div id="leaderboard-podium" class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-slate-50/70 border-b border-slate-100">
-                    <!-- Populated by JS -->
-                </div>
-
-                <!-- Full Ranking List -->
-                <div id="leaderboard-list" class="divide-y divide-slate-100">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 3: MONTHLY PAPER SHEETS (DEFAULT & STUDENT PERSONAL SHEET VIEW) -->
-        <div id="view-sheets" class="space-y-6 fade-in">
-            <div class="modern-card antigravity-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h3 class="font-extrabold text-slate-800 text-lg sm:text-xl flex items-center gap-2.5" style="margin:0;">
-                        <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 inline-flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-table-cells"></i>
-                        </span>
-                        <span id="sheet-class-heading">Monthly Prayer Tracker Sheet</span>
-                    </h3>
-                    <p id="sheet-subtitle-text" class="text-xs text-slate-500 mt-1 font-medium" style="margin-bottom:0;">Tap any prayer box to mark or update your daily prayers. Every tick is saved automatically.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
-                    <div class="flex items-center gap-2 bg-slate-100 px-3.5 py-2 rounded-2xl border border-slate-200">
-                        <label class="text-xs font-extrabold text-slate-600">Month:</label>
-                        <input type="month" id="admin-month-selector" class="bg-transparent text-xs font-extrabold text-slate-800 outline-none cursor-pointer">
-                    </div>
-                    <button id="btn-export-csv" onclick="exportDataToCSV()" class="modern-btn modern-btn-emerald">
-                        <i class="fa-solid fa-download"></i> Export CSV
-                    </button>
-                    <label id="csv-import-label" class="hidden cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-3.5 rounded-2xl transition shadow-sm text-xs items-center gap-1.5">
-                        <i class="fa-solid fa-upload"></i> Import CSV
-                        <input type="file" id="csv-upload" accept=".csv" class="hidden">
-                    </label>
-                </div>
-            </div>
-
-            <div id="paper-sheets-container" class="sheets-grid">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-    </main>
 
     <!-- DEDICATED STUDENT PERSONAL SHEET LINK SENDER MODAL (NO FULL-CLASS LINKS, ONLY INDIVIDUAL STUDENT LINKS) -->
     <div id="class-links-modal" class="hidden modal-overlay z-[195]">
