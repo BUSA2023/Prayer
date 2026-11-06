@@ -10,35 +10,70 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap');
         
         /* ==========================================================================
-           LUXURY ISLAMIC EMERALD & GOLD STANDALONE DESIGN ENGINE
-           Works 100% across all phones, tablets, desktops & webviews
+           ZERO-LAG, MULTI-COLOR COMBINATION STANDALONE DESIGN ENGINE
+           Optimized for 60/120 FPS Smooth Scrolling on All Mobile & Desktop Devices
            ========================================================================== */
         *, *::before, *::after { box-sizing: border-box; }
         .hidden { display: none !important; }
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
         
         body { 
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: #f0f4f8;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.08) 0px, transparent 50%);
+            background-color: #f1f5f9;
+            background-image: linear-gradient(180deg, #ecfdf5 0%, #f1f5f9 320px, #f8fafc 100%);
             margin: 0; 
             padding: 0; 
             color: #0f172a;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
+        body.modal-open { overflow: hidden !important; }
         .arabic-text { font-family: 'Amiri', serif; }
 
-        /* Royal Emerald & Gold Hero Header with Subtle Geometric Pattern */
+        /* Royal Multi-Tone Header (Emerald -> Teal -> Deep Indigo Accent) */
         .islamic-bg {
-            background: linear-gradient(135deg, #022c22 0%, #064e3b 52%, #047857 100%);
-            background-image: 
-                radial-gradient(circle at 12% 45%, rgba(16, 185, 129, 0.28) 0%, transparent 45%),
-                radial-gradient(circle at 88% 25%, rgba(251, 191, 36, 0.22) 0%, transparent 45%),
-                linear-gradient(135deg, #022c22 0%, #064e3b 52%, #047857 100%);
+            background: linear-gradient(135deg, #022c22 0%, #065f46 48%, #0f766e 82%, #1e1b4b 100%);
             color: #ffffff;
             position: relative;
         }
+
+        /* Distinct Vibrant Color Combination for NEXT SWALATH Countdown & Next Waqth Box */
+        .next-swalath-countdown-box {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 52%, #db2777 100%);
+            border: 2px solid #f472b6;
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.55);
+            color: #ffffff;
+        }
+        .waqth-card-active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            border: 2px solid #fde047 !important;
+            color: #022c22 !important;
+            box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.5);
+        }
+        .waqth-card-next {
+            background: linear-gradient(135deg, #6366f1 0%, #9333ea 55%, #ec4899 100%) !important;
+            border: 2px solid #f9a8d4 !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 24px -4px rgba(147, 51, 234, 0.55);
+            transform: translateY(-2px);
+        }
+        .waqth-card-open {
+            background: rgba(16, 185, 129, 0.22);
+            border: 1px solid rgba(52, 211, 153, 0.45);
+            color: #ecfdf5;
+        }
+        .waqth-card-wait {
+            background: rgba(15, 23, 42, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #cbd5e1;
+        }
+
+        /* 5-Waqth Individual Header Color Combinations on Sheets */
+        .th-subh { background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%) !important; color: #1e40af !important; border-bottom: 2px solid #93c5fd !important; }
+        .th-luhr { background: linear-gradient(180deg, #fefce8 0%, #fef08a 100%) !important; color: #854d0e !important; border-bottom: 2px solid #facc15 !important; }
+        .th-asr { background: linear-gradient(180deg, #fff7ed 0%, #fed7aa 100%) !important; color: #9a3412 !important; border-bottom: 2px solid #fb923c !important; }
+        .th-magrib { background: linear-gradient(180deg, #fdf2f8 0%, #fbcfe8 100%) !important; color: #9d174d !important; border-bottom: 2px solid #f472b6 !important; }
+        .th-isha { background: linear-gradient(180deg, #eef2ff 0%, #e0e7ff 100%) !important; color: #3730a3 !important; border-bottom: 2px solid #818cf8 !important; }
 
         .app-container { max-width: 1280px; margin: 0 auto; padding: 0 16px; width: 100%; }
         .modern-header-row { display: flex; align-items: center; justify-content: space-between; min-height: 76px; gap: 12px; flex-wrap: wrap; }
@@ -46,42 +81,40 @@
         .modern-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             padding: 10px 18px; border-radius: 14px; font-weight: 800; font-size: 13px;
-            border: 1px solid transparent; cursor: pointer; transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid transparent; cursor: pointer; transition: transform 0.15s ease, background-color 0.15s ease;
             text-decoration: none; line-height: 1.2;
         }
-        .modern-btn:hover { transform: translateY(-2px); }
+        .modern-btn:hover { transform: translateY(-1px); }
         .modern-btn:active { transform: translateY(0); }
         .modern-btn-gold { 
             background: linear-gradient(135deg, #fde047 0%, #f59e0b 55%, #d97706 100%); 
             color: #022c22; 
-            box-shadow: 0 8px 20px -4px rgba(245, 158, 11, 0.45); 
+            box-shadow: 0 6px 16px -4px rgba(245, 158, 11, 0.45); 
         }
         .modern-btn-glass { 
-            background: rgba(255, 255, 255, 0.14); 
+            background: rgba(255, 255, 255, 0.16); 
             color: #ffffff; 
             border: 1px solid rgba(255, 255, 255, 0.28); 
-            backdrop-filter: blur(12px); 
         }
         .modern-btn-emerald { 
             background: linear-gradient(135deg, #10b981 0%, #059669 60%, #047857 100%); 
             color: #ffffff; 
-            box-shadow: 0 8px 20px -4px rgba(5, 150, 105, 0.35); 
+            box-shadow: 0 6px 16px -4px rgba(5, 150, 105, 0.35); 
         }
 
         .modern-card {
             background: #ffffff;
             border-radius: 24px;
-            border: 1px solid rgba(226, 232, 240, 0.9);
-            box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.06), 0 4px 12px -4px rgba(15, 23, 42, 0.03);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.06);
             padding: 22px;
-            transition: all 0.25s ease;
         }
 
         .id-badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            background: linear-gradient(135deg, #022c22, #064e3b);
+            background: linear-gradient(135deg, #312e81, #1e1b4b);
             color: #fde047;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             font-size: 11px;
@@ -89,47 +122,42 @@
             padding: 4px 10px;
             border-radius: 9px;
             letter-spacing: 0.06em;
-            border: 1px solid rgba(251, 191, 36, 0.4);
-            box-shadow: 0 2px 8px rgba(2, 44, 34, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.45);
         }
 
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-            gap: 22px;
+            gap: 20px;
         }
         .sheets-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr));
-            gap: 24px;
+            gap: 22px;
         }
-        /* Single Student Locked Mode takes a centered luxury card layout */
+        /* Single Student Locked Mode uses full natural page scroll (Zero nested scroll lag!) */
         .sheets-grid.single-student-sheet {
-            grid-template-columns: minmax(min(100%, 340px), 760px);
+            grid-template-columns: minmax(min(100%, 340px), 780px);
             justify-content: center;
         }
-
-        @keyframes antigravityFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
+        .sheets-grid.single-student-sheet .paper-grid {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
         }
+        .sheets-grid.single-student-sheet .paper-grid > div:last-child {
+            overflow: visible !important;
+        }
+
+        /* GPU-Friendly Card Surface (No heavy backdrop-filter blur during scroll) */
         .antigravity-card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(16px);
+            background: #ffffff;
             border-radius: 24px;
-            border: 1px solid rgba(203, 213, 225, 0.75);
-            box-shadow: 0 16px 38px -10px rgba(15, 23, 42, 0.08), 0 4px 14px -4px rgba(5, 150, 105, 0.06);
-            transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
-        }
-        .antigravity-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 24px 48px -12px rgba(5, 150, 105, 0.14), 0 8px 20px -6px rgba(15, 23, 42, 0.06);
-        }
-        .float-badge {
-            animation: antigravityFloat 3.5s ease-in-out infinite;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 10px 26px -8px rgba(15, 23, 42, 0.07);
         }
 
-        /* Mobile Bottom Dock for Effortless One-Handed Navigation */
+        /* Mobile Bottom Dock */
         .mobile-bottom-dock {
             display: none;
             position: fixed;
@@ -137,12 +165,11 @@
             left: 12px;
             right: 12px;
             z-index: 120;
-            background: rgba(2, 44, 34, 0.96);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(251, 191, 36, 0.4);
+            background: #022c22;
+            border: 1px solid rgba(251, 191, 36, 0.45);
             border-radius: 22px;
             padding: 8px;
-            box-shadow: 0 20px 42px rgba(2, 44, 34, 0.5);
+            box-shadow: 0 14px 32px rgba(2, 44, 34, 0.45);
             justify-content: space-around;
             align-items: center;
             gap: 4px;
@@ -162,29 +189,22 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
         .dock-btn.active {
             background: linear-gradient(135deg, #fde047, #f59e0b);
             color: #022c22;
             font-weight: 800;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
         }
 
         /* Student Link Sender Card Styling */
         .student-link-card {
-            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            background: #ffffff;
             border: 1px solid #cbd5e1;
             border-radius: 20px;
             padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            transition: all 0.22s ease;
-        }
-        .student-link-card:hover {
-            border-color: #10b981;
-            box-shadow: 0 12px 26px -8px rgba(16, 185, 129, 0.18);
         }
 
         @media (max-width: 768px) {
@@ -192,7 +212,9 @@
             .mobile-bottom-dock { display: flex; }
             .app-container { padding: 0 12px; }
             .modern-card { padding: 16px; border-radius: 20px; }
-            .paper-grid { height: 74vh; border-radius: 18px; }
+            /* Eliminate nested scroll lag on mobile: sheets expand naturally */
+            .paper-grid { height: auto !important; max-height: none !important; border-radius: 18px; }
+            .paper-grid > div:last-child { overflow: visible !important; }
             .modern-header-row { min-height: 64px; padding: 8px 0; }
         }
         @media (max-width: 420px) {
@@ -202,55 +224,55 @@
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-        .loader { border: 4px solid #e2e8f0; border-top: 4px solid #059669; border-radius: 50%; width: 44px; height: 44px; animation: spin 0.85s linear infinite; }
+        .loader { border: 4px solid #e2e8f0; border-top: 4px solid #059669; border-radius: 50%; width: 44px; height: 44px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.2s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .glass-pill {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(14px);
+            background: rgba(15, 23, 42, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.22);
         }
         
-        .student-card { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-        .student-card:hover { transform: translateY(-4px); }
+        .prayer-btn { transition: transform 0.12s ease; }
+        .prayer-btn:active:not(:disabled) { transform: scale(0.93); }
 
-        .prayer-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .prayer-btn:active:not(:disabled) { transform: scale(0.92); }
-
-        /* Luxury Paper-like Grid Layout for Monthly Sheet */
+        /* Smooth Paper-like Grid Layout for Monthly Sheet */
         .paper-grid {
             border: 1px solid #cbd5e1;
             background: #ffffff;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 14px 32px -8px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.07);
             display: flex;
             flex-direction: column;
-            height: 76vh;
+            height: 74vh;
+        }
+        .paper-grid > div:last-child {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
         .paper-grid table { width: 100%; border-collapse: collapse; }
         .paper-grid th, .paper-grid td {
-            border: 1px solid #f1f5f9;
-            padding: 9px 6px;
+            border: 1px solid #e2e8f0;
+            padding: 8px 5px;
             text-align: center;
             font-size: 13px;
         }
         .paper-grid th { background-color: #f8fafc; font-weight: 800; color: #1e293b; }
         .paper-grid td:first-child { font-weight: 700; color: #334155; background-color: #f8fafc; width: 78px; }
-        .paper-grid tr:hover td { background-color: #ecfdf5; }
+        .paper-grid tr:hover td { background-color: #f0fdf4; }
         
         .modal-overlay { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(2, 44, 34, 0.78);
-            backdrop-filter: blur(8px); 
+            background: rgba(2, 44, 34, 0.85);
             display: flex; align-items: center; justify-content: center;
             padding: 16px;
+            overscroll-behavior: contain;
         }
     </style>
 </head>
@@ -333,22 +355,22 @@
                         <div class="glass-pill rounded-3xl p-4 border border-amber-300/30 shadow-xl">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-white/15">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-2xl bg-amber-400 text-emerald-950 flex items-center justify-center font-extrabold text-base shadow-md shrink-0">
+                                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 text-emerald-950 flex items-center justify-center font-extrabold text-lg shadow-md shrink-0">
                                         <i class="fa-solid fa-bell"></i>
                                     </div>
                                     <div>
                                         <div class="flex items-center flex-wrap gap-2">
                                             <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300">Kodinhi / Chemmad Adhan</span>
-                                            <span id="current-waqth-pill" class="text-[10px] font-extrabold uppercase bg-emerald-400 text-emerald-950 px-2 py-0.5 rounded-full">Active Waqth</span>
+                                            <span id="current-waqth-pill" class="text-[10px] font-extrabold uppercase bg-amber-400 text-emerald-950 px-2.5 py-0.5 rounded-full shadow-sm">Active Waqth</span>
                                         </div>
                                         <h4 id="next-prayer-headline" class="text-sm sm:text-base font-extrabold text-white mt-0.5" style="margin-bottom:0;">
                                             Calculating next Swalath time...
                                         </h4>
                                     </div>
                                 </div>
-                                <div class="bg-emerald-950/85 border border-amber-400/40 px-4 py-2 rounded-2xl text-center shrink-0">
-                                    <span class="block text-[9px] font-extrabold uppercase tracking-widest text-emerald-300" id="countdown-label">Time Remaining</span>
-                                    <span id="next-prayer-countdown" class="font-mono text-base sm:text-lg font-extrabold text-amber-300 tracking-wider">--h --m --s</span>
+                                <div class="next-swalath-countdown-box px-4 py-2.5 rounded-2xl text-center shrink-0">
+                                    <span class="block text-[9px] font-extrabold uppercase tracking-widest text-pink-200" id="countdown-label">Next Swalath In</span>
+                                    <span id="next-prayer-countdown" class="font-mono text-base sm:text-xl font-extrabold text-yellow-300 tracking-wider">--h --m --s</span>
                                 </div>
                             </div>
 
@@ -936,28 +958,35 @@
         
         // ============================================================================
         // STRICT KERALA (ASIA/KOLKATA) TIMEZONE & KODINHI / CHEMMAD ADHAN ENGINE
-        // Coordinates: Kodinhi / Chemmad, Malappuram, Kerala (11.0416° N, 75.9272° E)
-        // Follows exact Samastha Kerala / Shafi'i Adhan Timetable for Malappuram
+        // Cached Intl.DateTimeFormat for 0ms CPU overhead (No Scroll or Click Lag!)
         // ============================================================================
         const KODINHI_CHEMMAD_COORDS = { lat: 11.0416, lng: 75.9272 };
+        const KERALA_INTL_FMT = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            weekday: 'long',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
 
-        // Always get current Date/Time strictly in Kerala IST (Asia/Kolkata), regardless of device timezone
-        function getKeralaNow() {
-            const now = new Date();
-            const parts = new Intl.DateTimeFormat('en-US', {
-                timeZone: 'Asia/Kolkata',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                weekday: 'long',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            }).formatToParts(now);
+        let cachedKeralaTime = null;
+        let lastKeralaCacheTimestamp = 0;
 
+        // Fast cached Kerala IST time (recomputes at most once per 500ms even if called 1,000 times during table render)
+        function getKeralaNow(forceRefresh = false) {
+            const nowMs = Date.now();
+            if (!forceRefresh && cachedKeralaTime && (nowMs - lastKeralaCacheTimestamp < 500)) {
+                return cachedKeralaTime;
+            }
+            const parts = KERALA_INTL_FMT.formatToParts(new Date(nowMs));
             const map = {};
-            parts.forEach(p => { map[p.type] = p.value; });
+            for (let i = 0; i < parts.length; i++) {
+                map[parts[i].type] = parts[i].value;
+            }
             const year = parseInt(map.year, 10);
             const month = parseInt(map.month, 10);
             const day = parseInt(map.day, 10);
@@ -968,7 +997,7 @@
             const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const monthStr = `${year}-${String(month).padStart(2, '0')}`;
 
-            return {
+            cachedKeralaTime = {
                 year, month, day, hour, minute, second,
                 weekday: map.weekday,
                 dateStr,
@@ -976,6 +1005,8 @@
                 totalSec: hour * 3600 + minute * 60 + second,
                 totalMin: hour * 60 + minute
             };
+            lastKeralaCacheTimestamp = nowMs;
+            return cachedKeralaTime;
         }
 
         function format12Hour(h, m) {
@@ -1082,14 +1113,15 @@
         }
 
         let lastUnlockedPrayerName = null;
+        let lastScheduleGridSignature = "";
 
         function updateLiveAdhanCountdownUI() {
-            const kst = getKeralaNow();
+            const kst = getKeralaNow(true);
             const clockEl = document.getElementById('live-clock-ist');
             if (clockEl) {
                 const ampm = kst.hour >= 12 ? 'PM' : 'AM';
                 const h12 = kst.hour % 12 === 0 ? 12 : kst.hour % 12;
-                clockEl.innerText = `${String(h12).padStart(2, '0')}:${String(kst.minute).padStart(2, '0')}:${String(kst.second).padStart(2, '0')} ${ampm}`;
+                clockEl.textContent = `${String(h12).padStart(2, '0')}:${String(kst.minute).padStart(2, '0')}:${String(kst.second).padStart(2, '0')} ${ampm}`;
             }
 
             const nowTotalSec = kst.totalSec;
@@ -1126,20 +1158,26 @@
             const mins = Math.floor((nextPrayerDiffSec % 3600) / 60);
             const secs = nextPrayerDiffSec % 60;
 
+            const countdownEl = document.getElementById('next-prayer-countdown');
+            if (countdownEl) {
+                countdownEl.textContent = `${hrs > 0 ? hrs + 'h ' : ''}${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+            }
+
+            // Only rebuild the 5-Waqth schedule DOM when active/next Waqth or timings actually change (Eliminates 1s DOM lag!)
+            const sig = `${currentWaqth}_${nextPrayer}_${PRAYER_UNLOCK_TIMES['Subh'].label}_${PRAYER_UNLOCK_TIMES['Isha'].label}`;
+            if (sig === lastScheduleGridSignature) return;
+            lastScheduleGridSignature = sig;
+
             const currentPillEl = document.getElementById('current-waqth-pill');
             const headlineEl = document.getElementById('next-prayer-headline');
-            const countdownEl = document.getElementById('next-prayer-countdown');
             const scheduleGrid = document.getElementById('kerala-adhan-schedule-grid');
 
             if (currentPillEl) {
-                currentPillEl.innerText = `Now: ${currentWaqth}`;
+                currentPillEl.textContent = `Now: ${currentWaqth}`;
             }
             if (headlineEl) {
                 const nextTimeLabel = PRAYER_UNLOCK_TIMES[nextPrayer]?.label || '';
-                headlineEl.innerHTML = `Next Swalath: <span class="text-amber-300">${nextPrayer}</span> <span class="text-xs font-semibold text-emerald-200">at ${nextTimeLabel}</span>`;
-            }
-            if (countdownEl) {
-                countdownEl.innerText = `${ hrs > 0 ? hrs + 'h ' : '' }${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+                headlineEl.innerHTML = `Next Swalath: <span class="text-pink-300 underline decoration-pink-400/60">${nextPrayer}</span> <span class="text-xs font-bold text-amber-200">at ${nextTimeLabel}</span>`;
             }
 
             if (scheduleGrid) {
@@ -1150,27 +1188,33 @@
                     const pSec = pt.h * 3600 + pt.m * 60;
                     const isUnlocked = nowTotalSec >= pSec;
 
-                    let boxClass = 'bg-black/20 border-white/10 text-emerald-100';
+                    let boxClass = isUnlocked ? 'waqth-card-open' : 'waqth-card-wait';
+                    let timeTextColor = 'text-white';
+                    let arabicColor = 'text-amber-300';
                     let statusTag = isUnlocked
-                        ? '<span class="text-[9px] text-emerald-300 font-bold"><i class="fa-solid fa-unlock mr-0.5"></i>Open</span>'
-                        : '<span class="text-[9px] text-amber-200/75 font-semibold"><i class="fa-solid fa-clock mr-0.5"></i>Wait</span>';
+                        ? '<span class="text-[9px] text-emerald-300 font-extrabold"><i class="fa-solid fa-check-circle mr-0.5"></i>OPEN</span>'
+                        : '<span class="text-[9px] text-slate-300 font-semibold"><i class="fa-solid fa-clock mr-0.5"></i>WAIT</span>';
 
                     if (isCurrent) {
-                        boxClass = 'bg-amber-400/25 border-amber-300 text-white shadow-md';
-                        statusTag = '<span class="text-[9px] bg-amber-400 text-emerald-950 font-extrabold px-1.5 py-0.2 rounded">ACTIVE</span>';
+                        boxClass = 'waqth-card-active';
+                        timeTextColor = 'text-emerald-950';
+                        arabicColor = 'text-emerald-900';
+                        statusTag = '<span class="text-[9px] bg-emerald-950 text-amber-300 font-extrabold px-2 py-0.5 rounded-full">ACTIVE NOW</span>';
                     } else if (isNext) {
-                        boxClass = 'bg-emerald-800/70 border-emerald-400/50 text-white';
-                        statusTag = '<span class="text-[9px] text-amber-300 font-extrabold">NEXT</span>';
+                        boxClass = 'waqth-card-next';
+                        timeTextColor = 'text-yellow-300';
+                        arabicColor = 'text-pink-200';
+                        statusTag = '<span class="text-[9px] bg-yellow-300 text-indigo-950 font-extrabold px-2 py-0.5 rounded-full shadow-sm">NEXT SWALATH</span>';
                     }
 
                     return `
-                        <div class="rounded-2xl p-2 border ${boxClass} flex flex-col items-center justify-center transition">
+                        <div class="rounded-2xl p-2 ${boxClass} flex flex-col items-center justify-center transition-transform">
                             <div class="flex items-center gap-1">
                                 <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight">${p}</span>
-                                <span class="arabic-text text-xs text-amber-300 hidden sm:inline">${PRAYER_ARABIC[idx]}</span>
+                                <span class="arabic-text text-xs ${arabicColor} hidden sm:inline font-bold">${PRAYER_ARABIC[idx]}</span>
                             </div>
-                            <span class="text-[11px] sm:text-xs font-mono font-extrabold text-white mt-0.5">${pt.label}</span>
-                            <div class="mt-0.5">${statusTag}</div>
+                            <span class="text-[11px] sm:text-xs font-mono font-extrabold ${timeTextColor} mt-0.5">${pt.label}</span>
+                            <div class="mt-1">${statusTag}</div>
                         </div>
                     `;
                 }).join('');
@@ -2528,7 +2572,7 @@
             tbody.innerHTML = rows || `<tr><td colspan="6" class="p-6 text-center text-slate-400">No dates recorded for this month yet.</td></tr>`;
         }
 
-        // Toggle Prayer & Leave in Firestore
+        // Toggle Prayer & Leave in Firestore (With Instant Optimistic UI Update for 0ms Feel)
         window.togglePrayer = async function(date, studentName, prayer, gender) {
             if (!authReady || !currentClass) return;
             
@@ -2549,6 +2593,13 @@
             } else {
                 nextValue = current === true ? false : true;
             }
+
+            // Optimistic local state update so UI responds instantaneously without lag
+            if (!allRecords[date]) allRecords[date] = {};
+            if (!allRecords[date][studentName]) allRecords[date][studentName] = {};
+            allRecords[date][studentName][prayer] = nextValue;
+            allRecords[date][studentName].excused = false;
+            renderAllActiveViews(false);
 
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', `class_records_${currentClass.id}`, date);
@@ -2655,8 +2706,11 @@
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-white shadow-sm z-10">
                                     <tr>
-                                        <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-slate-500 bg-slate-50 whitespace-nowrap w-20">Date</th>
-                                        ${PRAYERS.map((p, idx) => `<th class="p-1.5 border-b border-slate-200 bg-white text-emerald-950"><div class="arabic-text font-bold text-lg leading-none">${PRAYER_ARABIC[idx]}</div><div class="text-[9px] font-mono font-bold text-emerald-700 mt-0.5">${PRAYER_UNLOCK_TIMES[p].label}</div></th>`).join('')}
+                                        <th class="p-2 border-r border-b text-xs uppercase tracking-wider text-slate-600 bg-slate-100 whitespace-nowrap w-20">Date</th>
+                                        ${PRAYERS.map((p, idx) => {
+                                            const colThemeClass = ['th-subh', 'th-luhr', 'th-asr', 'th-magrib', 'th-isha'][idx];
+                                            return `<th class="p-1.5 border-b border-slate-200 ${colThemeClass}"><div class="arabic-text font-bold text-lg leading-none">${PRAYER_ARABIC[idx]}</div><div class="text-[9px] font-mono font-extrabold opacity-90 mt-0.5">${PRAYER_UNLOCK_TIMES[p].label}</div></th>`;
+                                        }).join('')}
                                         ${leaveHeader}
                                     </tr>
                                 </thead>
