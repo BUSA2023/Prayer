@@ -281,8 +281,8 @@
                     </div>
                 </div>
 
-                <!-- Right Actions -->
-                <div class="flex items-center gap-2 sm:gap-3" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <!-- Right Actions (Hidden automatically in Student Personal Sheet Link) -->
+                <div id="header-right-actions" class="flex items-center gap-2 sm:gap-3" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     <button id="btn-header-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-gold float-badge" title="Send individual personal sheet links to each student">
                         <i class="fa-brands fa-whatsapp text-base"></i>
                         <span>Send Student Sheet Links</span>
@@ -314,13 +314,12 @@
                     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-200 text-xs font-semibold">
                         <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
                         <span id="live-date-display">Loading Date...</span>
-                        <span class="text-amber-300 font-extrabold">• swalath.madrasaa.online</span>
                     </div>
                     <h2 id="hero-greeting-title" class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
                         Assalamu Alaikum! <span class="arabic-text font-normal text-amber-300 text-3xl sm:text-4xl ml-1">ٱلسَّلَامُ عَلَيْكُمْ</span>
                     </h2>
                     <p id="hero-greeting-subtitle" class="text-emerald-100/90 text-sm sm:text-base max-w-xl leading-relaxed">
-                        Mark your 5 daily prayers on time and build a blessed monthly streak. Each student receives their own private <strong>Personal Prayer Sheet Link</strong>.
+                        Mark your 5 daily prayers on time and build a blessed monthly streak.
                     </p>
                 </div>
 
@@ -396,10 +395,10 @@
                         <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Monthly Consistency</span>
                         <span id="personal-banner-score" class="text-lg font-extrabold text-emerald-700">0%</span>
                     </div>
-                    <button onclick="copyMyPersonalSheetLink()" class="modern-btn modern-btn-emerald">
-                        <i class="fa-solid fa-link"></i>
-                        <span>Copy My Sheet Link</span>
-                    </button>
+                    <div class="bg-emerald-900 text-amber-300 px-4 py-2.5 rounded-2xl text-center shadow-sm">
+                        <span class="block text-[10px] font-extrabold uppercase tracking-wider text-emerald-200">Today's Status</span>
+                        <span id="personal-banner-today" class="text-lg font-extrabold text-amber-300">0 / 5</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -905,6 +904,9 @@
         function updateSingleStudentModeUI() {
             const isLocked = isSingleStudentSheetOnlyMode && !isUsthadAdmin;
             const navBar = document.getElementById('portal-navigation-bar');
+            const headerRightActions = document.getElementById('header-right-actions');
+            const btnUsthadAuth = document.getElementById('btn-usthad-auth');
+            const mainControlBar = document.getElementById('main-control-bar');
             const searchWrapper = document.getElementById('student-search-wrapper');
             const btnHeaderLinks = document.getElementById('btn-header-send-links');
             const btnControlLinks = document.getElementById('btn-control-send-links');
@@ -916,6 +918,10 @@
 
             if (isLocked) {
                 navBar?.classList.add('hidden');
+                if (headerRightActions) headerRightActions.style.display = 'none';
+                headerRightActions?.classList.add('hidden');
+                btnUsthadAuth?.classList.add('hidden');
+                mainControlBar?.classList.add('hidden');
                 searchWrapper?.classList.add('hidden');
                 btnHeaderLinks?.classList.add('hidden');
                 btnControlLinks?.classList.add('hidden');
@@ -926,6 +932,10 @@
                 sheetsContainer?.classList.add('single-student-sheet');
             } else {
                 navBar?.classList.remove('hidden');
+                if (headerRightActions) headerRightActions.style.display = 'flex';
+                headerRightActions?.classList.remove('hidden');
+                btnUsthadAuth?.classList.remove('hidden');
+                mainControlBar?.classList.remove('hidden');
                 searchWrapper?.classList.remove('hidden');
                 btnHeaderLinks?.classList.remove('hidden');
                 btnControlLinks?.classList.remove('hidden');
@@ -1751,9 +1761,10 @@
                 document.getElementById('personal-banner-class').innerText = currentClass.name;
                 document.getElementById('personal-banner-name').innerText = st.name;
                 document.getElementById('personal-banner-score').innerText = `${stats.percentage}% (${stats.prayedCount} Prayers)`;
-                const phonesText = [st.phone1 ? `No. 1: ${st.phone1}` : '', st.phone2 ? `No. 2: ${st.phone2}` : ''].filter(Boolean).join(' • ');
-                document.getElementById('personal-banner-phones').innerText = phonesText || 'Official Personal Monthly Prayer Tracker';
-                document.getElementById('sheet-class-heading').innerText = `${st.name} (${st.studentId}) — Personal Prayer Sheet`;
+                const todayEl = document.getElementById('personal-banner-today');
+                if (todayEl) todayEl.innerText = `${completed} / 5 Prayed`;
+                document.getElementById('personal-banner-phones').innerText = 'Personal Monthly Prayer Tracker Sheet';
+                document.getElementById('sheet-class-heading').innerText = `${st.name} (${st.studentId}) — Monthly Prayer Sheet`;
                 document.getElementById('hero-greeting-title').innerHTML = `Assalamu Alaikum, <span class="text-amber-300">${st.name}!</span>`;
             }
         }
@@ -2208,15 +2219,10 @@
                     
                     const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
                     const safeStName = student.name.replace(/'/g, "\\'");
-                    
-                    let tableHtml = `
-                    <div class="paper-grid antigravity-card fade-in">
-                        <div class="p-4 border-b border-slate-200 flex justify-between items-center gap-2 ${headerBg}">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <span class="id-badge shrink-0">${student.studentId}</span>
-                                <span class="font-extrabold uppercase tracking-wider text-sm sm:text-base ${colorTheme} truncate" title="${student.name}">${student.name}</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 shrink-0">
+                    const isLockedStudentView = isSingleStudentSheetOnlyMode && !isUsthadAdmin;
+                    const sheetHeaderRightHtml = isLockedStudentView
+                        ? `<span class="text-xs font-extrabold text-emerald-800 bg-emerald-100/90 px-3 py-1 rounded-xl border border-emerald-200"><i class="fa-solid fa-hand-pointer mr-1"></i>Tap boxes to mark</span>`
+                        : `<div class="flex items-center gap-1.5 shrink-0">
                                 <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${student.studentId}', '${safeStName}')" class="text-[11px] font-extrabold text-emerald-800 bg-white hover:bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200 shadow-sm transition cursor-pointer" title="Copy Personal Sheet Link for ${student.name} (${student.studentId})">
                                     <i class="fa-solid fa-link mr-1"></i>Student Link
                                 </button>
@@ -2226,7 +2232,16 @@
                                 <button onclick="openStudentQrModal('${currentClass.id}', '${student.studentId}', '${safeStName}')" class="text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1.5 rounded-xl shadow-sm transition cursor-pointer" title="Show QR Code for ${student.name}">
                                     <i class="fa-solid fa-qrcode"></i>
                                 </button>
+                            </div>`;
+                    
+                    let tableHtml = `
+                    <div class="paper-grid antigravity-card fade-in">
+                        <div class="p-4 border-b border-slate-200 flex justify-between items-center gap-2 ${headerBg}">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="id-badge shrink-0">${student.studentId}</span>
+                                <span class="font-extrabold uppercase tracking-wider text-sm sm:text-base ${colorTheme} truncate" title="${student.name}">${student.name}</span>
                             </div>
+                            ${sheetHeaderRightHtml}
                         </div>
                         <div id="scroll-div-${safeId}" class="overflow-y-auto flex-grow bg-white">
                             <table class="w-full text-left border-collapse">
@@ -2304,7 +2319,7 @@
                     const rowClass = isToday ? 'bg-emerald-50/50' : (isFuture ? 'bg-slate-50/40 opacity-75' : 'bg-white');
 
                     rowsHtml += `
-                        <tr class="${rowClass}">
+                        <tr data-date="${date}" class="${rowClass}">
                             <td class="p-1.5 text-center border-r border-b border-slate-100 font-bold text-xs ${isToday ? 'bg-emerald-100/80 text-emerald-950' : 'bg-slate-50 text-slate-600'}">
                                 <div class="flex flex-col items-center justify-center leading-tight">
                                     <span class="text-[9px] uppercase opacity-70">${dayName}</span>
