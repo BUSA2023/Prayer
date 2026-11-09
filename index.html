@@ -310,13 +310,13 @@
 
                 <!-- Right Actions (Hidden automatically in Student Personal Sheet-Only link) -->
                 <div id="header-right-actions" class="flex items-center gap-2 sm:gap-3" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <button id="btn-header-9pm-reminders" onclick="openNightReminderModal(true)" class="modern-btn modern-btn-rose relative" title="9:00 PM Night WhatsApp Reminder for Unmarked Students">
+                    <button id="btn-header-9pm-reminders" onclick="openNightReminderModal(true)" class="hidden modern-btn modern-btn-rose relative" title="9:00 PM Night WhatsApp Reminder for Unmarked Students">
                         <i class="fa-solid fa-bell"></i>
                         <span>9:00 PM Reminder</span>
                         <span id="pending-reminder-count-badge" class="bg-yellow-300 text-rose-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span>
                     </button>
 
-                    <button id="btn-header-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-gold float-badge" title="Send individual sheet-only links to each student">
+                    <button id="btn-header-send-links" onclick="openClassLinksModal()" class="hidden modern-btn modern-btn-gold float-badge" title="Send individual sheet-only links to each student">
                         <i class="fa-solid fa-paper-plane"></i>
                         <span>Send Student Links</span>
                     </button>
@@ -400,14 +400,14 @@
                         </span>
                         <span id="sheet-class-heading">Monthly Prayer Tracker Sheet</span>
                     </h3>
-                    <p id="sheet-subtitle-text" class="text-xs text-slate-500 mt-1 font-medium" style="margin-bottom:0;">Tap any prayer box below to mark or update your daily prayers. Every tick is saved automatically.</p>
+                    <p id="sheet-subtitle-text" class="text-xs text-slate-500 mt-1 font-medium" style="margin-bottom:0;">Public View: Read-only ticked prayer sheet. Only Usthad or personal student links can edit.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
                     <div class="flex items-center gap-2 bg-slate-100 px-3.5 py-2 rounded-2xl border border-slate-200">
                         <label class="text-xs font-extrabold text-slate-600">Month:</label>
                         <input type="month" id="admin-month-selector" class="bg-transparent text-xs font-extrabold text-slate-800 outline-none cursor-pointer">
                     </div>
-                    <button id="btn-export-csv" onclick="exportDataToCSV()" class="modern-btn modern-btn-emerald">
+                    <button id="btn-export-csv" onclick="exportDataToCSV()" class="hidden modern-btn modern-btn-emerald">
                         <i class="fa-solid fa-download"></i> Export CSV
                     </button>
                     <label id="csv-import-label" class="hidden cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-3.5 rounded-2xl transition shadow-sm text-xs items-center gap-1.5">
@@ -463,12 +463,12 @@
                     </button>
                 </div>
 
-                <button id="btn-control-9pm-reminders" onclick="openNightReminderModal(true)" class="modern-btn modern-btn-rose" style="white-space:nowrap;" title="Send 9:00 PM Night WhatsApp Reminders to students who haven't opened or ticked today">
+                <button id="btn-control-9pm-reminders" onclick="openNightReminderModal(true)" class="hidden modern-btn modern-btn-rose" style="white-space:nowrap;" title="Send 9:00 PM Night WhatsApp Reminders to students who haven't opened or ticked today">
                     <i class="fa-solid fa-bell"></i>
                     <span>9:00 PM Reminders</span>
                 </button>
 
-                <button id="btn-control-send-links" onclick="openClassLinksModal()" class="modern-btn modern-btn-emerald" style="white-space:nowrap;" title="Send individual personal prayer sheet links to each student">
+                <button id="btn-control-send-links" onclick="openClassLinksModal()" class="hidden modern-btn modern-btn-emerald" style="white-space:nowrap;" title="Send individual personal prayer sheet links to each student">
                     <i class="fa-brands fa-whatsapp text-base"></i>
                     <span>Send Student Links</span>
                 </button>
@@ -760,97 +760,129 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-2xl">
                         <i class="fa-solid fa-globe text-emerald-600 text-xs"></i>
-                    <!-- Full WhatsApp Bot Configuration Panel (Green-API Free / UltraMsg / CallMeBot / Webhook + 24/7 Cloud Cron) -->
-                <div class="bg-white rounded-2xl border-2 border-emerald-500/30 p-3.5 text-xs shadow-sm space-y-3">
-                    <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
-                        <div class="flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-extrabold text-sm">
-                                <i class="fa-solid fa-robot"></i>
-                            </span>
-                            <div>
-                                <h4 class="font-extrabold text-slate-800 text-xs sm:text-sm" style="margin:0;">Automatic 9:00 PM WhatsApp Bot Connect</h4>
-                                <p class="text-[11px] text-slate-500" style="margin:0;">Sends WhatsApp reminders automatically to every student's Phone 1 & Phone 2 if no entry is marked</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <button onclick="toggleBotGuidePanel()" class="text-[11px] font-extrabold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-xl border border-indigo-200 cursor-pointer transition">
-                                <i class="fa-solid fa-circle-question mr-1"></i>How to Connect (3 Easy Steps)
-                            </button>
-                            <button onclick="openCloudCronModal()" class="text-[11px] font-extrabold bg-amber-50 hover:bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl border border-amber-300 cursor-pointer transition" title="Run 9:00 PM Bot 24/7 even when your phone/browser is closed">
-                                <i class="fa-solid fa-cloud-bolt mr-1"></i>24/7 Cloud Auto-Run
-                            </button>
-                            <span id="wa-bot-connection-badge" class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">Bot Not Connected</span>
-                        </div>
+                        <span class="text-[11px] font-extrabold text-emerald-950">Domain:</span>
+                        <input type="text" id="custom-domain-input" value="https://swalath.madrasaa.online" oninput="renderAllClassLinksModal()" class="bg-white border border-emerald-200 rounded-lg px-2 py-1 text-xs font-mono font-bold text-emerald-800 w-56 outline-none">
                     </div>
-
-                    <!-- Collapsible 3-Step Visual Guide -->
-                    <div id="bot-setup-guide-box" class="hidden bg-indigo-50/70 border border-indigo-200 rounded-2xl p-3.5 text-xs text-slate-700 space-y-2">
-                        <div class="font-extrabold text-indigo-950 flex items-center justify-between">
-                            <span><i class="fa-brands fa-whatsapp text-green-600 mr-1.5 text-sm"></i>How to Send Automatic WhatsApp Messages at 9:00 PM (Zero Click):</span>
-                            <button onclick="toggleBotGuidePanel()" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
-                            <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                                <span class="text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">Step 1 • Add Student Numbers</span>
-                                <p class="text-[11px] mt-1.5 mb-0 leading-relaxed">Enter each student's <strong>Phone 1</strong> & <strong>Phone 2</strong> directly in the list below (or in <em>Send Student Links</em>). They save automatically.</p>
-                            </div>
-                            <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                                <span class="text-[10px] font-extrabold uppercase bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">Step 2 • Connect Free WA Bot</span>
-                                <p class="text-[11px] mt-1.5 mb-0 leading-relaxed">Create a free account at <a href="https://green-api.com/en" target="_blank" class="text-indigo-600 font-extrabold underline">green-api.com</a> (Free Developer Plan) or <a href="https://ultramsg.com" target="_blank" class="text-indigo-600 font-extrabold underline">ultramsg.com</a>, scan the WhatsApp QR code on their site, and paste your <strong>Instance ID</strong> & <strong>Token</strong> below.</p>
-                            </div>
-                            <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                                <span class="text-[10px] font-extrabold uppercase bg-amber-100 text-amber-900 px-2 py-0.5 rounded-md">Step 3 • Auto 9:00 PM Dispatch</span>
-                                <p class="text-[11px] mt-1.5 mb-0 leading-relaxed">Click <strong>Save Bot</strong> & <strong>Test</strong>. Every night at <strong>9:00 PM IST</strong>, any student in <em>any class</em> with 0/incomplete ticks receives an automatic WhatsApp reminder!</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2.5 items-end">
-                        <div>
-                            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Select Any Bot Gateway</label>
-                            <select id="wa-bot-provider" onchange="handleBotProviderChange()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-extrabold text-slate-800 outline-none focus:border-emerald-500">
-                                <option value="greenapi">Green-API Bot (Free QR Plan)</option>
-                                <option value="ultramsg">UltraMsg WhatsApp Bot</option>
-                                <option value="callmebot">CallMeBot (Free API Key)</option>
-                                <option value="meta">Meta Official Cloud API</option>
-                                <option value="webhook">Any Custom Webhook / WaSender</option>
-                            </select>
-                        </div>
-                        <div id="bot-field-1-wrap">
-                            <label id="bot-field-1-label" class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Green-API idInstance</label>
-                            <input type="text" id="wa-bot-instance" placeholder="e.g. 7103849201" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold outline-none focus:border-emerald-500">
-                        </div>
-                        <div id="bot-field-2-wrap">
-                            <label id="bot-field-2-label" class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">API Token / Key</label>
-                            <input type="password" id="wa-bot-token" placeholder="Enter Bot API Token..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold outline-none focus:border-emerald-500">
-                        </div>
-                        <div class="flex gap-1.5">
-                            <button onclick="saveWaBotConfig()" class="modern-btn modern-btn-emerald flex-1 justify-center" style="padding:8px 10px; font-size:11px;">
-                                <i class="fa-solid fa-floppy-disk"></i> Save Bot
-                            </button>
-                            <button onclick="testWhatsAppBotConnection()" class="modern-btn modern-btn-gold justify-center" style="padding:8px 10px; font-size:11px;" title="Send a test WhatsApp message via Bot">
-                                <i class="fa-solid fa-paper-plane"></i> Test
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Scope Selector: All Classes vs Current Class -->
-                    <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-600">
-                        <label class="flex items-center gap-2 font-bold cursor-pointer">
-                            <input type="checkbox" id="toggle-scan-all-classes" checked onchange="renderNightReminderModal()" class="w-3.5 h-3.5 accent-emerald-600 rounded cursor-pointer">
-                            <span>Check & Send to <strong>ALL Classes</strong> automatically at 9:00 PM IST</span>
-                        </label>
-                        <span class="text-slate-400 font-semibold">Tip: Edit any student's Phone 1 or Phone 2 below and it saves immediately</span>
-                    </div>
-
-                    <!-- Live Bot Dispatch Progress Log -->
-                    <div id="wa-bot-live-log" class="hidden mt-2 p-2.5 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[11px] max-h-28 overflow-y-auto"></div>
                 </div>
             </div>
 
-            <!-- List of Unopened / Unmarked Students for Today -->
-            <div class="p-4 sm:p-5 overflow-y-auto space-y-3" id="night-reminder-students-list">
-                <!-- Populated dynamically by JS -->
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-5" id="all-class-links-list">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT QR CODE & DIRECT SHARE MODAL -->
+    <div id="qr-share-modal" class="hidden modal-overlay z-[220]">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl fade-in">
+            <div class="flex justify-between items-center mb-3">
+                <span id="qr-student-id" class="id-badge">HIM-901</span>
+                <button onclick="closeQrModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <h4 id="qr-student-name" class="text-lg font-extrabold text-slate-800" style="margin:0;">Student Name</h4>
+            <p class="text-xs text-slate-500 mt-1 mb-4">Scan QR with any phone camera to open this student's personal sheet only</p>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 inline-block mx-auto mb-4">
+                <img id="qr-image" src="" alt="Student QR Code" class="w-44 h-44 mx-auto rounded-lg" onerror="this.src='https://placehold.co/200x200/064e3b/ffffff?text=QR+Link'">
+            </div>
+            <div id="qr-url-box" class="bg-slate-100 rounded-xl p-2.5 text-[11px] font-mono text-emerald-800 font-bold break-all mb-4 select-all"></div>
+            <div class="grid grid-cols-2 gap-2">
+                <button id="qr-copy-btn" class="modern-btn modern-btn-emerald w-full justify-center">
+                    <i class="fa-solid fa-copy"></i> Copy Link
+                </button>
+                <button id="qr-wa-btn" class="modern-btn w-full justify-center" style="background:#16a34a; color:#fff;">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE FLOATING BOTTOM NAVIGATION DOCK -->
+    <nav id="mobile-bottom-nav" class="mobile-bottom-dock" aria-label="Mobile Navigation">
+        <button onclick="switchMainView('sheets')" id="dock-btn-sheets" class="dock-btn active">
+            <i class="fa-solid fa-table text-sm"></i>
+            <span>Sheets</span>
+        </button>
+        <button onclick="switchMainView('cards')" id="dock-btn-cards" class="dock-btn">
+            <i class="fa-solid fa-id-card text-sm"></i>
+            <span>ID Cards</span>
+        </button>
+        <button onclick="switchMainView('leaderboard')" id="dock-btn-leaderboard" class="dock-btn">
+            <i class="fa-solid fa-trophy text-sm"></i>
+            <span>Ranks</span>
+        </button>
+        <button id="dock-btn-student-links" onclick="openClassLinksModal()" class="hidden dock-btn" style="color:#fde68a;">
+            <i class="fa-brands fa-whatsapp text-sm"></i>
+            <span>Student Links</span>
+        </button>
+    </nav>
+
+    <!-- INDIVIDUAL STUDENT PROFILE MODAL -->
+    <div id="student-profile-modal" class="hidden modal-overlay z-[160]">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden fade-in flex flex-col max-h-[90vh]">
+            <div class="islamic-bg p-6 text-white flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div id="profile-avatar" class="w-14 h-14 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-2xl font-extrabold text-amber-300 shadow-inner">
+                        S
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="profile-id-badge" class="id-badge">HIM-901</span>
+                            <span id="profile-class-badge" class="text-[11px] font-bold uppercase tracking-widest text-amber-300 bg-white/10 px-2.5 py-0.5 rounded-full">Class 9</span>
+                        </div>
+                        <h3 id="profile-student-name" class="text-2xl font-extrabold mt-1" style="margin-bottom:0;">Student Name</h3>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="profile-share-btn" class="hidden modern-btn modern-btn-gold" style="padding:8px 13px; font-size:11px;">
+                        <i class="fa-solid fa-link"></i> Copy Student Link
+                    </button>
+                    <button onclick="closeStudentProfileModal()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="grid grid-cols-3 gap-3 p-4 bg-slate-50 border-b border-slate-200/80 text-center">
+                <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">This Month</span>
+                    <p id="profile-stat-score" class="text-xl font-extrabold text-emerald-600 mt-0.5" style="margin-bottom:0;">0%</p>
+                </div>
+                <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Prayers Done</span>
+                    <p id="profile-stat-count" class="text-xl font-extrabold text-slate-800 mt-0.5" style="margin-bottom:0;">0</p>
+                </div>
+                <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Perfect Days</span>
+                    <p id="profile-stat-perfect" class="text-xl font-extrabold text-amber-500 mt-0.5" style="margin-bottom:0;">0 <i class="fa-solid fa-star text-xs"></i></p>
+                </div>
+            </div>
+
+            <!-- Student's Monthly History Table -->
+            <div class="p-4 overflow-y-auto flex-grow">
+                <div class="flex justify-between items-center mb-3 px-1">
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500" style="margin:0;">Monthly Prayer Log</h4>
+                    <span class="arabic-text text-sm text-emerald-700 font-bold">صبح • ظهر • عصر • مغرب • عشاء</span>
+                </div>
+                <div class="border border-slate-200 rounded-2xl overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600">
+                            <tr>
+                                <th class="py-2.5 px-3">Date</th>
+                                <th class="py-2.5 px-2 text-center arabic-text text-base">صبح</th>
+                                <th class="py-2.5 px-2 text-center arabic-text text-base">ظهر</th>
+                                <th class="py-2.5 px-2 text-center arabic-text text-base">عصر</th>
+                                <th class="py-2.5 px-2 text-center arabic-text text-base">مغرب</th>
+                                <th class="py-2.5 px-2 text-center arabic-text text-base">عشاء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="profile-history-tbody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -2179,6 +2211,11 @@ function sendViaBot(rawPhone, message) {
         };
 
         window.openNightReminderModal = function(manualOpen = false) {
+            if (!isUsthadAdmin) {
+                showToast("Only Usthad can access 9:00 PM Reminders & WhatsApp Bot!", "error");
+                handleUsthadButtonClick();
+                return;
+            }
             renderNightReminderModal();
             document.getElementById('night-reminder-modal')?.classList.remove('hidden');
         };
@@ -2186,6 +2223,14 @@ function sendViaBot(rawPhone, message) {
         window.closeNightReminderModal = function() {
             document.getElementById('night-reminder-modal')?.classList.add('hidden');
         };
+
+        // Permission check: Can current user edit prayer ticks for this student?
+        // Public view is strictly READ-ONLY (ticked sheet only). Only Usthad or the student on their personal link can edit.
+        function canUserEditStudentPrayers(studentName = '') {
+            if (isUsthadAdmin) return true;
+            if (isSingleStudentSheetOnlyMode) return true;
+            return false;
+        }
 
         // Automatic 9:00 PM IST (21:00) Trigger Checker
         function checkNinePmAutoReminders(kst) {
@@ -2216,7 +2261,8 @@ function sendViaBot(rawPhone, message) {
                 autoFireWebhookRemindersForToday(false);
             }
 
-            // 3. Also open the 9:00 PM Reminder Center once per night so Usthad can see live Bot delivery status
+            // 3. Only open the 9:00 PM Reminder Center modal if Usthad Mode is unlocked
+            if (!isUsthadAdmin) return;
             const autoTriggerKey = `him_9pm_auto_triggered_${kst.dateStr}_${currentClass.id}`;
             if (!localStorage.getItem(autoTriggerKey)) {
                 localStorage.setItem(autoTriggerKey, 'true');
@@ -2246,11 +2292,15 @@ function sendViaBot(rawPhone, message) {
             const searchWrapper = document.getElementById('student-search-wrapper');
             const btnHeaderLinks = document.getElementById('btn-header-send-links');
             const btnControlLinks = document.getElementById('btn-control-send-links');
+            const btnHeader9pm = document.getElementById('btn-header-9pm-reminders');
+            const btnControl9pm = document.getElementById('btn-control-9pm-reminders');
+            const dockStudentLinks = document.getElementById('dock-btn-student-links');
             const btnExportCsv = document.getElementById('btn-export-csv');
             const mobileNav = document.getElementById('mobile-bottom-nav');
             const singleBadge = document.getElementById('single-student-mode-badge');
             const personalBanner = document.getElementById('personal-student-banner');
             const sheetsContainer = document.getElementById('paper-sheets-container');
+            const subtitleEl = document.getElementById('sheet-subtitle-text');
 
             if (isLocked) {
                 navBar?.classList.add('hidden');
@@ -2261,11 +2311,15 @@ function sendViaBot(rawPhone, message) {
                 searchWrapper?.classList.add('hidden');
                 btnHeaderLinks?.classList.add('hidden');
                 btnControlLinks?.classList.add('hidden');
+                btnHeader9pm?.classList.add('hidden');
+                btnControl9pm?.classList.add('hidden');
+                dockStudentLinks?.classList.add('hidden');
                 btnExportCsv?.classList.add('hidden');
                 mobileNav?.classList.add('hidden');
                 singleBadge?.classList.remove('hidden');
                 personalBanner?.classList.remove('hidden');
                 sheetsContainer?.classList.add('single-student-sheet');
+                if (subtitleEl) subtitleEl.innerText = "Tap any prayer box below to mark or update your daily prayers. Every tick is saved automatically.";
             } else {
                 navBar?.classList.remove('hidden');
                 if (headerRightActions) headerRightActions.style.display = 'flex';
@@ -2273,13 +2327,29 @@ function sendViaBot(rawPhone, message) {
                 btnUsthadAuth?.classList.remove('hidden');
                 mainControlBar?.classList.remove('hidden');
                 searchWrapper?.classList.remove('hidden');
-                btnHeaderLinks?.classList.remove('hidden');
-                btnControlLinks?.classList.remove('hidden');
-                btnExportCsv?.classList.remove('hidden');
                 mobileNav?.classList.remove('hidden');
                 singleBadge?.classList.add('hidden');
                 personalBanner?.classList.add('hidden');
                 sheetsContainer?.classList.remove('single-student-sheet');
+
+                // Strictly show link sending, 9PM reminder, and CSV export ONLY when Usthad is logged in
+                if (isUsthadAdmin) {
+                    btnHeaderLinks?.classList.remove('hidden');
+                    btnControlLinks?.classList.remove('hidden');
+                    btnHeader9pm?.classList.remove('hidden');
+                    btnControl9pm?.classList.remove('hidden');
+                    dockStudentLinks?.classList.remove('hidden');
+                    btnExportCsv?.classList.remove('hidden');
+                    if (subtitleEl) subtitleEl.innerText = "Usthad Mode: Tap any prayer box to edit student records, or click Send Student Links.";
+                } else {
+                    btnHeaderLinks?.classList.add('hidden');
+                    btnControlLinks?.classList.add('hidden');
+                    btnHeader9pm?.classList.add('hidden');
+                    btnControl9pm?.classList.add('hidden');
+                    dockStudentLinks?.classList.add('hidden');
+                    btnExportCsv?.classList.add('hidden');
+                    if (subtitleEl) subtitleEl.innerText = "Public View (Read-Only Ticked Sheet): Only Usthad or a student's personal link can edit ticks.";
+                }
             }
         }
 
@@ -2473,11 +2543,13 @@ function sendViaBot(rawPhone, message) {
             const csvImportLabel = document.getElementById('csv-import-label');
             const lockIcon = document.getElementById('usthad-lock-icon');
             const btnText = document.getElementById('usthad-btn-text');
+            const profileShareBtn = document.getElementById('profile-share-btn');
 
             if (isUsthadAdmin) {
                 badge?.classList.remove('hidden');
                 btnManage?.classList.remove('hidden');
                 btnEditAdv?.classList.remove('hidden');
+                profileShareBtn?.classList.remove('hidden');
                 csvImportLabel?.classList.remove('hidden');
                 csvImportLabel?.classList.add('flex');
                 if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-amber-300";
@@ -2486,6 +2558,7 @@ function sendViaBot(rawPhone, message) {
                 badge?.classList.add('hidden');
                 btnManage?.classList.add('hidden');
                 btnEditAdv?.classList.add('hidden');
+                profileShareBtn?.classList.add('hidden');
                 csvImportLabel?.classList.add('hidden');
                 csvImportLabel?.classList.remove('flex');
                 if (lockIcon) lockIcon.className = "fa-solid fa-lock text-amber-300";
@@ -2590,6 +2663,10 @@ function sendViaBot(rawPhone, message) {
 
         // Save Student's Two Phone Numbers to Firestore
         window.saveStudentPhones = async function(classId, studentIndex, phone1Id, phone2Id, silent = false) {
+            if (!isUsthadAdmin) {
+                if (!silent) showToast("Only Usthad can edit student phone numbers!", "error");
+                return;
+            }
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls || !cls.students || !cls.students[studentIndex]) return;
             const p1 = (document.getElementById(phone1Id)?.value || '').trim();
@@ -2706,6 +2783,11 @@ function sendViaBot(rawPhone, message) {
         }
 
         window.openClassLinksModal = function() {
+            if (!isUsthadAdmin) {
+                showToast("Only Usthad can view and send student links!", "error");
+                handleUsthadButtonClick();
+                return;
+            }
             renderAllClassLinksModal();
             document.getElementById('class-links-modal').classList.remove('hidden');
         };
@@ -3238,8 +3320,9 @@ function sendViaBot(rawPhone, message) {
                     const done = val === true;
                     const excused = val === 'excused';
                     const locked = isFuturePrayer(selectedDailyDate, p);
+                    const canEdit = canUserEditStudentPrayers(student.name);
 
-                    let btnStyle = 'bg-slate-50 hover:bg-emerald-50/60 border-slate-200 text-slate-600';
+                    let btnStyle = 'bg-slate-50 border-slate-200 text-slate-600';
                     let badgeIcon = '<i class="fa-regular fa-circle text-slate-300 text-xs"></i>';
 
                     if (done) {
@@ -3253,12 +3336,19 @@ function sendViaBot(rawPhone, message) {
                         badgeIcon = '<i class="fa-solid fa-lock text-slate-300 text-[10px]"></i>';
                     }
 
-                    const onClickAttr = locked
-                        ? `showToast('${p} Adhan (Kodinhi/Chemmad) is at ${getTimeRemainingUntilPrayer(p)}', 'error')`
-                        : `togglePrayer('${selectedDailyDate}', '${safeName}', '${p}', '${student.gender}')`;
+                    let onClickAttr = '';
+                    let cursorClass = 'cursor-default';
+                    if (canEdit) {
+                        cursorClass = locked ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-emerald-50/60';
+                        onClickAttr = locked
+                            ? `showToast('${p} Adhan (Kodinhi/Chemmad) is at ${getTimeRemainingUntilPrayer(p)}', 'error')`
+                            : `togglePrayer('${selectedDailyDate}', '${safeName}', '${p}', '${student.gender}')`;
+                    } else {
+                        onClickAttr = `showToast('Public View is Read-Only. Only Usthad can edit here.', 'error')`;
+                    }
 
                     return `
-                        <button onclick="${onClickAttr}" class="prayer-btn flex flex-col items-center justify-between p-2.5 rounded-2xl border ${btnStyle} cursor-pointer select-none">
+                        <button onclick="${onClickAttr}" class="prayer-btn flex flex-col items-center justify-between p-2.5 rounded-2xl border ${btnStyle} ${cursorClass} select-none">
                             <span class="arabic-text text-base font-bold leading-none">${arabic}</span>
                             <div class="my-1.5">${badgeIcon}</div>
                             <span class="text-[10px] font-bold uppercase tracking-tighter opacity-90">${p}</span>
@@ -3267,7 +3357,7 @@ function sendViaBot(rawPhone, message) {
                 }).join('');
 
                 let girlLeaveBar = '';
-                if (isGirl && currentClass.allowExcuses !== false) {
+                if (isUsthadAdmin && isGirl && currentClass.allowExcuses !== false) {
                     const allExcused = PRAYERS.every(p => (rec[p] === 'excused' || isFullDayExcused));
                     if (allExcused) {
                         girlLeaveBar = `
@@ -3284,22 +3374,27 @@ function sendViaBot(rawPhone, message) {
                     }
                 }
 
+                const usthadShareActionsHtml = isUsthadAdmin ? `
+                    <div class="flex items-center gap-1">
+                        <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${student.studentId}', '${safeName}')" class="text-[11px] font-extrabold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition cursor-pointer" title="Copy Personal Sheet Link for ${student.name}">
+                            <i class="fa-solid fa-link mr-1"></i>Student Link
+                        </button>
+                        <button onclick="shareClassOnWhatsApp('${currentClass.id}', '${student.studentId}', '${safeName}')" class="text-[11px] font-bold text-green-700 bg-green-50 hover:bg-green-100 px-2 py-1 rounded-lg transition cursor-pointer" title="Send link to ${student.name} on WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </button>
+                        <button onclick="openStudentQrModal('${currentClass.id}', '${student.studentId}', '${safeName}')" class="text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg transition cursor-pointer" title="Show QR Code for ${student.name}">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </button>
+                    </div>
+                ` : `<span class="text-[10px] font-bold text-slate-400">Read-Only View</span>`;
+
                 container.innerHTML += `
                     <div class="student-card modern-card antigravity-card flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3 gap-1 flex-wrap">
                                 <span class="id-badge"><i class="fa-solid fa-id-badge text-[10px]"></i> ${student.studentId}</span>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${student.studentId}', '${safeName}')" class="text-[11px] font-extrabold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition cursor-pointer" title="Copy Personal Sheet Link for ${student.name}">
-                                        <i class="fa-solid fa-link mr-1"></i>Student Link
-                                    </button>
-                                    <button onclick="shareClassOnWhatsApp('${currentClass.id}', '${student.studentId}', '${safeName}')" class="text-[11px] font-bold text-green-700 bg-green-50 hover:bg-green-100 px-2 py-1 rounded-lg transition cursor-pointer" title="Send link to ${student.name} on WhatsApp">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                    </button>
-                                    <button onclick="openStudentQrModal('${currentClass.id}', '${student.studentId}', '${safeName}')" class="text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg transition cursor-pointer" title="Show QR Code for ${student.name}">
-                                        <i class="fa-solid fa-qrcode"></i>
-                                    </button>
-                                </div>
+                                ${usthadShareActionsHtml}
+                            </div>
                             </div>
 
                             <div class="flex items-start justify-between gap-3 mb-4">
@@ -3464,13 +3559,14 @@ function sendViaBot(rawPhone, message) {
                 const cells = PRAYERS.map(p => {
                     const val = fullExcused ? 'excused' : rec[p];
                     const locked = isFuturePrayer(date, p);
+                    const canEdit = canUserEditStudentPrayers(student.name);
                     let icon = '<i class="fa-regular fa-circle text-slate-300"></i>';
                     if (val === true) icon = '<i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>';
                     else if (val === 'excused') icon = '<i class="fa-solid fa-moon text-pink-500 text-base"></i>';
                     else if (locked) icon = '<i class="fa-solid fa-clock text-slate-200"></i>';
 
-                    const clickAct = locked ? '' : `togglePrayer('${date}', '${safeName}', '${p}', '${student.gender}')`;
-                    return `<td onclick="${clickAct}" class="py-2.5 px-2 text-center cursor-pointer hover:bg-emerald-50/50 transition">${icon}</td>`;
+                    const clickAct = (!canEdit || locked) ? '' : `togglePrayer('${date}', '${safeName}', '${p}', '${student.gender}')`;
+                    return `<td onclick="${clickAct}" class="py-2.5 px-2 text-center ${canEdit && !locked ? 'cursor-pointer hover:bg-emerald-50/50' : 'cursor-default'} transition">${icon}</td>`;
                 }).join('');
 
                 rows = `
@@ -3489,6 +3585,10 @@ function sendViaBot(rawPhone, message) {
         // Toggle Prayer & Leave in Firestore (With Instant Optimistic UI Update for 0ms Feel)
         window.togglePrayer = async function(date, studentName, prayer, gender) {
             if (!authReady || !currentClass) return;
+            if (!canUserEditStudentPrayers(studentName)) {
+                showToast("Public View is Read-Only. Only Usthad can edit!", "error");
+                return;
+            }
             
             if (isFuturePrayer(date, prayer)) {
                 showToast(`${prayer} Adhan in Kodinhi/Chemmad is at ${getTimeRemainingUntilPrayer(prayer)}`, "error");
@@ -3530,6 +3630,10 @@ function sendViaBot(rawPhone, message) {
 
         window.toggleExcuse = async function(date, studentName, isExcused) {
             if (!authReady || !currentClass) return;
+            if (!canUserEditStudentPrayers(studentName)) {
+                showToast("Public View is Read-Only. Only Usthad can edit!", "error");
+                return;
+            }
             
             if (date > localTodayStr) {
                 showToast("Cannot mark future dates!", "error");
@@ -3592,14 +3696,17 @@ function sendViaBot(rawPhone, message) {
                 students.forEach(student => {
                     let colorTheme = student.gender === 'girl' ? 'text-pink-700' : 'text-emerald-950';
                     let headerBg = student.gender === 'girl' ? 'bg-gradient-to-r from-pink-50 via-rose-50/60 to-white' : 'bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white';
-                    let leaveHeader = (student.gender === 'girl' && currentClass.allowExcuses !== false) ? `<th class="p-2 border-b border-l border-slate-100 text-xs text-pink-600 bg-pink-50/50 w-12">Leave</th>` : '';
+                    const canEditThisSheet = canUserEditStudentPrayers(student.name);
+                    let leaveHeader = (canEditThisSheet && student.gender === 'girl' && currentClass.allowExcuses !== false) ? `<th class="p-2 border-b border-l border-slate-100 text-xs text-pink-600 bg-pink-50/50 w-12">Leave</th>` : '';
                     
                     const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
                     const safeStName = student.name.replace(/'/g, "\\'");
                     const isLockedStudentView = isSingleStudentSheetOnlyMode && !isUsthadAdmin;
-                    const sheetHeaderRightHtml = isLockedStudentView
-                        ? `<span class="text-xs font-extrabold text-emerald-800 bg-emerald-100/90 px-3 py-1 rounded-xl border border-emerald-200"><i class="fa-solid fa-hand-pointer mr-1"></i>Tap boxes to mark</span>`
-                        : `<div class="flex items-center gap-1.5 shrink-0">
+                    let sheetHeaderRightHtml = '';
+                    if (isLockedStudentView) {
+                        sheetHeaderRightHtml = `<span class="text-xs font-extrabold text-emerald-800 bg-emerald-100/90 px-3 py-1 rounded-xl border border-emerald-200"><i class="fa-solid fa-hand-pointer mr-1"></i>Tap boxes to mark</span>`;
+                    } else if (isUsthadAdmin) {
+                        sheetHeaderRightHtml = `<div class="flex items-center gap-1.5 shrink-0">
                                 <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${student.studentId}', '${safeStName}')" class="text-[11px] font-extrabold text-emerald-800 bg-white hover:bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200 shadow-sm transition cursor-pointer" title="Copy Personal Sheet Link for ${student.name} (${student.studentId})">
                                     <i class="fa-solid fa-link mr-1"></i>Student Link
                                 </button>
@@ -3610,6 +3717,9 @@ function sendViaBot(rawPhone, message) {
                                     <i class="fa-solid fa-qrcode"></i>
                                 </button>
                             </div>`;
+                    } else {
+                        sheetHeaderRightHtml = `<span class="text-[11px] font-bold text-slate-500 bg-white/80 px-2.5 py-1 rounded-xl border border-slate-200"><i class="fa-solid fa-eye mr-1 text-emerald-600"></i>Ticked Sheet</span>`;
+                    }
                     
                     let tableHtml = `
                     <div class="paper-grid antigravity-card fade-in">
@@ -3647,6 +3757,7 @@ function sendViaBot(rawPhone, message) {
                 const safeStudentName = student.name.replace(/'/g, "\\'");
                 const tbody = document.getElementById(`tbody-${safeId}`);
                 if (!tbody) return;
+                const canEditThisSheet = canUserEditStudentPrayers(student.name);
 
                 let rowsHtml = '';
                 
@@ -3674,16 +3785,20 @@ function sendViaBot(rawPhone, message) {
                         else if (excused) icon = '<i class="fa-solid fa-moon text-pink-500 font-bold text-base"></i>';
                         else if (isFutureWaqth) icon = '<i class="fa-solid fa-clock text-slate-200 text-sm"></i>'; 
                         
-                        let clickAction = isFutureWaqth ? `showToast('${p} Adhan in Kodinhi/Chemmad is at ${getTimeRemainingUntilPrayer(p)}', 'error')` : `togglePrayer('${date}', '${safeStudentName}', '${p}', '${student.gender}')`;
-                        let cursorClass = isFutureWaqth ? 'cursor-not-allowed bg-slate-50/50' : 'cursor-pointer hover:bg-emerald-50/60 transition-colors';
+                        let clickAction = '';
+                        let cursorClass = 'cursor-default';
+                        if (canEditThisSheet) {
+                            clickAction = isFutureWaqth ? `showToast('${p} Adhan in Kodinhi/Chemmad is at ${getTimeRemainingUntilPrayer(p)}', 'error')` : `togglePrayer('${date}', '${safeStudentName}', '${p}', '${student.gender}')`;
+                            cursorClass = isFutureWaqth ? 'cursor-not-allowed bg-slate-50/50' : 'cursor-pointer hover:bg-emerald-50/60 transition-colors';
+                        }
 
-                        return `<td class="p-1 text-center border-l border-b border-slate-100 ${cursorClass}" onclick="${clickAction}">
+                        return `<td class="p-1 text-center border-l border-b border-slate-100 ${cursorClass}" ${clickAction ? `onclick="${clickAction}"` : ''}>
                             <div class="w-full h-9 flex items-center justify-center">${icon}</div>
                         </td>`;
                     }).join('');
                     
                     let leaveCell = '';
-                    if (student.gender === 'girl' && currentClass.allowExcuses !== false) {
+                    if (canEditThisSheet && student.gender === 'girl' && currentClass.allowExcuses !== false) {
                         let allExcused = PRAYERS.every(p => (record[p] === 'excused' || isFullDayExcused));
                         let actionRemove = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${safeStudentName}', false)`;
                         let actionAdd = isFuture ? `showToast('Cannot mark future dates!', 'error')` : `toggleExcuse('${date}', '${safeStudentName}', true)`;
