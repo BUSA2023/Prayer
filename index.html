@@ -132,17 +132,25 @@
 
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
             gap: 20px;
         }
         .sheets-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+            gap: 24px;
+            align-items: start;
         }
-        /* Single Student Locked Mode uses full natural page scroll (Zero nested scroll lag!) */
+        @media (min-width: 1024px) {
+            .sheets-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .cards-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
         .sheets-grid.single-student-sheet {
-            grid-template-columns: minmax(min(100%, 340px), 780px);
+            grid-template-columns: minmax(min(100%, 340px), 820px) !important;
             justify-content: center;
         }
         .sheets-grid.single-student-sheet .paper-grid {
@@ -154,7 +162,6 @@
             overflow: visible !important;
         }
 
-        /* GPU-Friendly Card Surface (No heavy backdrop-filter blur during scroll) */
         .antigravity-card {
             background: #ffffff;
             border-radius: 24px;
@@ -162,7 +169,6 @@
             box-shadow: 0 10px 26px -8px rgba(15, 23, 42, 0.07);
         }
 
-        /* Mobile Bottom Dock */
         .mobile-bottom-dock {
             display: none;
             position: fixed;
@@ -201,7 +207,6 @@
             font-weight: 800;
         }
 
-        /* Student Link Sender Card Styling */
         .student-link-card {
             background: #ffffff;
             border: 1px solid #cbd5e1;
@@ -217,7 +222,6 @@
             .mobile-bottom-dock { display: flex; }
             .app-container { padding: 0 12px; }
             .modern-card { padding: 16px; border-radius: 20px; }
-            /* Eliminate nested scroll lag on mobile: sheets expand naturally */
             .paper-grid { height: auto !important; max-height: none !important; border-radius: 18px; }
             .paper-grid > div:last-child { overflow: visible !important; }
             .modern-header-row { min-height: 64px; padding: 8px 0; }
@@ -246,30 +250,30 @@
         .prayer-btn { transition: transform 0.12s ease; }
         .prayer-btn:active:not(:disabled) { transform: scale(0.93); }
 
-        /* Smooth Paper-like Grid Layout for Monthly Sheet */
         .paper-grid {
             border: 1px solid #cbd5e1;
             background: #ffffff;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.07);
+            box-shadow: 0 12px 28px -8px rgba(15, 23, 42, 0.08);
             display: flex;
             flex-direction: column;
-            height: 74vh;
+            height: 620px;
+            max-height: 75vh;
         }
         .paper-grid > div:last-child {
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
         }
-        .paper-grid table { width: 100%; border-collapse: collapse; }
+        .paper-grid table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .paper-grid th, .paper-grid td {
             border: 1px solid #e2e8f0;
-            padding: 8px 5px;
+            padding: 8px 4px;
             text-align: center;
             font-size: 13px;
         }
         .paper-grid th { background-color: #f8fafc; font-weight: 800; color: #1e293b; }
-        .paper-grid td:first-child { font-weight: 700; color: #334155; background-color: #f8fafc; width: 78px; }
+        .paper-grid td:first-child, .paper-grid th:first-child { font-weight: 700; color: #334155; background-color: #f8fafc; width: 76px; }
         .paper-grid tr:hover td { background-color: #f0fdf4; }
         
         .modal-overlay { 
@@ -316,14 +320,14 @@
                         <span id="pending-reminder-count-badge" class="bg-yellow-300 text-rose-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span>
                     </button>
 
-                    <button id="btn-header-send-links" onclick="openClassLinksModal()" class="hidden modern-btn modern-btn-gold float-badge" title="Send individual sheet-only links to each student">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        <span>Send Student Links</span>
+                    <button id="btn-header-send-links" onclick="openClassLinksModal()" class="hidden modern-btn modern-btn-gold float-badge" title="Save Student Phone Numbers & Send Links">
+                        <i class="fa-solid fa-phone-volume"></i>
+                        <span>Save Numbers & Send Links</span>
                     </button>
 
                     <button id="btn-manage-class" onclick="openManageClassModal()" class="hidden modern-btn modern-btn-emerald">
                         <i class="fa-solid fa-users-gear"></i>
-                        <span class="hidden md:inline">Manage Class</span>
+                        <span>Manage Students & Numbers</span>
                     </button>
 
                     <button id="btn-usthad-auth" onclick="handleUsthadButtonClick()" class="modern-btn modern-btn-glass">
@@ -335,14 +339,14 @@
         </div>
     </header>
 
-    <!-- Compact Top Class & View Switcher Bar (Keeps Sheet in the Upper 1st Position) -->
+    <!-- Compact Top Class & View Switcher Bar -->
     <div id="portal-navigation-bar" class="islamic-bg text-white py-3 border-b border-emerald-900/90 shadow-md">
         <div class="app-container flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full" id="class-pills-container">
                 <!-- Dynamic Class Pills Injected Here -->
             </div>
 
-            <!-- View Mode Switcher (Monthly Sheets 1st) -->
+            <!-- View Mode Switcher -->
             <div id="view-mode-switcher" class="flex items-center bg-emerald-950/80 p-1 rounded-2xl border border-emerald-700/50 self-start sm:self-auto">
                 <button onclick="switchMainView('sheets')" id="view-btn-sheets" class="px-4 py-1.5 rounded-xl text-xs font-extrabold transition flex items-center gap-1.5 bg-amber-400 text-emerald-950 shadow-sm cursor-pointer">
                     <i class="fa-solid fa-table"></i> 1. Monthly Sheets
@@ -360,7 +364,7 @@
     <!-- 1ST & UPPERMOST MAIN SECTION: MONTHLY PRAYER SHEETS AT THE VERY TOP -->
     <main class="flex-grow app-container pt-4 pb-8 z-10">
         
-        <!-- PERSONAL STUDENT SHEET HERO CARD (Visible 1st when a student opens their personal sheet link) -->
+        <!-- PERSONAL STUDENT SHEET HERO CARD -->
         <div id="personal-student-banner" class="hidden modern-card antigravity-card mb-5 border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-50/90 via-white to-amber-50/60">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -390,7 +394,7 @@
             </div>
         </div>
 
-        <!-- VIEW 1 (1ST & UPPERMOST): MONTHLY PAPER SHEETS -->
+        <!-- VIEW 1: MONTHLY PAPER SHEETS -->
         <div id="view-sheets" class="space-y-5 fade-in">
             <div class="modern-card antigravity-card flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -417,7 +421,7 @@
                 </div>
             </div>
 
-            <!-- Monthly Paper Sheets Grid (Rendered 1st at Top of Page) -->
+            <!-- Monthly Paper Sheets Grid -->
             <div id="paper-sheets-container" class="sheets-grid">
                 <!-- Populated by JS -->
             </div>
@@ -533,7 +537,7 @@
 
     </main>
 
-    <!-- Live Kodinhi / Chemmad Adhan Countdown & Usthad Daily Advice Banner (Below the Sheet so Sheet is 1st) -->
+    <!-- Live Kodinhi / Chemmad Adhan Countdown & Usthad Daily Advice Banner -->
     <section class="islamic-bg text-white py-8 border-t border-emerald-900">
         <div class="app-container">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -632,7 +636,7 @@
         </div>
     </section>
 
-    <!-- AUTOMATIC 9:00 PM NIGHT WHATSAPP REMINDER MODAL (FOR STUDENTS WHO DID NOT OPEN OR TICK TODAY) -->
+    <!-- AUTOMATIC 9:00 PM NIGHT WHATSAPP REMINDER MODAL -->
     <div id="night-reminder-modal" class="hidden modal-overlay z-[210]">
         <div class="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden fade-in flex flex-col max-h-[92vh]">
             <!-- Header -->
@@ -647,7 +651,7 @@
                             <span id="night-reminder-status-pill" class="text-[10px] font-extrabold uppercase tracking-wider bg-white/20 text-white px-2.5 py-0.5 rounded-full">Active</span>
                         </div>
                         <h3 class="text-lg sm:text-xl font-extrabold mt-1" style="margin-bottom:0;">9:00 PM Night WhatsApp Reminder Center</h3>
-                        <p class="text-xs text-rose-100/90" style="margin:2px 0 0 0;">Automatically lists students who <strong>did not open their link</strong> or <strong>did not tick all 5 prayers</strong> today</p>
+                        <p class="text-xs text-rose-100/90" style="margin:2px 0 0 0;">Connected to your Render WhatsApp Bot (<strong>+91 9656977828</strong>) — auto-reminds students with unmarked prayers</p>
                     </div>
                 </div>
                 <button onclick="closeNightReminderModal()" class="w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition cursor-pointer">
@@ -676,7 +680,7 @@
                     </div>
                 </div>
 
-                <!-- Full WhatsApp Bot Configuration Panel (UltraMsg / Green-API / Meta Cloud API / Custom Webhook) -->
+                <!-- Full WhatsApp Bot Configuration Panel (Pre-configured for Render Bot https://wabot-4nbu.onrender.com/send-reminder) -->
                 <div class="bg-white rounded-2xl border-2 border-emerald-500/30 p-3.5 text-xs shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-slate-100">
                         <div class="flex items-center gap-2">
@@ -685,11 +689,11 @@
                             </span>
                             <div>
                                 <h4 class="font-extrabold text-slate-800 text-xs sm:text-sm" style="margin:0;">WhatsApp Bot Auto-Sender Configuration (9:00 PM IST)</h4>
-                                <p class="text-[11px] text-slate-500" style="margin:0;">Automatically sends WhatsApp messages in background without clicking</p>
+                                <p class="text-[11px] text-slate-500" style="margin:0;">Pre-connected to your Render WhatsApp Bot (<code>wabot-4nbu.onrender.com</code>) • Sends automatically in background</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span id="wa-bot-connection-badge" class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">Bot Not Connected</span>
+                            <span id="wa-bot-connection-badge" class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">Render Bot Connected</span>
                         </div>
                     </div>
 
@@ -697,25 +701,25 @@
                         <div>
                             <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Bot Provider</label>
                             <select id="wa-bot-provider" onchange="handleBotProviderChange()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-extrabold text-slate-800 outline-none focus:border-emerald-500">
+                                <option value="webhook" selected>Your Render WA Bot (wabot-4nbu.onrender.com)</option>
                                 <option value="ultramsg">UltraMsg WhatsApp Bot</option>
                                 <option value="greenapi">Green-API WhatsApp Bot</option>
                                 <option value="meta">Meta Official Cloud API</option>
-                                <option value="webhook">Custom Webhook / Make / n8n</option>
                             </select>
                         </div>
                         <div id="bot-field-1-wrap">
-                            <label id="bot-field-1-label" class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Instance ID</label>
-                            <input type="text" id="wa-bot-instance" placeholder="e.g. instance115092" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold outline-none focus:border-emerald-500">
+                            <label id="bot-field-1-label" class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Render Bot Endpoint URL</label>
+                            <input type="text" id="wa-bot-instance" value="https://wabot-4nbu.onrender.com/send-reminder" placeholder="https://wabot-4nbu.onrender.com/send-reminder" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold outline-none focus:border-emerald-500">
                         </div>
                         <div id="bot-field-2-wrap">
-                            <label id="bot-field-2-label" class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">API Token / Key</label>
-                            <input type="password" id="wa-bot-token" placeholder="Enter Bot API Token..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold outline-none focus:border-emerald-500">
+                            <label id="bot-field-2-label" class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">API Key / Secret (Optional)</label>
+                            <input type="password" id="wa-bot-token" placeholder="Leave blank for Render Bot..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono font-bold outline-none focus:border-emerald-500">
                         </div>
                         <div class="flex gap-1.5">
                             <button onclick="saveWaBotConfig()" class="modern-btn modern-btn-emerald flex-1 justify-center" style="padding:8px 10px; font-size:11px;">
                                 <i class="fa-solid fa-floppy-disk"></i> Save Bot
                             </button>
-                            <button onclick="testWhatsAppBotConnection()" class="modern-btn modern-btn-gold justify-center" style="padding:8px 10px; font-size:11px;" title="Send a test WhatsApp message via Bot">
+                            <button onclick="testWhatsAppBotConnection()" class="modern-btn modern-btn-gold justify-center" style="padding:8px 10px; font-size:11px;" title="Send a test WhatsApp message via your Render Bot">
                                 <i class="fa-solid fa-paper-plane"></i> Test
                             </button>
                         </div>
@@ -733,7 +737,7 @@
         </div>
     </div>
 
-    <!-- DEDICATED STUDENT PERSONAL SHEET LINK SENDER MODAL (NO FULL-CLASS LINKS, ONLY INDIVIDUAL STUDENT LINKS) -->
+    <!-- DEDICATED STUDENT PERSONAL SHEET LINK SENDER MODAL -->
     <div id="class-links-modal" class="hidden modal-overlay z-[195]">
         <div class="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden fade-in flex flex-col max-h-[92vh]">
             <div class="islamic-bg p-5 sm:p-6 text-white flex justify-between items-center">
@@ -887,42 +891,6 @@
         </div>
     </div>
 
-    <!-- 24/7 GOOGLE APPS SCRIPT CLOUD CRON GENERATOR MODAL (RUNS EVEN WHEN PHONE/LAPTOP IS OFF) -->
-    <div id="cloud-cron-modal" class="hidden modal-overlay z-[230]">
-        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden fade-in flex flex-col max-h-[90vh]">
-            <div class="islamic-bg p-5 text-white flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-amber-300 text-lg">
-                        <i class="fa-solid fa-cloud-bolt"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base sm:text-lg font-extrabold" style="margin:0;">24/7 Cloud Auto-Sender (Works Even When Phone is Off)</h3>
-                        <p class="text-xs text-emerald-100/85" style="margin:2px 0 0 0;">Free Google Apps Script that checks Firestore at 9:00 PM IST & sends WhatsApp via your Bot</p>
-                    </div>
-                </div>
-                <button onclick="closeCloudCronModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-5 overflow-y-auto space-y-3 text-xs text-slate-600">
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-amber-950 font-semibold leading-relaxed">
-                    <strong>Why use this?</strong> When the portal is open in your browser at 9:00 PM, it sends messages automatically. If you want it to run at 9:00 PM even when your phone & computer are turned off:
-                    <ol class="list-decimal ml-4 mt-1.5 space-y-1">
-                        <li>Open <a href="https://script.google.com" target="_blank" class="underline font-extrabold text-emerald-800">script.google.com</a> (Free) and click <strong>New Project</strong>.</li>
-                        <li>Copy the pre-configured code below (it already includes your Firebase Database + Bot keys) and paste it there.</li>
-                        <li>Click the <strong>Triggers (Alarm Clock icon)</strong> on the left &rarr; <strong>Add Trigger</strong> &rarr; Choose <code>sendNinePmPrayerReminders</code> &rarr; <strong>Time-driven</strong> &rarr; <strong>Day timer</strong> &rarr; <strong>9pm to 10pm</strong>.</li>
-                    </ol>
-                </div>
-                <pre id="cloud-cron-code-block" class="bg-slate-900 text-emerald-300 p-3.5 rounded-2xl font-mono text-[11px] overflow-x-auto max-h-64 select-all"></pre>
-                <div class="flex justify-end gap-2">
-                    <button onclick="copyCloudCronCode()" class="modern-btn modern-btn-emerald">
-                        <i class="fa-solid fa-copy"></i> Copy 24/7 Cloud Script
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- USTHAD PIN MODAL -->
     <div id="admin-login-modal" class="hidden modal-overlay z-[200]">
         <div class="bg-white rounded-3xl p-7 max-w-sm w-full text-center shadow-2xl relative fade-in">
@@ -1064,8 +1032,9 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Official Production Domain
+        // Official Production Domain & Render WhatsApp Bot Webhook
         const PRODUCTION_DOMAIN = "https://swalath.madrasaa.online";
+        const DEFAULT_RENDER_BOT_WEBHOOK = "https://wabot-4nbu.onrender.com/send-reminder";
 
         // Environment & Firebase Config
         const isImmersive = typeof __firebase_config !== 'undefined';
@@ -1114,7 +1083,6 @@
         
         // ============================================================================
         // STRICT KERALA (ASIA/KOLKATA) TIMEZONE & KODINHI / CHEMMAD ADHAN ENGINE
-        // Cached Intl.DateTimeFormat for 0ms CPU overhead (No Scroll or Click Lag!)
         // ============================================================================
         const KODINHI_CHEMMAD_COORDS = { lat: 11.0416, lng: 75.9272 };
         const KERALA_INTL_FMT = new Intl.DateTimeFormat('en-US', {
@@ -1132,7 +1100,6 @@
         let cachedKeralaTime = null;
         let lastKeralaCacheTimestamp = 0;
 
-        // Fast cached Kerala IST time (recomputes at most once per 500ms even if called 1,000 times during table render)
         function getKeralaNow(forceRefresh = false) {
             const nowMs = Date.now();
             if (!forceRefresh && cachedKeralaTime && (nowMs - lastKeralaCacheTimestamp < 500)) {
@@ -1171,29 +1138,24 @@
             return `${hr12}:${String(m).padStart(2, '0')} ${period}`;
         }
 
-        // Authentic Monthly Kerala (Kodinhi / Chemmad, Malappuram) Adhan Reference Table (in minutes from midnight)
-        // Interpolates smoothly by day of month for 100% accurate local mosque timings
         const KODINHI_MONTHLY_ANCHORS = [
-            // [Month 1..12]: { Subh, Luhr, Asr, Magrib, Isha } on the 15th of each month in Kodinhi/Chemmad
-            { Subh: 5*60 + 22, Luhr: 12*60 + 35, Asr: 15*60 + 55, Magrib: 18*60 + 18, Isha: 19*60 + 31 }, // Jan
-            { Subh: 5*60 + 23, Luhr: 12*60 + 40, Asr: 16*60 + 0,  Magrib: 18*60 + 29, Isha: 19*60 + 39 }, // Feb
-            { Subh: 5*60 + 11, Luhr: 12*60 + 35, Asr: 15*60 + 50, Magrib: 18*60 + 34, Isha: 19*60 + 43 }, // Mar
-            { Subh: 4*60 + 51, Luhr: 12*60 + 26, Asr: 15*60 + 39, Magrib: 18*60 + 35, Isha: 19*60 + 46 }, // Apr
-            { Subh: 4*60 + 36, Luhr: 12*60 + 23, Asr: 15*60 + 44, Magrib: 18*60 + 39, Isha: 19*60 + 53 }, // May
-            { Subh: 4*60 + 35, Luhr: 12*60 + 26, Asr: 15*60 + 52, Magrib: 18*60 + 47, Isha: 20*60 + 3  }, // Jun
-            { Subh: 4*60 + 43, Luhr: 12*60 + 32, Asr: 15*60 + 57, Magrib: 18*60 + 50, Isha: 20*60 + 5  }, // Jul
-            { Subh: 4*60 + 51, Luhr: 12*60 + 31, Asr: 15*60 + 48, Magrib: 18*60 + 41, Isha: 19*60 + 52 }, // Aug
-            { Subh: 4*60 + 53, Luhr: 12*60 + 22, Asr: 15*60 + 34, Magrib: 18*60 + 24, Isha: 19*60 + 33 }, // Sep
-            { Subh: 4*60 + 53, Luhr: 12*60 + 12, Asr: 15*60 + 28, Magrib: 18*60 + 6,  Isha: 19*60 + 16 }, // Oct
-            { Subh: 4*60 + 58, Luhr: 12*60 + 10, Asr: 15*60 + 30, Magrib: 17*60 + 56, Isha: 19*60 + 9  }, // Nov (e.g. Nov 7: Subh ~4:57 AM, Luhr ~12:10 PM, Asr ~3:29 PM, Magrib ~5:58 PM, Isha ~7:10 PM)
-            { Subh: 5*60 + 11, Luhr: 12*60 + 21, Asr: 15*60 + 43, Magrib: 18*60 + 3,  Isha: 19*60 + 18 }  // Dec
+            { Subh: 5*60 + 22, Luhr: 12*60 + 35, Asr: 15*60 + 55, Magrib: 18*60 + 18, Isha: 19*60 + 31 },
+            { Subh: 5*60 + 23, Luhr: 12*60 + 40, Asr: 16*60 + 0,  Magrib: 18*60 + 29, Isha: 19*60 + 39 },
+            { Subh: 5*60 + 11, Luhr: 12*60 + 35, Asr: 15*60 + 50, Magrib: 18*60 + 34, Isha: 19*60 + 43 },
+            { Subh: 4*60 + 51, Luhr: 12*60 + 26, Asr: 15*60 + 39, Magrib: 18*60 + 35, Isha: 19*60 + 46 },
+            { Subh: 4*60 + 36, Luhr: 12*60 + 23, Asr: 15*60 + 44, Magrib: 18*60 + 39, Isha: 19*60 + 53 },
+            { Subh: 4*60 + 35, Luhr: 12*60 + 26, Asr: 15*60 + 52, Magrib: 18*60 + 47, Isha: 20*60 + 3  },
+            { Subh: 4*60 + 43, Luhr: 12*60 + 32, Asr: 15*60 + 57, Magrib: 18*60 + 50, Isha: 20*60 + 5  },
+            { Subh: 4*60 + 51, Luhr: 12*60 + 31, Asr: 15*60 + 48, Magrib: 18*60 + 41, Isha: 19*60 + 52 },
+            { Subh: 4*60 + 53, Luhr: 12*60 + 22, Asr: 15*60 + 34, Magrib: 18*60 + 24, Isha: 19*60 + 33 },
+            { Subh: 4*60 + 53, Luhr: 12*60 + 12, Asr: 15*60 + 28, Magrib: 18*60 + 6,  Isha: 19*60 + 16 },
+            { Subh: 4*60 + 58, Luhr: 12*60 + 10, Asr: 15*60 + 30, Magrib: 17*60 + 56, Isha: 19*60 + 9  },
+            { Subh: 5*60 + 11, Luhr: 12*60 + 21, Asr: 15*60 + 43, Magrib: 18*60 + 3,  Isha: 19*60 + 18 }
         ];
 
         function computeKodinhiChemmadAdhanTimes(monthNum, dayNum) {
             const mIdx = Math.max(0, Math.min(11, (monthNum || 1) - 1));
             const day = dayNum || 15;
-
-            // Interpolate smoothly between current month's 15th and adjacent month's 15th
             let otherIdx = mIdx;
             let weight = 0;
             if (day < 15) {
@@ -1226,7 +1188,6 @@
         const initialKst = getKeralaNow();
         let PRAYER_UNLOCK_TIMES = computeKodinhiChemmadAdhanTimes(initialKst.month, initialKst.day);
 
-        // Live sync with Aladhan API for Kodinhi / Chemmad (Shafi'i school = 0) using exact Kerala IST date
         async function syncLiveKodinhiChemmadTimings() {
             try {
                 const kst = getKeralaNow();
@@ -1253,7 +1214,6 @@
                     const m = total % 60;
                     return { h, m, totalMin: h * 60 + m, label: format12Hour(h, m) };
                 };
-                // Apply +2 min Kerala Samastha Ihtiyat (precaution) to astronomical horizon
                 PRAYER_UNLOCK_TIMES = {
                     'Subh': parseHHMM(t.Fajr, 2),
                     'Luhr': parseHHMM(t.Dhuhr, 2),
@@ -1263,9 +1223,7 @@
                 };
                 updateLiveAdhanCountdownUI();
                 renderAllActiveViews();
-            } catch (e) {
-                // Uses calibrated Kodinhi/Chemmad monthly table seamlessly
-            }
+            } catch (e) {}
         }
 
         let lastUnlockedPrayerName = null;
@@ -1280,7 +1238,6 @@
                 clockEl.textContent = `${String(h12).padStart(2, '0')}:${String(kst.minute).padStart(2, '0')}:${String(kst.second).padStart(2, '0')} ${ampm}`;
             }
 
-            // Trigger Automatic 9:00 PM IST Night Reminder Check
             checkNinePmAutoReminders(kst);
 
             const nowTotalSec = kst.totalSec;
@@ -1300,14 +1257,12 @@
                 }
             }
 
-            // If all 5 prayers for today have passed (after Isha), next prayer is tomorrow's Subh
             if (!nextPrayer) {
                 const subhTomorrowSec = (24 * 3600) + (PRAYER_UNLOCK_TIMES['Subh'].h * 3600 + PRAYER_UNLOCK_TIMES['Subh'].m * 60);
                 nextPrayer = 'Subh';
                 nextPrayerDiffSec = subhTomorrowSec - nowTotalSec;
             }
 
-            // Auto-refresh views the exact moment a new Adhan time unlocks
             if (lastUnlockedPrayerName !== null && lastUnlockedPrayerName !== currentWaqth) {
                 renderAllActiveViews();
             }
@@ -1322,7 +1277,6 @@
                 countdownEl.textContent = `${hrs > 0 ? hrs + 'h ' : ''}${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
             }
 
-            // Only rebuild the 5-Waqth schedule DOM when active/next Waqth or timings actually change (Eliminates 1s DOM lag!)
             const sig = `${currentWaqth}_${nextPrayer}_${PRAYER_UNLOCK_TIMES['Subh'].label}_${PRAYER_UNLOCK_TIMES['Isha'].label}`;
             if (sig === lastScheduleGridSignature) return;
             lastScheduleGridSignature = sig;
@@ -1382,7 +1336,6 @@
 
         // ============================================================================
         // ROTATING ISLAMIC THOUGHTS, HADITH & USTHAD DAILY ADVICE ENGINE
-        // Automatically picks random best Islamic thoughts & rotates every 20 seconds
         // ============================================================================
         const ISLAMIC_THOUGHTS_LIBRARY = [
             {
@@ -1414,36 +1367,6 @@
                 arabic: "إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ",
                 text: "Indeed, genuine prayer restrains a believer from shameful and unjust deeds, and the remembrance of Allah is the greatest.",
                 source: "Holy Qur'an (Surah Al-Ankabut 29:45)"
-            },
-            {
-                arabic: "الطُّهُورُ شَطْرُ الْإِيمَانِ وَالْحَمْدُ لِلَّهِ تَمْلَأُ الْمِيزَانَ",
-                text: "Cleanliness (Wudu) is half of faith, and saying 'Alhamdulillah' fills the scale of good deeds.",
-                source: "Sahih Muslim"
-            },
-            {
-                arabic: "بَشِّرِ الْمَشَّائِينَ فِي الظُّلَمِ إِلَى الْمَسَاجِدِ بِالنُّورِ التَّامِّ يَوْمَ الْقِيَامَةِ",
-                text: "Give glad tidings to those who walk to the mosques in darkness (for Subh & Isha) of complete Light on the Day of Judgment.",
-                source: "Sunan Abi Dawud & Tirmidhi"
-            },
-            {
-                arabic: "مَنْ صَلَّى الصُّبْحَ فَهُوَ فِي ذِمَّةِ اللَّهِ",
-                text: "Whoever performs the Subh (Fajr) prayer is under the special protection and guarantee of Allah.",
-                source: "Sahih Muslim"
-            },
-            {
-                arabic: "أَوَّلُ مَا يُحَاسَبُ بِهِ الْعَبْدُ يَوْمَ الْقِيَامَةِ الصَّلَاةُ",
-                text: "The first matter that a servant will be brought to account for on the Day of Judgment is the five daily prayers.",
-                source: "Sunan An-Nasa'i"
-            },
-            {
-                arabic: "مَنْ صَلَّى عَلَيَّ صَلَاةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْرًا",
-                text: "Whoever sends Swalath (blessings) upon me once, Allah will send ten blessings upon him and erase ten sins.",
-                source: "Sahih Muslim"
-            },
-            {
-                arabic: "رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ وَمِن ذُرِّيَّتِي ۚ رَبَّنَا وَتَقَبَّلْ دُعَاءِ",
-                text: "My Lord, make me an establisher of prayer, and from my descendants. Our Lord, and accept my supplication.",
-                source: "Holy Qur'an (Surah Ibrahim 14:40)"
             }
         ];
 
@@ -1481,7 +1404,6 @@
             }
         };
 
-        // Start 1-second live Adhan countdown ticker & 20-second Rotating Islamic Thoughts
         setInterval(updateLiveAdhanCountdownUI, 1000);
         setInterval(() => cycleRandomIslamicThought(false), 20000);
         setTimeout(() => {
@@ -1491,26 +1413,20 @@
         }, 50);
 
         // ============================================================================
-        // AUTOMATIC 9:00 PM IST NIGHT WHATSAPP REMINDER & "LAST OPENED" TRACKING ENGINE
-        // Automatically tracks if a student opened their sheet today & ticked all 5 prayers
+        // AUTOMATIC 9:00 PM IST NIGHT WHATSAPP REMINDER ENGINE
+        // Pre-Connected to Your Render Bot: https://wabot-4nbu.onrender.com/send-reminder
         // ============================================================================
         let hasRecordedStudentVisitToday = false;
         let auto9pmPopupEnabled = localStorage.getItem('him_auto_9pm_popup') !== 'false';
 
-        // Multi-Provider WhatsApp Bot Configuration State (Defaults to Green-API Free QR Plan)
         let waBotConfig = {
-            provider: localStorage.getItem('him_wabot_provider') || 'greenapi',
-            instanceId: localStorage.getItem('him_wabot_instance') || '',
+            provider: localStorage.getItem('him_wabot_provider') || 'webhook',
+            instanceId: localStorage.getItem('him_wabot_instance') || DEFAULT_RENDER_BOT_WEBHOOK,
             token: localStorage.getItem('him_wabot_token') || ''
         };
 
-        window.toggleBotGuidePanel = function() {
-            const box = document.getElementById('bot-setup-guide-box');
-            box?.classList.toggle('hidden');
-        };
-
         window.handleBotProviderChange = function() {
-            const provider = document.getElementById('wa-bot-provider')?.value || 'greenapi';
+            const provider = document.getElementById('wa-bot-provider')?.value || 'webhook';
             const lbl1 = document.getElementById('bot-field-1-label');
             const inp1 = document.getElementById('wa-bot-instance');
             const lbl2 = document.getElementById('bot-field-2-label');
@@ -1528,21 +1444,17 @@
                 inp1.placeholder = 'e.g. 7103849201';
                 lbl2.innerText = 'Green-API apiTokenInstance';
                 inp2.placeholder = 'e.g. d74b3a8f9e...';
-            } else if (provider === 'callmebot') {
-                lbl1.innerText = 'Sender / Default Phone';
-                inp1.placeholder = 'e.g. 919876543210';
-                lbl2.innerText = 'CallMeBot API Key';
-                inp2.placeholder = 'e.g. 1234567';
             } else if (provider === 'meta') {
                 lbl1.innerText = 'Meta Phone Number ID';
                 inp1.placeholder = 'e.g. 109283746510293';
                 lbl2.innerText = 'Permanent Access Token';
                 inp2.placeholder = 'EAAGm0PX4ZCps...';
             } else {
-                lbl1.innerText = 'Webhook / Gateway POST URL';
-                inp1.placeholder = 'https://your-bot-gateway.com/send';
-                lbl2.innerText = 'API Key / Bearer Token (Optional)';
-                inp2.placeholder = 'Optional secret token';
+                lbl1.innerText = 'Render Bot Endpoint URL';
+                if (!inp1.value) inp1.value = DEFAULT_RENDER_BOT_WEBHOOK;
+                inp1.placeholder = DEFAULT_RENDER_BOT_WEBHOOK;
+                lbl2.innerText = 'API Key / Secret (Optional)';
+                inp2.placeholder = 'Leave blank for Render Bot...';
             }
         };
 
@@ -1552,7 +1464,7 @@
             const isConfigured = Boolean(waBotConfig.instanceId && (waBotConfig.token || waBotConfig.provider === 'webhook'));
             if (isConfigured) {
                 badge.className = 'text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
-                badge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>Bot Ready (${waBotConfig.provider.toUpperCase()})`;
+                badge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>Bot Ready (${waBotConfig.instanceId.includes('wabot-4nbu') ? 'Render WA Bot +91 9656977828' : waBotConfig.provider.toUpperCase()})`;
             } else {
                 badge.className = 'text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300';
                 badge.innerHTML = `<i class="fa-solid fa-plug-circle-exclamation mr-1"></i>Enter Bot Instance & Token`;
@@ -1568,7 +1480,6 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // Initialize saved Bot settings into inputs
         setTimeout(() => {
             const provEl = document.getElementById('wa-bot-provider');
             const instEl = document.getElementById('wa-bot-instance');
@@ -1591,8 +1502,8 @@
         };
 
         window.saveWaBotConfig = async function() {
-            const provider = (document.getElementById('wa-bot-provider')?.value || 'ultramsg').trim();
-            const instanceId = (document.getElementById('wa-bot-instance')?.value || '').trim();
+            const provider = (document.getElementById('wa-bot-provider')?.value || 'webhook').trim();
+            const instanceId = (document.getElementById('wa-bot-instance')?.value || DEFAULT_RENDER_BOT_WEBHOOK).trim();
             const token = (document.getElementById('wa-bot-token')?.value || '').trim();
 
             waBotConfig = { provider, instanceId, token };
@@ -1610,7 +1521,6 @@
             showToast("WhatsApp Bot credentials saved! Will auto-send at 9:00 PM IST.", "success");
         };
 
-        // Core WhatsApp Bot API Dispatcher (Supports UltraMsg, Green-API, Meta Cloud API, and Custom Webhook)
         async function dispatchMessageViaWhatsAppBot(rawPhone, messageText, studentMeta = {}) {
             let phoneClean = (rawPhone || '').replace(/[^0-9]/g, '');
             if (!phoneClean) return { ok: false, error: 'Empty phone number' };
@@ -1664,12 +1574,8 @@
                     });
                     const data = await res.json();
                     return { ok: res.ok && !data.error, data };
-                } else if (provider === 'callmebot') {
-                    const url = `https://api.callmebot.com/whatsapp.php?phone=${phoneClean}&text=${encodeURIComponent(messageText)}&apikey=${encodeURIComponent(token)}`;
-                    await fetch(url, { mode: 'no-cors' });
-                    return { ok: true };
                 } else {
-                    // Custom Webhook / Make / n8n / Zapier / WaSender
+                    // Render WhatsApp Bot (https://wabot-4nbu.onrender.com/send-reminder) or Custom Webhook
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) headers['Authorization'] = `Bearer ${token}`;
                     const res = await fetch(instanceId, {
@@ -1685,14 +1591,14 @@
                             ...studentMeta
                         })
                     });
-                    return { ok: res.ok };
+                    const data = await res.json().catch(() => ({}));
+                    return { ok: res.ok && data.ok !== false, data, error: data.error };
                 }
             } catch (err) {
                 return { ok: false, error: err.message };
             }
         }
 
-        // Send a Single Student Reminder Immediately via the Configured Bot (or fallback to WhatsApp Direct)
         window.sendSingleStudentViaBot = async function(studentIndex, whichPhone = 1, classIdOverride = '') {
             const targetClass = classIdOverride ? availableClasses.find(c => c.id === classIdOverride) : currentClass;
             if (!targetClass || !targetClass.students || !targetClass.students[studentIndex]) return;
@@ -1719,12 +1625,10 @@
                 return;
             }
 
-            // Save phone numbers if edited
             if (p1El && p2El) {
                 await saveStudentPhones(targetClass.id, studentIndex, `rem_p1_${targetClass.id}_${studentIndex}`, `rem_p2_${targetClass.id}_${studentIndex}`, true);
             }
 
-            // If Bot is configured, send automatically in background via Bot API
             if (waBotConfig.instanceId && (waBotConfig.token || waBotConfig.provider === 'webhook')) {
                 const msg = buildNightReminderWhatsAppMessage(st, targetClass);
                 appendBotLog(`Sending Bot message to ${st.name} (${rawPhone})...`);
@@ -1746,12 +1650,10 @@
                     sendNightReminderWhatsApp(studentIndex, whichPhone, targetClass.id);
                 }
             } else {
-                // Fallback to direct WhatsApp link
                 sendNightReminderWhatsApp(studentIndex, whichPhone, targetClass.id);
             }
         };
 
-        // Test WhatsApp Bot Connection using the first available student phone number
         window.testWhatsAppBotConnection = async function() {
             await saveWaBotConfig();
             if (!waBotConfig.instanceId) {
@@ -1760,11 +1662,7 @@
             }
             const students = (currentClass?.students || []);
             const sampleSt = students.find(s => s.phone1 || s.phone2);
-            const testPhone = sampleSt ? (sampleSt.phone1 || sampleSt.phone2) : '';
-            if (!testPhone) {
-                showToast("Add at least one student Phone Number below to test the Bot!", "error");
-                return;
-            }
+            const testPhone = sampleSt ? (sampleSt.phone1 || sampleSt.phone2) : '919539601481';
             appendBotLog(`Testing ${waBotConfig.provider.toUpperCase()} Bot to ${testPhone}...`);
             const res = await dispatchMessageViaWhatsAppBot(
                 testPhone,
@@ -1775,11 +1673,10 @@
                 showToast(`Bot test message sent to ${testPhone}!`, "success");
             } else {
                 appendBotLog(`❌ Test failed: ${res.error || JSON.stringify(res.data || {})}`);
-                showToast("Bot test failed. Check Instance ID & Token in log.", "error");
+                showToast("Bot test failed. Ensure Render Bot is online.", "error");
             }
         };
 
-        // Automatically record when a student opens their personal prayer sheet link today
         async function recordStudentSheetOpenedToday() {
             if (hasRecordedStudentVisitToday || !authReady || !currentClass || !isSingleStudentSheetOnlyMode) return;
             const students = getFilteredStudents();
@@ -1800,7 +1697,6 @@
             } catch (e) {}
         }
 
-        // Cache of today's records across ALL classes so the 9:00 PM Bot can check every class automatically
         let allClassesTodayRecords = {};
         let classTodayListeners = {};
 
@@ -1821,7 +1717,6 @@
             });
         }
 
-        // Compute list of students who have NOT opened their link or NOT ticked all 5 prayers today
         function getPendingReminderStudentsForToday(forceAllClasses = false) {
             if (!currentClass) return [];
             const kst = getKeralaNow();
@@ -1852,7 +1747,6 @@
                         }
                     });
 
-                    // Needs reminder if not all 5 prayers are ticked/excused OR never opened & 0 ticked
                     if (doneCount < 5) {
                         let reasonLabel = '';
                         if (!openedToday && doneCount === 0) {
@@ -1885,7 +1779,6 @@
             return pendingList;
         }
 
-        // Compose personalized 9:00 PM Night WhatsApp Reminder Message
         function buildNightReminderWhatsAppMessage(st, clsObj = null) {
             const targetCls = clsObj || availableClasses.find(c => c.id === st.classId) || currentClass;
             const personalUrl = getStudentPersonalSheetUrl(targetCls, st.studentId, st.name);
@@ -1896,7 +1789,6 @@
             return `*HIM PULLANITHAZHAM (${targetCls.name}) - 9:00 PM Prayer Reminder* 🌙\nAssalamu Alaikum *${st.name}* (ID: *${st.studentId}*),\n\n${statusLine}\n\nPlease tap your personal Prayer Sheet link below and mark your daily prayers before sleeping:\n${personalUrl}`;
         }
 
-        // Send 9:00 PM Reminder to a specific student via WhatsApp & mark as reminded in Firestore
         window.sendNightReminderWhatsApp = async function(studentIndex, whichPhone = 1, classIdOverride = '') {
             const targetClass = classIdOverride ? availableClasses.find(c => c.id === classIdOverride) : currentClass;
             if (!targetClass || !targetClass.students || !targetClass.students[studentIndex]) return;
@@ -1929,7 +1821,6 @@
             const waBase = phoneClean ? `https://wa.me/${phoneClean}` : `https://wa.me/`;
             window.open(`${waBase}?text=${encodeURIComponent(message)}`, '_blank');
 
-            // Mark student as Reminded in Firestore for today
             try {
                 const kst = getKeralaNow();
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', `class_records_${targetClass.id}`, kst.dateStr);
@@ -1937,7 +1828,6 @@
             } catch (e) {}
         };
 
-        // Sequential One-Tap Dispatcher for Next Unsent Student
         window.triggerAllPendingWhatsAppSequential = function() {
             const pending = getPendingReminderStudentsForToday();
             const nextUnsent = pending.find(s => !s.remindedAt9PM && (s.phone1 || s.phone2)) || pending.find(s => !s.remindedAt9PM) || pending[0];
@@ -1949,20 +1839,18 @@
             sendNightReminderWhatsApp(nextUnsent.originalIndex, usePhone, nextUnsent.classId);
         };
 
-        // Zero-Click WhatsApp Bot Auto-Sender at 9:00 PM IST (Iterates all classes & unmarked students)
         let isBotCurrentlyDispatching = false;
         window.autoFireWebhookRemindersForToday = async function(manualTrigger = false) {
             if (isBotCurrentlyDispatching) return;
             const isBotReady = Boolean(waBotConfig.instanceId && (waBotConfig.token || waBotConfig.provider === 'webhook'));
             if (!isBotReady || !currentClass) {
                 if (manualTrigger) {
-                    document.getElementById('bot-setup-guide-box')?.classList.remove('hidden');
-                    showToast("Connect your WhatsApp Bot Instance ID & Token above (see 3-Step Guide)!", "error");
+                    showToast("Connect your WhatsApp Bot URL above!", "error");
                 }
                 return;
             }
 
-            const pending = getPendingReminderStudentsForToday();
+            const pending = getPendingReminderStudentsForToday(true);
             if (pending.length === 0) {
                 if (manualTrigger) showToast("Alhamdulillah! All students have ticked their prayers today.", "success");
                 return;
@@ -1999,7 +1887,7 @@
                             deliveredAny = true;
                             appendBotLog(`✅ Bot sent reminder to ${st.name} (${rawP})`);
                         } else {
-                            appendBotLog(`❌ Failed for ${st.name} (${rawP}): ${res.error || 'Check Bot Token'}`);
+                            appendBotLog(`❌ Failed for ${st.name} (${rawP}): ${res.error || 'Check Render Bot connection'}`);
                         }
                     }
 
@@ -2022,109 +1910,6 @@
             }
         };
 
-        // 24/7 Cloud Cron Generator Modal (Google Apps Script that runs even when phone/laptop is off)
-        window.openCloudCronModal = function() {
-            const codeEl = document.getElementById('cloud-cron-code-block');
-            const projectId = firebaseConfig.projectId || 'prayers-9';
-            const provider = waBotConfig.provider || 'greenapi';
-            const inst = waBotConfig.instanceId || 'YOUR_INSTANCE_ID';
-            const tok = waBotConfig.token || 'YOUR_BOT_TOKEN';
-
-            const scriptCode = `// ============================================================================
-// HIM PULLANITHAZHAM - 24/7 AUTOMATIC 9:00 PM IST WHATSAPP REMINDER SCRIPT
-// Runs on Google Cloud every night at 9:00 PM IST even when phone/PC is off
-// ============================================================================
-const PROJECT_ID = "${projectId}";
-const APP_ID = "${appId}";
-const BOT_PROVIDER = "${provider}"; // "greenapi" or "ultramsg"
-const BOT_INSTANCE = "${inst}";
-const BOT_TOKEN = "${tok}";
-const PORTAL_DOMAIN = "${PRODUCTION_DOMAIN}";
-
-function sendNinePmPrayerReminders() {
-  const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-  const yyyy = nowIST.getFullYear();
-  const mm = String(nowIST.getMonth() + 1).padStart(2, "0");
-  const dd = String(nowIST.getDate()).padStart(2, "0");
-  const todayStr = yyyy + "-" + mm + "-" + dd;
-
-  const baseUrl = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents/artifacts/" + APP_ID + "/public/data";
-  const classesRes = UrlFetchApp.fetch(baseUrl + "/classes", { muteHttpExceptions: true });
-  const classesJson = JSON.parse(classesRes.getContentText());
-  if (!classesJson.documents) return;
-
-  classesJson.documents.forEach(function(clsDoc) {
-    const classId = clsDoc.name.split("/").pop();
-    const className = clsDoc.fields.name ? clsDoc.fields.name.stringValue : classId;
-    const studentsArr = (clsDoc.fields.students && clsDoc.fields.students.arrayValue && clsDoc.fields.students.arrayValue.values) || [];
-
-    const recUrl = baseUrl + "/class_records_" + classId + "/" + todayStr;
-    const recRes = UrlFetchApp.fetch(recUrl, { muteHttpExceptions: true });
-    const recFields = (recRes.getResponseCode() === 200) ? (JSON.parse(recRes.getContentText()).fields || {}) : {};
-
-    studentsArr.forEach(function(stVal, idx) {
-      const f = (stVal.mapValue && stVal.mapValue.fields) || {};
-      const stName = f.name ? f.name.stringValue : "";
-      const stId = f.studentId ? f.studentId.stringValue : ("HIM-" + (idx + 1));
-      const phone1 = f.phone1 ? f.phone1.stringValue : "";
-      const phone2 = f.phone2 ? f.phone2.stringValue : "";
-      if (!stName || (!phone1 && !phone2)) return;
-
-      const stRec = (recFields[stName] && recFields[stName].mapValue && recFields[stName].mapValue.fields) || {};
-      if (stRec.remindedAt9PM && stRec.remindedAt9PM.stringValue) return;
-
-      const prayers = ["Subh", "Luhr", "Asr", "Magrib", "Isha"];
-      const missing = [];
-      prayers.forEach(function(p) {
-        const v = stRec[p];
-        const done = v && (v.booleanValue === true || v.stringValue === "excused");
-        if (!done) missing.push(p);
-      });
-
-      if (missing.length > 0) {
-        const link = PORTAL_DOMAIN + "/?class=" + encodeURIComponent(className) + "&id=" + encodeURIComponent(stId) + "&name=" + encodeURIComponent(stName) + "&sheet=only";
-        const msg = "*HIM PULLANITHAZHAM (" + className + ") - 9:00 PM Prayer Reminder* 🌙\\nAssalamu Alaikum *" + stName + "* (ID: *" + stId + "*),\\n\\nYou have unmarked prayers today (Pending: *" + missing.join(", ") + "*).\\n\\nPlease open your personal Prayer Sheet and mark your ticks:\\n" + link;
-        [phone1, phone2].forEach(function(ph) {
-          if (ph && ph.replace(/[^0-9]/g, "").length >= 10) sendViaBot(ph, msg);
-        });
-      }
-    });
-  });
-}
-
-function sendViaBot(rawPhone, message) {
-  var p = rawPhone.replace(/[^0-9]/g, "");
-  if (p.length === 10) p = "91" + p;
-  if (BOT_PROVIDER === "greenapi") {
-    UrlFetchApp.fetch("https://api.green-api.com/waInstance" + BOT_INSTANCE + "/sendMessage/" + BOT_TOKEN, {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify({ chatId: p + "@c.us", message: message }),
-      muteHttpExceptions: true
-    });
-  } else {
-    var inst = BOT_INSTANCE.indexOf("instance") === 0 ? BOT_INSTANCE : ("instance" + BOT_INSTANCE);
-    UrlFetchApp.fetch("https://api.ultramsg.com/" + inst + "/messages/chat", {
-      method: "post",
-      payload: { token: BOT_TOKEN, to: "+" + p, body: message },
-      muteHttpExceptions: true
-    });
-  }
-}`;
-            if (codeEl) codeEl.textContent = scriptCode;
-            document.getElementById('cloud-cron-modal')?.classList.remove('hidden');
-        };
-
-        window.closeCloudCronModal = function() {
-            document.getElementById('cloud-cron-modal')?.classList.add('hidden');
-        };
-
-        window.copyCloudCronCode = function() {
-            const codeEl = document.getElementById('cloud-cron-code-block');
-            if (codeEl) copyTextToClipboard(codeEl.textContent, "Copied 24/7 Cloud Auto-Sender Script!");
-        };
-
-        // Render the 9:00 PM Night Reminder Modal Content
         window.renderNightReminderModal = function() {
             const listEl = document.getElementById('night-reminder-students-list');
             const summaryEl = document.getElementById('night-reminder-summary-text');
@@ -2187,21 +1972,21 @@ function sendViaBot(rawPhone, message) {
                             <!-- Phone 1 Reminder Button -->
                             <div class="flex items-center gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200">
                                 <input type="tel" id="${remP1Id}" value="${st.phone1}" onchange="saveStudentPhones('${st.classId}', ${st.originalIndex}, '${remP1Id}', '${remP2Id}', false)" placeholder="Add Phone 1 (e.g. 9876543210)..." class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 outline-none focus:border-emerald-500">
+                                <button onclick="saveStudentPhones('${st.classId}', ${st.originalIndex}, '${remP1Id}', '${remP2Id}', false)" class="modern-btn shrink-0" style="background:#0f172a; color:#fde047; padding:8px 10px; font-size:11px;" title="Save Phone 1">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save
+                                </button>
                                 <button onclick="sendSingleStudentViaBot(${st.originalIndex}, 1, '${st.classId}')" class="modern-btn shrink-0" style="background:#059669; color:#fff; padding:8px 10px; font-size:11px;" title="Auto-send via WhatsApp Bot to Phone 1">
                                     <i class="fa-solid fa-robot"></i> Bot 1
-                                </button>
-                                <button onclick="sendNightReminderWhatsApp(${st.originalIndex}, 1, '${st.classId}')" class="modern-btn shrink-0" style="background:#16a34a; color:#fff; padding:8px 10px; font-size:11px;" title="Open WhatsApp directly for Phone 1">
-                                    <i class="fa-brands fa-whatsapp"></i> WA 1
                                 </button>
                             </div>
                             <!-- Phone 2 Reminder Button -->
                             <div class="flex items-center gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200">
                                 <input type="tel" id="${remP2Id}" value="${st.phone2}" onchange="saveStudentPhones('${st.classId}', ${st.originalIndex}, '${remP1Id}', '${remP2Id}', false)" placeholder="Add Phone 2 (Optional)..." class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 outline-none focus:border-indigo-500">
+                                <button onclick="saveStudentPhones('${st.classId}', ${st.originalIndex}, '${remP1Id}', '${remP2Id}', false)" class="modern-btn shrink-0" style="background:#0f172a; color:#fde047; padding:8px 10px; font-size:11px;" title="Save Phone 2">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save
+                                </button>
                                 <button onclick="sendSingleStudentViaBot(${st.originalIndex}, 2, '${st.classId}')" class="modern-btn shrink-0" style="background:#059669; color:#fff; padding:8px 10px; font-size:11px;" title="Auto-send via WhatsApp Bot to Phone 2">
                                     <i class="fa-solid fa-robot"></i> Bot 2
-                                </button>
-                                <button onclick="sendNightReminderWhatsApp(${st.originalIndex}, 2, '${st.classId}')" class="modern-btn shrink-0" style="background:#15803d; color:#fff; padding:8px 10px; font-size:11px;" title="Open WhatsApp directly for Phone 2">
-                                    <i class="fa-brands fa-whatsapp"></i> WA 2
                                 </button>
                             </div>
                         </div>
@@ -2224,27 +2009,21 @@ function sendViaBot(rawPhone, message) {
             document.getElementById('night-reminder-modal')?.classList.add('hidden');
         };
 
-        // Permission check: Can current user edit prayer ticks for this student?
-        // Public view is strictly READ-ONLY (ticked sheet only). Only Usthad or the student on their personal link can edit.
         function canUserEditStudentPrayers(studentName = '') {
             if (isUsthadAdmin) return true;
             if (isSingleStudentSheetOnlyMode) return true;
             return false;
         }
 
-        // Automatic 9:00 PM IST (21:00) Trigger Checker
         function checkNinePmAutoReminders(kst) {
             if (!authReady || !currentClass) return;
 
-            // Update header badge count silently
             const badgeEl = document.getElementById('pending-reminder-count-badge');
             const pending = getPendingReminderStudentsForToday();
             if (badgeEl) badgeEl.innerText = pending.length;
 
-            // Only trigger at or after 9:00 PM IST (hour >= 21)
             if (kst.hour < 21 || pending.length === 0) return;
 
-            // 1. If student is on their own personal sheet at 9:00 PM and hasn't ticked all 5 prayers, alert them directly
             if (isSingleStudentSheetOnlyMode && !isUsthadAdmin) {
                 const studentAlertKey = `him_9pm_student_self_alert_${kst.dateStr}_${currentClass.id}`;
                 if (!localStorage.getItem(studentAlertKey)) {
@@ -2254,14 +2033,12 @@ function sendViaBot(rawPhone, message) {
                 return;
             }
 
-            // 2. Automatically run the WhatsApp Bot for any un-reminded students at/after 9:00 PM IST
             const isBotReady = Boolean(waBotConfig.instanceId && (waBotConfig.token || waBotConfig.provider === 'webhook'));
             const unremindedWithPhones = pending.filter(st => !st.remindedAt9PM && (st.phone1 || st.phone2));
             if (isBotReady && auto9pmPopupEnabled && unremindedWithPhones.length > 0 && !isBotCurrentlyDispatching) {
                 autoFireWebhookRemindersForToday(false);
             }
 
-            // 3. Only open the 9:00 PM Reminder Center modal if Usthad Mode is unlocked
             if (!isUsthadAdmin) return;
             const autoTriggerKey = `him_9pm_auto_triggered_${kst.dateStr}_${currentClass.id}`;
             if (!localStorage.getItem(autoTriggerKey)) {
@@ -2273,7 +2050,6 @@ function sendViaBot(rawPhone, message) {
             }
         }
 
-        // Helper: Generate a clean Student ID for every student (e.g., HIM-901)
         function getStudentId(student, index, className = '') {
             if (student && student.studentId) return student.studentId.toUpperCase();
             const numMatch = (className || '').match(/\d+/);
@@ -2282,7 +2058,6 @@ function sendViaBot(rawPhone, message) {
             return `HIM-${classPrefix}${rollNo}`;
         }
 
-        // Apply Single-Student Sheet-Only UI Lock if opened via personal student link
         function updateSingleStudentModeUI() {
             const isLocked = isSingleStudentSheetOnlyMode && !isUsthadAdmin;
             const navBar = document.getElementById('portal-navigation-bar');
@@ -2332,7 +2107,6 @@ function sendViaBot(rawPhone, message) {
                 personalBanner?.classList.add('hidden');
                 sheetsContainer?.classList.remove('single-student-sheet');
 
-                // Strictly show link sending, 9PM reminder, and CSV export ONLY when Usthad is logged in
                 if (isUsthadAdmin) {
                     btnHeaderLinks?.classList.remove('hidden');
                     btnControlLinks?.classList.remove('hidden');
@@ -2340,7 +2114,7 @@ function sendViaBot(rawPhone, message) {
                     btnControl9pm?.classList.remove('hidden');
                     dockStudentLinks?.classList.remove('hidden');
                     btnExportCsv?.classList.remove('hidden');
-                    if (subtitleEl) subtitleEl.innerText = "Usthad Mode: Tap any prayer box to edit student records, or click Send Student Links.";
+                    if (subtitleEl) subtitleEl.innerText = "Usthad Mode: Tap any prayer box to edit student records, or click Send Student Links / 9:00 PM Reminder.";
                 } else {
                     btnHeaderLinks?.classList.add('hidden');
                     btnControlLinks?.classList.add('hidden');
@@ -2353,7 +2127,6 @@ function sendViaBot(rawPhone, message) {
             }
         }
 
-        // Pre-fill search input if ?id=... or ?name=... is in the URL
         if (lockedStudentIdParam || lockedStudentNameParam) {
             const searchInput = document.getElementById('student-search-input');
             if (searchInput) {
@@ -2370,14 +2143,10 @@ function sendViaBot(rawPhone, message) {
             renderAllActiveViews(true);
         };
 
-        // Date Setup
-        // Date Setup strictly using Kerala (Asia/Kolkata) IST Timezone
         const keralaInit = getKeralaNow();
         const localTodayStr = keralaInit.dateStr;
         let selectedDailyDate = localTodayStr;
         
-        const currentYearStr = String(keralaInit.year);
-        const currentMonthStr = String(keralaInit.month).padStart(2, '0');
         let selectedViewMonth = keralaInit.monthStr;
         let lastRenderedMonthStr = ""; 
         let lastRenderedClassId = "";
@@ -2473,7 +2242,6 @@ function sendViaBot(rawPhone, message) {
             document.getElementById('loading-overlay')?.classList.add('hidden');
         }
 
-        // Auto-Connect to Firebase Immediately
         async function bootStudentPortal() {
             showLoading("Connecting to swalath.madrasaa.online...");
             try {
@@ -2502,7 +2270,6 @@ function sendViaBot(rawPhone, message) {
         }
         bootStudentPortal();
 
-        // Usthad Mode Authentication
         window.handleUsthadButtonClick = function() {
             if (isUsthadAdmin) {
                 isUsthadAdmin = false;
@@ -2569,7 +2336,6 @@ function sendViaBot(rawPhone, message) {
             renderAllActiveViews(true);
         }
 
-        // Advisement Modal
         window.openAdvisementModal = function() {
             document.getElementById('advisement-modal').classList.remove('hidden');
         };
@@ -2594,8 +2360,8 @@ function sendViaBot(rawPhone, message) {
                         const provEl = document.getElementById('wa-bot-provider');
                         const instEl = document.getElementById('wa-bot-instance');
                         const tokEl = document.getElementById('wa-bot-token');
-                        if (provEl) provEl.value = waBotConfig.provider || 'ultramsg';
-                        if (instEl) instEl.value = waBotConfig.instanceId || '';
+                        if (provEl) provEl.value = waBotConfig.provider || 'webhook';
+                        if (instEl) instEl.value = waBotConfig.instanceId || DEFAULT_RENDER_BOT_WEBHOOK;
                         if (tokEl) tokEl.value = waBotConfig.token || '';
                         handleBotProviderChange();
                         updateWaBotStatusBadge();
@@ -2624,7 +2390,6 @@ function sendViaBot(rawPhone, message) {
             }
         });
 
-        // Get Base Domain (Defaults to https://swalath.madrasaa.online)
         function getPortalBaseDomain() {
             const customInput = document.getElementById('custom-domain-input');
             if (customInput && customInput.value.trim()) {
@@ -2633,7 +2398,6 @@ function sendViaBot(rawPhone, message) {
             return PRODUCTION_DOMAIN;
         }
 
-        // Build Student Personal Sheet-Only URL on swalath.madrasaa.online
         function getStudentPersonalSheetUrl(cls, studentId, studentName) {
             const baseDomain = getPortalBaseDomain();
             const params = new URLSearchParams();
@@ -2644,16 +2408,6 @@ function sendViaBot(rawPhone, message) {
             return `${baseDomain}/?${params.toString()}`;
         }
 
-        window.copyMyPersonalSheetLink = function() {
-            if (!currentClass) return;
-            const students = getFilteredStudents();
-            if (students.length >= 1) {
-                const st = students[0];
-                const url = getStudentPersonalSheetUrl(currentClass, st.studentId, st.name);
-                copyTextToClipboard(url, `Copied ${st.name}'s Personal Sheet Link!`);
-            }
-        };
-
         window.copySpecificClassLink = function(classId, viewMode = 'sheets', studentId = '', studentName = '') {
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls || !studentId) return;
@@ -2661,7 +2415,6 @@ function sendViaBot(rawPhone, message) {
             copyTextToClipboard(shareUrl, `${studentName || studentId}'s Personal Sheet Link copied!`);
         };
 
-        // Save Student's Two Phone Numbers to Firestore
         window.saveStudentPhones = async function(classId, studentIndex, phone1Id, phone2Id, silent = false) {
             if (!isUsthadAdmin) {
                 if (!silent) showToast("Only Usthad can edit student phone numbers!", "error");
@@ -2688,7 +2441,6 @@ function sendViaBot(rawPhone, message) {
             }
         };
 
-        // Direct WhatsApp Sender for Individual Student Personal Sheet Link
         window.shareClassOnWhatsApp = function(classId, studentId = '', studentName = '', phoneInputId = '', viewMode = 'sheets', studentIndex = -1, phone1Id = '', phone2Id = '') {
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls || !studentId) return;
@@ -2711,7 +2463,6 @@ function sendViaBot(rawPhone, message) {
             window.open(`${waBase}?text=${encodeURIComponent(message)}`, '_blank');
         };
 
-        // Direct SMS Sender for Individual Student Personal Sheet Link
         window.shareStudentViaSMS = function(classId, studentId, studentName, phoneInputId = '') {
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls || !studentId) return;
@@ -2725,7 +2476,6 @@ function sendViaBot(rawPhone, message) {
             window.location.href = `sms:${phoneClean}?body=${encodeURIComponent(body)}`;
         };
 
-        // Native Web Share API for Individual Student Personal Sheet Link
         window.nativeShareStudentLink = async function(classId, studentId, studentName) {
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls || !studentId) return;
@@ -2744,7 +2494,6 @@ function sendViaBot(rawPhone, message) {
             copyTextToClipboard(`${shareText}\n${shareUrl}`, `Copied ${studentName}'s Personal Sheet Link!`);
         };
 
-        // QR Code Generator Modal for Any Student's Personal Sheet Link
         window.openStudentQrModal = function(classId, studentId, studentName) {
             const cls = availableClasses.find(c => c.id === classId);
             if (!cls || !studentId) return;
@@ -2796,7 +2545,6 @@ function sendViaBot(rawPhone, message) {
             document.getElementById('class-links-modal').classList.add('hidden');
         };
 
-        // Renders ONLY Individual Student Personal Sheet Links (No Full-Class or All-Link buttons)
         function renderAllClassLinksModal() {
             const container = document.getElementById('all-class-links-list');
             if (!availableClasses.length) {
@@ -2834,7 +2582,6 @@ function sendViaBot(rawPhone, message) {
                             const phone2InputId = `phone2_${cls.id}_${st.originalIndex}`;
                             return `
                                 <div class="student-link-card">
-                                    <!-- Top Row: Student ID, Student Name, Individual Actions -->
                                     <div class="flex flex-wrap items-center justify-between gap-2">
                                         <div class="flex items-center gap-2.5">
                                             <span class="id-badge">${stId}</span>
@@ -2854,14 +2601,11 @@ function sendViaBot(rawPhone, message) {
                                         </div>
                                     </div>
 
-                                    <!-- Personal Student URL Box -->
                                     <div class="bg-emerald-950 text-amber-300 border border-emerald-800 rounded-xl px-3.5 py-2 text-xs font-mono font-bold break-all select-all flex items-center justify-between gap-2">
                                         <span>${personalUrl}</span>
                                     </div>
 
-                                    <!-- Two Phone Numbers per Student (Number 1 & Number 2) -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                                        <!-- Phone Number 1 -->
                                         <div class="flex items-center gap-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                                             <div class="relative flex-grow">
                                                 <span class="block text-[9px] font-extrabold uppercase text-emerald-700 mb-0.5">Number 1 (Father / Primary)</span>
@@ -2875,7 +2619,6 @@ function sendViaBot(rawPhone, message) {
                                             </button>
                                         </div>
 
-                                        <!-- Phone Number 2 -->
                                         <div class="flex items-center gap-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                                             <div class="relative flex-grow">
                                                 <span class="block text-[9px] font-extrabold uppercase text-indigo-700 mb-0.5">Number 2 (Mother / Secondary)</span>
@@ -2912,7 +2655,6 @@ function sendViaBot(rawPhone, message) {
             }).join('');
         }
 
-        // Load Classes & Records
         function loadClassesList() {
             const classesRef = collection(db, 'artifacts', appId, 'public', 'data', 'classes');
             if (activeClassesUnsubscribe) activeClassesUnsubscribe();
@@ -3096,7 +2838,6 @@ function sendViaBot(rawPhone, message) {
             });
         }
 
-        // Switch between Monthly Sheets, Student ID Cards, and Leaderboard
         window.switchMainView = function(viewName) {
             if (isSingleStudentSheetOnlyMode && !isUsthadAdmin) {
                 viewName = 'sheets';
@@ -3120,7 +2861,6 @@ function sendViaBot(rawPhone, message) {
             renderAllActiveViews(true);
         };
 
-        // Filter helper by Student ID or Student Name (Strictly locks to 1 student if opened via personal link)
         function getFilteredStudents() {
             if (!currentClass) return [];
             const allMapped = (currentClass.students || []).map((st, idx) => ({
@@ -3272,7 +3012,6 @@ function sendViaBot(rawPhone, message) {
             return { prayedCount, excusedCount, perfectDays, percentage };
         }
 
-        // Render View 1: Student ID Cards
         function renderStudentCards() {
             const container = document.getElementById('student-cards-grid');
             const students = getFilteredStudents();
@@ -3395,7 +3134,6 @@ function sendViaBot(rawPhone, message) {
                                 <span class="id-badge"><i class="fa-solid fa-id-badge text-[10px]"></i> ${student.studentId}</span>
                                 ${usthadShareActionsHtml}
                             </div>
-                            </div>
 
                             <div class="flex items-start justify-between gap-3 mb-4">
                                 <div class="flex items-center gap-3 min-w-0">
@@ -3436,7 +3174,6 @@ function sendViaBot(rawPhone, message) {
             });
         }
 
-        // Render View 2: Leaderboard
         function renderLeaderboard() {
             const podiumContainer = document.getElementById('leaderboard-podium');
             const listContainer = document.getElementById('leaderboard-list');
@@ -3512,7 +3249,6 @@ function sendViaBot(rawPhone, message) {
             }).join('');
         }
 
-        // Student Individual Profile Modal
         window.openStudentProfileModal = function(studentName) {
             activeProfileStudentName = studentName;
             renderStudentProfileModalContent(studentName);
@@ -3582,7 +3318,6 @@ function sendViaBot(rawPhone, message) {
             tbody.innerHTML = rows || `<tr><td colspan="6" class="p-6 text-center text-slate-400">No dates recorded for this month yet.</td></tr>`;
         }
 
-        // Toggle Prayer & Leave in Firestore (With Instant Optimistic UI Update for 0ms Feel)
         window.togglePrayer = async function(date, studentName, prayer, gender) {
             if (!authReady || !currentClass) return;
             if (!canUserEditStudentPrayers(studentName)) {
@@ -3608,7 +3343,6 @@ function sendViaBot(rawPhone, message) {
                 nextValue = current === true ? false : true;
             }
 
-            // Optimistic local state update so UI responds instantaneously without lag
             const kst = getKeralaNow();
             const stamp = format12Hour(kst.hour, kst.minute);
             if (!allRecords[date]) allRecords[date] = {};
@@ -3677,7 +3411,6 @@ function sendViaBot(rawPhone, message) {
             return dates;
         }
 
-        // Render View 3: Monthly Paper Sheets (With Student ID Badge & Personal Sheet Link)
         function renderPaperSheets(dates, forceStructureRedraw = false) {
             if (!currentClass) return;
             const container = document.getElementById('paper-sheets-container');
@@ -3693,7 +3426,9 @@ function sendViaBot(rawPhone, message) {
             if (needsSkeleton) {
                 container.innerHTML = '';
                 
-                students.forEach(student => {
+                students.forEach((student, stIdx) => {
+                    const realStudentIdx = (currentClass.students || []).findIndex(s => s.name === student.name);
+                    const idxToSave = realStudentIdx >= 0 ? realStudentIdx : stIdx;
                     let colorTheme = student.gender === 'girl' ? 'text-pink-700' : 'text-emerald-950';
                     let headerBg = student.gender === 'girl' ? 'bg-gradient-to-r from-pink-50 via-rose-50/60 to-white' : 'bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white';
                     const canEditThisSheet = canUserEditStudentPrayers(student.name);
@@ -3701,8 +3436,11 @@ function sendViaBot(rawPhone, message) {
                     
                     const safeId = student.name.replace(/[^a-zA-Z0-9]/g, '_');
                     const safeStName = student.name.replace(/'/g, "\\'");
+                    const sheetP1Id = `sheet_p1_${currentClass.id}_${idxToSave}`;
+                    const sheetP2Id = `sheet_p2_${currentClass.id}_${idxToSave}`;
                     const isLockedStudentView = isSingleStudentSheetOnlyMode && !isUsthadAdmin;
                     let sheetHeaderRightHtml = '';
+                    let usthadPhoneQuickBarHtml = '';
                     if (isLockedStudentView) {
                         sheetHeaderRightHtml = `<span class="text-xs font-extrabold text-emerald-800 bg-emerald-100/90 px-3 py-1 rounded-xl border border-emerald-200"><i class="fa-solid fa-hand-pointer mr-1"></i>Tap boxes to mark</span>`;
                     } else if (isUsthadAdmin) {
@@ -3710,13 +3448,23 @@ function sendViaBot(rawPhone, message) {
                                 <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${student.studentId}', '${safeStName}')" class="text-[11px] font-extrabold text-emerald-800 bg-white hover:bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200 shadow-sm transition cursor-pointer" title="Copy Personal Sheet Link for ${student.name} (${student.studentId})">
                                     <i class="fa-solid fa-link mr-1"></i>Student Link
                                 </button>
-                                <button onclick="shareClassOnWhatsApp('${currentClass.id}', '${student.studentId}', '${safeStName}')" class="text-[11px] font-bold text-white bg-green-600 hover:bg-green-700 px-2.5 py-1.5 rounded-xl shadow-sm transition cursor-pointer" title="Send ${student.name}'s Personal Sheet Link on WhatsApp">
+                                <button onclick="shareClassOnWhatsApp('${currentClass.id}', '${student.studentId}', '${safeStName}', '${sheetP1Id}', 'sheets', ${idxToSave}, '${sheetP1Id}', '${sheetP2Id}')" class="text-[11px] font-bold text-white bg-green-600 hover:bg-green-700 px-2.5 py-1.5 rounded-xl shadow-sm transition cursor-pointer" title="Send ${student.name}'s Personal Sheet Link on WhatsApp">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </button>
                                 <button onclick="openStudentQrModal('${currentClass.id}', '${student.studentId}', '${safeStName}')" class="text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1.5 rounded-xl shadow-sm transition cursor-pointer" title="Show QR Code for ${student.name}">
                                     <i class="fa-solid fa-qrcode"></i>
                                 </button>
                             </div>`;
+                        usthadPhoneQuickBarHtml = `
+                            <div class="px-4 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap sm:flex-nowrap items-center gap-2">
+                                <i class="fa-solid fa-phone text-emerald-600 text-xs shrink-0"></i>
+                                <input type="tel" id="${sheetP1Id}" value="${student.phone1 || ''}" placeholder="Phone 1 (e.g. 9876543210)" class="w-full sm:w-1/2 px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-800 outline-none focus:border-emerald-500">
+                                <input type="tel" id="${sheetP2Id}" value="${student.phone2 || ''}" placeholder="Phone 2 (Optional)" class="w-full sm:w-1/2 px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-800 outline-none focus:border-indigo-500">
+                                <button onclick="saveStudentPhones('${currentClass.id}', ${idxToSave}, '${sheetP1Id}', '${sheetP2Id}', false)" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shrink-0 cursor-pointer transition shadow-sm">
+                                    <i class="fa-solid fa-floppy-disk mr-1"></i>Save No.
+                                </button>
+                            </div>
+                        `;
                     } else {
                         sheetHeaderRightHtml = `<span class="text-[11px] font-bold text-slate-500 bg-white/80 px-2.5 py-1 rounded-xl border border-slate-200"><i class="fa-solid fa-eye mr-1 text-emerald-600"></i>Ticked Sheet</span>`;
                     }
@@ -3730,6 +3478,7 @@ function sendViaBot(rawPhone, message) {
                             </div>
                             ${sheetHeaderRightHtml}
                         </div>
+                        ${usthadPhoneQuickBarHtml}
                         <div id="scroll-div-${safeId}" class="overflow-y-auto flex-grow bg-white">
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-white shadow-sm z-10">
@@ -3831,7 +3580,6 @@ function sendViaBot(rawPhone, message) {
             });
         }
 
-        // Usthad Manage Class & Students Functions
         window.openManageClassModal = function() {
             if (!isUsthadAdmin) {
                 handleUsthadButtonClick();
@@ -3916,8 +3664,11 @@ function sendViaBot(rawPhone, message) {
                                 <span class="font-bold text-slate-800 text-sm">${student.name}</span>
                             </div>
                             <div class="flex items-center gap-1">
+                                <button onclick="saveStudentPhones('${currentClass.id}', ${index}, '${mPhone1Id}', '${mPhone2Id}', false)" class="text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer" title="Save Phone Numbers">
+                                    <i class="fa-solid fa-floppy-disk mr-1"></i>Save No.
+                                </button>
                                 <button onclick="copySpecificClassLink('${currentClass.id}', 'sheets', '${stId}', '${safeStName}')" class="text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg text-xs font-extrabold transition cursor-pointer" title="Copy Student Sheet Link">
-                                    <i class="fa-solid fa-link mr-1"></i>Student Link
+                                    <i class="fa-solid fa-link mr-1"></i>Link
                                 </button>
                                 <button onclick="removeStudent(${index})" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition cursor-pointer" title="Remove Student">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
@@ -3925,8 +3676,8 @@ function sendViaBot(rawPhone, message) {
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pl-10">
-                            <input type="tel" id="${mPhone1Id}" value="${student.phone1 || ''}" onchange="saveStudentPhones('${currentClass.id}', ${index}, '${mPhone1Id}', '${mPhone2Id}')" placeholder="Phone Number 1..." class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-emerald-500">
-                            <input type="tel" id="${mPhone2Id}" value="${student.phone2 || ''}" onchange="saveStudentPhones('${currentClass.id}', ${index}, '${mPhone1Id}', '${mPhone2Id}')" placeholder="Phone Number 2..." class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-indigo-500">
+                            <input type="tel" id="${mPhone1Id}" value="${student.phone1 || ''}" onchange="saveStudentPhones('${currentClass.id}', ${index}, '${mPhone1Id}', '${mPhone2Id}')" placeholder="Phone Number 1 (e.g. 9876543210)..." class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-emerald-500">
+                            <input type="tel" id="${mPhone2Id}" value="${student.phone2 || ''}" onchange="saveStudentPhones('${currentClass.id}', ${index}, '${mPhone1Id}', '${mPhone2Id}')" placeholder="Phone Number 2 (Optional)..." class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold outline-none focus:border-indigo-500">
                         </div>
                     </li>
                 `;
@@ -3988,7 +3739,6 @@ function sendViaBot(rawPhone, message) {
             }
         };
 
-        // CSV Export & Import
         window.exportDataToCSV = function() {
             if (!authReady || !currentClass) return;
 
@@ -4110,7 +3860,6 @@ function sendViaBot(rawPhone, message) {
             reader.readAsText(file);
         });
 
-        // Toast Helper
         let toastTimeout;
         window.showToast = function(message, type = 'success') {
             const toast = document.getElementById('toast');
