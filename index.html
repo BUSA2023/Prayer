@@ -1007,9 +1007,14 @@
 
                 <!-- Right Column: Enrolled Students List -->
                 <div class="md:w-7/12 flex flex-col">
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                         <h4 class="font-extrabold text-slate-700 text-xs uppercase tracking-wider">Enrolled Students (<span id="student-count">0</span>)</h4>
-                        <span class="text-[11px] text-slate-400">Edit 2 Numbers or Copy Student Sheet Link</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="restoreMissingDefaultStudents()" class="text-[11px] font-extrabold bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg transition cursor-pointer" title="Restore any missing default students (HIM-901 to HIM-905)">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>Restore Missing Students
+                            </button>
+                            <span class="text-[11px] text-slate-400">Edit 2 Numbers or Copy Link</span>
+                        </div>
                     </div>
                     <div class="flex-grow overflow-y-auto border border-slate-200 rounded-2xl bg-white p-2 max-h-[420px]">
                         <ul id="manage-students-list" class="divide-y divide-slate-100">
@@ -2051,11 +2056,18 @@
         }
 
         function getStudentId(student, index, className = '') {
-            if (student && student.studentId) return student.studentId.toUpperCase();
+            if (student && student.studentId && String(student.studentId).trim() !== '') {
+                return String(student.studentId).trim().toUpperCase();
+            }
             const numMatch = (className || '').match(/\d+/);
             const classPrefix = numMatch ? numMatch[0] : (className ? className.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() : 'S');
             const rollNo = String(index + 1).padStart(2, '0');
             return `HIM-${classPrefix}${rollNo}`;
+        }
+
+        // Normalize any ID or search string so "him 904", "HIM-904", "him904", and "904" all match
+        function normalizeIdQuery(str) {
+            return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
         }
 
         function updateSingleStudentModeUI() {
@@ -2678,18 +2690,44 @@
                 });
 
                 const class9 = availableClasses.find(c => c.name === "Class 9");
-                if (class9 && (!class9.students || class9.students.length === 0)) {
-                    const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', class9.id);
-                    await setDoc(classRef, { 
-                        students: [
-                            { name: 'Niswa', gender: 'girl', studentId: 'HIM-901', phone1: '', phone2: '', addedAt: new Date().toISOString() },
-                            { name: 'Shahma', gender: 'girl', studentId: 'HIM-902', phone1: '', phone2: '', addedAt: new Date().toISOString() },
-                            { name: 'Rashid', gender: 'boy', studentId: 'HIM-903', phone1: '', phone2: '', addedAt: new Date().toISOString() },
-                            { name: 'Shamil', gender: 'boy', studentId: 'HIM-904', phone1: '', phone2: '', addedAt: new Date().toISOString() },
-                            { name: 'Nafith', gender: 'boy', studentId: 'HIM-905', phone1: '', phone2: '', addedAt: new Date().toISOString() }
-                        ] 
-                    }, { merge: true });
-                    return;
+                if (class9) {
+                    const defaultClass9Roster = [
+                        { name: 'Niswa', gender: 'girl', studentId: 'HIM-901' },
+                        { name: 'Shahma', gender: 'girl', studentId: 'HIM-902' },
+                        { name: 'Rashid', gender: 'boy', studentId: 'HIM-903' },
+                        { name: 'Shamil', gender: 'boy', studentId: 'HIM-904' },
+                        { name: 'Nafith', gender: 'boy', studentId: 'HIM-905' }
+                    ];
+                    const existingStudents = Array.isArray(class9.students) ? [...class9.students] : [];
+                    let rosterChanged = false;
+
+                    // Ensure existing default students keep their canonical HIM-901..HIM-905 IDs and restore any missing ones
+                    defaultClass9Roster.forEach(defSt => {
+                        const foundIdx = existingStudents.findIndex(s =>
+                            (s.name && s.name.toLowerCase() === defSt.name.toLowerCase()) ||
+                            (s.studentId && normalizeIdQuery(s.studentId) === normalizeIdQuery(defSt.studentId))
+                        );
+                        if (foundIdx === -1) {
+                            existingStudents.push({
+                                name: defSt.name,
+                                gender: defSt.gender,
+                                studentId: defSt.studentId,
+                                phone1: '',
+                                phone2: '',
+                                addedAt: new Date().toISOString()
+                            });
+                            rosterChanged = true;
+                        } else if (existingStudents[foundIdx].studentId !== defSt.studentId) {
+                            existingStudents[foundIdx].studentId = defSt.studentId;
+                            rosterChanged = true;
+                        }
+                    });
+
+                    if (rosterChanged) {
+                        const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', class9.id);
+                        await setDoc(classRef, { students: existingStudents }, { merge: true });
+                        return;
+                    }
                 }
 
                 availableClasses.sort((a, b) => a.name.localeCompare(b.name));
@@ -2715,12 +2753,16 @@
                         if (match) targetClass = match;
                         initialClassParam = null;
                     } else if (lockedStudentIdParam || lockedStudentNameParam) {
-                        const q = (lockedStudentIdParam || lockedStudentNameParam).toLowerCase().trim();
+                        const qRaw = (lockedStudentIdParam || lockedStudentNameParam).toLowerCase().trim();
+                        const qNorm = normalizeIdQuery(qRaw);
                         const foundClass = availableClasses.find(c =>
-                            (c.students || []).some((st, idx) =>
-                                getStudentId(st, idx, c.name).toLowerCase() === q ||
-                                st.name.toLowerCase() === q
-                            )
+                            (c.students || []).some((st, idx) => {
+                                const sid = getStudentId(st, idx, c.name);
+                                return sid.toLowerCase() === qRaw ||
+                                       normalizeIdQuery(sid) === qNorm ||
+                                       normalizeIdQuery(sid).endsWith(qNorm) ||
+                                       st.name.toLowerCase() === qRaw;
+                            })
                         );
                         if (foundClass) targetClass = foundClass;
                     }
@@ -2871,12 +2913,14 @@
             }));
 
             if (isSingleStudentSheetOnlyMode && !isUsthadAdmin) {
-                const targetId = (lockedStudentIdParam || '').toLowerCase().trim();
+                const targetIdRaw = (lockedStudentIdParam || '').toLowerCase().trim();
+                const targetIdNorm = normalizeIdQuery(targetIdRaw);
                 const targetName = (lockedStudentNameParam || '').toLowerCase().trim();
-                const exactMatches = allMapped.filter(s =>
-                    (targetId && s.studentId.toLowerCase() === targetId) ||
-                    (targetName && s.name.toLowerCase() === targetName)
-                );
+                const exactMatches = allMapped.filter(s => {
+                    const sIdNorm = normalizeIdQuery(s.studentId);
+                    return (targetIdRaw && (s.studentId.toLowerCase() === targetIdRaw || sIdNorm === targetIdNorm || (targetIdNorm.length >= 3 && sIdNorm.endsWith(targetIdNorm)))) ||
+                           (targetName && s.name.toLowerCase() === targetName);
+                });
                 if (exactMatches.length > 0) return [exactMatches[0]];
             }
 
@@ -2886,12 +2930,33 @@
                 if (rawSearch.length > 0) clearBtn.classList.remove('hidden');
                 else clearBtn.classList.add('hidden');
             }
+            if (!rawSearch) return allMapped;
+
             const searchQuery = rawSearch.toLowerCase();
-            return allMapped.filter(s => 
-                !searchQuery || 
-                s.name.toLowerCase().includes(searchQuery) || 
-                s.studentId.toLowerCase().includes(searchQuery)
-            );
+            const searchNorm = normalizeIdQuery(rawSearch);
+
+            const filteredInCurrent = allMapped.filter(s => {
+                const sIdNorm = normalizeIdQuery(s.studentId);
+                return s.name.toLowerCase().includes(searchQuery) ||
+                       s.studentId.toLowerCase().includes(searchQuery) ||
+                       (searchNorm && sIdNorm.includes(searchNorm));
+            });
+
+            // If user typed a Student ID (like "him 904") that belongs to another class, automatically switch to that class!
+            if (filteredInCurrent.length === 0 && searchNorm.length >= 3) {
+                const otherClass = availableClasses.find(c =>
+                    c.id !== currentClass.id &&
+                    (c.students || []).some((st, idx) => {
+                        const sid = getStudentId(st, idx, c.name);
+                        return normalizeIdQuery(sid).includes(searchNorm) || st.name.toLowerCase().includes(searchQuery);
+                    })
+                );
+                if (otherClass) {
+                    setTimeout(() => selectClass(otherClass.id), 10);
+                }
+            }
+
+            return filteredInCurrent;
         }
 
         window.renderAllActiveViews = function(forceSheetRedraw = false) {
@@ -3709,7 +3774,18 @@
                 return;
             }
 
-            const assignedId = customId || getStudentId({}, currentStudents.length, currentClass.name);
+            // Ensure unique non-colliding Student ID (e.g. HIM-901, HIM-902...)
+            let assignedId = customId;
+            if (!assignedId) {
+                const numMatch = (currentClass.name || '').match(/\d+/);
+                const prefix = numMatch ? numMatch[0] : (currentClass.name ? currentClass.name.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() : 'S');
+                let nextNum = currentStudents.length + 1;
+                while (currentStudents.some((s, idx) => normalizeIdQuery(getStudentId(s, idx, currentClass.name)) === normalizeIdQuery(`HIM-${prefix}${String(nextNum).padStart(2, '0')}`))) {
+                    nextNum++;
+                }
+                assignedId = `HIM-${prefix}${String(nextNum).padStart(2, '0')}`;
+            }
+
             const newStudent = { name, gender, studentId: assignedId, phone1, phone2, addedAt: new Date().toISOString() };
             const updatedStudents = [...currentStudents, newStudent];
 
@@ -3736,6 +3812,50 @@
                 showToast(`Removed ${removed[0]?.name || 'student'}`, "success");
             } catch (error) {
                 showToast("Failed to remove student", "error");
+            }
+        };
+
+        window.restoreMissingDefaultStudents = async function() {
+            if (!currentClass || !isUsthadAdmin) return;
+            const defaultRoster = [
+                { name: 'Niswa', gender: 'girl', studentId: 'HIM-901' },
+                { name: 'Shahma', gender: 'girl', studentId: 'HIM-902' },
+                { name: 'Rashid', gender: 'boy', studentId: 'HIM-903' },
+                { name: 'Shamil', gender: 'boy', studentId: 'HIM-904' },
+                { name: 'Nafith', gender: 'boy', studentId: 'HIM-905' }
+            ];
+            const updatedStudents = [...(currentClass.students || [])];
+            let restoredCount = 0;
+
+            defaultRoster.forEach(defSt => {
+                const exists = updatedStudents.some(s =>
+                    s.name.toLowerCase() === defSt.name.toLowerCase() ||
+                    normalizeIdQuery(s.studentId) === normalizeIdQuery(defSt.studentId)
+                );
+                if (!exists) {
+                    updatedStudents.push({
+                        name: defSt.name,
+                        gender: defSt.gender,
+                        studentId: defSt.studentId,
+                        phone1: '',
+                        phone2: '',
+                        addedAt: new Date().toISOString()
+                    });
+                    restoredCount++;
+                }
+            });
+
+            if (restoredCount === 0) {
+                showToast("All default students (HIM-901 to HIM-905) are already in this class!", "success");
+                return;
+            }
+
+            try {
+                const classRef = doc(db, 'artifacts', appId, 'public', 'data', 'classes', currentClass.id);
+                await setDoc(classRef, { students: updatedStudents }, { merge: true });
+                showToast(`Restored ${restoredCount} missing student(s) (including HIM-904)!`, "success");
+            } catch (e) {
+                showToast("Failed to restore students", "error");
             }
         };
 
